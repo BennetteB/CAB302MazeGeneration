@@ -1,5 +1,12 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicToggleButtonUI;
+import javax.swing.plaf.metal.MetalButtonUI;
+import javax.swing.plaf.metal.MetalToggleButtonUI;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -7,11 +14,12 @@ import java.util.ArrayList;
 /**
  * Creates the Grid Panel with editable cells for Maze construction
  */
-public class GridPanel extends JPanel {
+public class GridPanel extends JLayeredPane {
+    private int sizeMultiplier = 5;
+    private Color GridColor = Color.WHITE;
     enum Position {HORIZONTAL,VERTICAl}
     private GridBagConstraints cst;
-    private int sizeMultiplier = 5;
-    private ArrayList<JButton> btnList = new ArrayList<JButton>();
+    private ArrayList<JToggleButton> btnList = new ArrayList<JToggleButton>();
 
     public GridPanel() {
         super();
@@ -41,7 +49,7 @@ public class GridPanel extends JPanel {
                     cst.gridy = y;
                     cst.gridwidth = 14;
                     cst.gridheight = 2;
-                    add(createWall(Position.HORIZONTAL),cst);
+                    add(createWall(Position.HORIZONTAL),cst,1);
                     x += 12;
                     j += 1;
                 }
@@ -51,7 +59,7 @@ public class GridPanel extends JPanel {
                         cst.gridy = y - 2;
                         cst.gridwidth = 2;
                         cst.gridheight = 14;
-                        add(createWall(Position.VERTICAl),cst);
+                        add(createWall(Position.VERTICAl),cst,1);
                         x += 2;
                     }
                     else {
@@ -59,7 +67,7 @@ public class GridPanel extends JPanel {
                         cst.gridy = y;
                         cst.gridwidth = 10;
                         cst.gridheight = 10;
-                        add(createCell(),cst);
+                        add(createCell(),cst,1);
                         x += 10;
                     }
                 }
@@ -80,6 +88,7 @@ public class GridPanel extends JPanel {
      */
     private JPanel createCell() {
         JPanel panel = new JPanel();
+        panel.setBackground(GridColor);
         panel.setPreferredSize(new Dimension(10 * sizeMultiplier,10 * sizeMultiplier));
         return panel;
     }
@@ -89,39 +98,29 @@ public class GridPanel extends JPanel {
      * @param position Vertical or Horizontal decides dimensions of button
      * @return JButton
      */
-    private JButton createWall(Position position) {
-        JButton btn = new JButton();
-        btn.setOpaque(false);
-        btn.setBackground(Color.BLACK);
-        btn.addMouseListener(new MouseListener() {
-
+    private JToggleButton createWall(Position position) {
+        JToggleButton btn = new JToggleButton();
+        btn.setBorderPainted(false);
+        btn.setBackground(GridColor);
+        btn.setRolloverEnabled(true);
+        btn.setUI(new MetalToggleButtonUI() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-
+            protected Color getSelectColor() {
+                return Color.BLACK;
             }
-
+        });
+        btn.addChangeListener(new ChangeListener() {
             @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            public void mouseEntered(MouseEvent e) {
-                for(int i = 0; i < btnList.size(); i++) {
-                    if(e.getSource() == btnList.get(i)) {
-                        btnList.get(i).setBackground(Color.RED);
-                        repaint();
-                    }
+            public void stateChanged(ChangeEvent e) {
+                if(btn.getModel().isRollover()) {
+                    btn.setBackground(Color.RED);
                 }
-            }
+                else{
+                    btn.setBackground(GridColor);
+                }
+                if(btn.isSelected()) {
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                e.getComponent().setBackground(Color.WHITE);
+                }
             }
         });
         switch (position) {
