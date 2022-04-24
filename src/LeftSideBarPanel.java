@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 /**
  * Left Side Bar Panel class
  */
-public class LeftSideBarPanel extends JFrame implements ActionListener {
+public class LeftSideBarPanel extends JPanel implements ActionListener {
     /**
      * properties of the left sidebar panel, which includes
      * width, height, base panel, and inner panel buttons.
@@ -20,9 +20,7 @@ public class LeftSideBarPanel extends JFrame implements ActionListener {
      * constructor for left sidebar panel
      */
     public LeftSideBarPanel() {
-        super("Left Side Panel");
         initComponents();
-        setVisible(true);
     }
 
     /**
@@ -59,4 +57,5 @@ public class LeftSideBarPanel extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
+
 }
