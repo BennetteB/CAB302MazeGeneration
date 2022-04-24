@@ -33,16 +33,21 @@ public class LeftSideBarPanel extends JPanel implements ActionListener {
         leftsidePanel = new JPanel();
         leftsidePanel.setBackground(Color.LIGHT_GRAY);
 
-        mazeStatsButton = new JButton("  Maze Stats  ");
-        editButton = new JButton("        Edit        ");
-        solvableButton = new JButton("   Solvable     ");
+        mazeStatsButton = new JButton();
+        editButton = new JButton();
+        solvableButton = new JButton();
         mazeStatsButton.setBackground(Color.WHITE);
-
-        editButton.setBackground(Color.WHITE);
         solvableButton.setBackground(Color.WHITE);
+        editButton.setBackground(Color.WHITE);
+        solvableButton.setMaximumSize(new Dimension(100,100));
+        mazeStatsButton.setMaximumSize(new Dimension(100,100));
+        editButton.setMaximumSize(new Dimension(100,100));
+
 
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
-        leftsidePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        solvableButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        mazeStatsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         leftsidePanel.add(mazeStatsButton);
         leftsidePanel.add(editButton);
         leftsidePanel.add(solvableButton);
