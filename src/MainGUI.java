@@ -26,7 +26,6 @@ public class MainGUI extends JFrame implements Runnable {
 
         //leftSidePanel
         JPanel leftSidePanel = new LeftSideBarPanel();
-
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
 
         //rightSidePanel
