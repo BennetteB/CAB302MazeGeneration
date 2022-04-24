@@ -26,12 +26,12 @@ public class MainGUI extends JFrame implements Runnable {
 
         //leftSidePanel
         JPanel leftSidePanel = new LeftSideBarPanel();
-        leftSidePanel.setSize(200, 300);
+        leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
 
         //rightSidePanel
         JPanel rightSidePanel = new RightSideBarPanel(200, 300);
-        rightSidePanel.setSize(200, 300);
+        rightSidePanel.setPreferredSize(new Dimension(200, 300));
         mainPanel.add(rightSidePanel, BorderLayout.EAST);
 
         //gridPanel
@@ -77,7 +77,7 @@ public class MainGUI extends JFrame implements Runnable {
 
 
         // Display the window.
-        setPreferredSize(new Dimension(300, 200));
+        setPreferredSize(new Dimension(1600, 900));
         setLocation(new Point(100, 100));
         pack();
         setVisible(true);
