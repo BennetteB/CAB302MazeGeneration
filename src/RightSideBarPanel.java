@@ -29,7 +29,9 @@ public class RightSideBarPanel extends JPanel implements ActionListener {
      */
     public void initializeRightSideBar() {
         setBackground(Color.WHITE);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JButton newImage = new JButton("Add Image");
+        newImage.setAlignmentX(Component.CENTER_ALIGNMENT);
         newImage.addActionListener(this);
         add(newImage);
     }
@@ -45,6 +47,7 @@ public class RightSideBarPanel extends JPanel implements ActionListener {
         ImageIcon newIcon = resizeImage(icon, 0, 0);
         JLabel label = new JLabel(newIcon);
         imageList.add(label);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(label);
         updateUI();
     }
