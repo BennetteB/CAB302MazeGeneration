@@ -59,12 +59,4 @@ public class LeftSideBarPanel extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
-
-    /**
-     * Calls the left sidebar panel.
-     */
-    public static void main(String[] args) {
-        LeftSideBarPanel leftside = new LeftSideBarPanel();
-    }
-
 }
