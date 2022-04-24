@@ -25,22 +25,20 @@ public class MainGUI extends JFrame implements Runnable {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         //leftSidePanel
-        JPanel leftSidePanel = new JPanel();
-        leftSidePanel.setBackground(Color.RED);
-        leftSidePanel.setPreferredSize(new Dimension(50,200));
+        JPanel leftSidePanel = new LeftSideBarPanel();
+
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
 
         //rightSidePanel
-        JPanel rightSidePanel = new JPanel();
-        rightSidePanel.setBackground((Color.WHITE));
-        rightSidePanel.setPreferredSize(new Dimension(150, 200));
+        JPanel rightSidePanel = new RightSideBarPanel(200, 300);
+        rightSidePanel.setSize(200, 300);
         mainPanel.add(rightSidePanel, BorderLayout.EAST);
 
         //gridPanel
-        JPanel gridPanel = new JPanel();
-        rightSidePanel.setBackground(Color.RED);
-        rightSidePanel.setPreferredSize(new Dimension(100, 200));
-        mainPanel.add(gridPanel, BorderLayout.CENTER);
+        GridPanel gridPanel = new GridPanel();
+        gridPanel.CreateGrid(10,10);
+        JScrollPane GridPanel = new JScrollPane(gridPanel);
+        mainPanel.add(GridPanel, BorderLayout.CENTER);
         //endregion
 
         //region File on Menu bar
