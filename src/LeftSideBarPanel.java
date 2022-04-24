@@ -3,24 +3,31 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
+/**
+ * Left Side Bar Panel class
+ */
 public class LeftSideBarPanel extends JFrame implements ActionListener {
-
+    /**
+     * properties of the left sidebar panel, which includes
+     * width, height, base panel, and inner panel buttons.
+     */
     public static final int WIDTH = 300;
-
     public static final int HEIGHT = 200;
-
     private JPanel leftsidePanel;
-
     private JButton mazeStatsButton, editButton, solvableButton;
 
-
+    /**
+     * constructor for left sidebar panel
+     */
     public LeftSideBarPanel() {
         super("Left Side Panel");
         initComponents();
         setVisible(true);
     }
 
+    /**
+     * Create maze stats, edit, solvable buttons and add them to the panel
+     */
     private void initComponents() {
         setSize(WIDTH, HEIGHT);
         setLayout(new BorderLayout());
@@ -53,6 +60,9 @@ public class LeftSideBarPanel extends JFrame implements ActionListener {
 
     }
 
+    /**
+     * Calls the left sidebar panel.
+     */
     public static void main(String[] args) {
         LeftSideBarPanel leftside = new LeftSideBarPanel();
     }
