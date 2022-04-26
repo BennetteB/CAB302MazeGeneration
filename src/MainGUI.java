@@ -8,6 +8,7 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem open;
     private JMenuItem save;
     private JMenuItem export;
+    private JMenuItem setting;
     private JMenuItem impImage;
 
 
@@ -44,11 +45,13 @@ public class MainGUI extends JFrame implements Runnable {
         //region File on Menu bar
         // File Menu Bar Implementation
         createMaze = new JMenuItem("Create new maze");
+        setting = new JMenuItem("Settings");
         open = new JMenuItem("Open");
         save = new JMenuItem("Save");
         export = new JMenuItem("Export");
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(createMaze);
+        fileMenu.add(setting);
         fileMenu.add(open);
         fileMenu.add(save);
         fileMenu.add(export);
