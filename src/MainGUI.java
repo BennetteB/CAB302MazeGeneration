@@ -17,9 +17,14 @@ public class MainGUI extends JFrame implements Runnable {
      */
     private static final long serialVersionUID = -6063203541510340633L;
 
-    public MainGUI() {
-        //region Panels
+    public MainGUI(){
         super("Main GUI");
+        initGUI();
+    }
+
+    public void initGUI() {
+        //region Panels
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //Main Panel for the other panels
