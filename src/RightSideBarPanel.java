@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Class representing the right side panel of the maze program GUI
  */
-public class RightSideBarPanel extends JPanel implements ActionListener {
+public class RightSideBarPanel extends JPanel {
 
     /** The maximum width of an image */
     private final int maxImageWidth;
@@ -17,6 +17,8 @@ public class RightSideBarPanel extends JPanel implements ActionListener {
 
     /** An array of JLabels containing images */
     private ArrayList<JLabel> imageList = new ArrayList<>();
+
+    private JButton newImage;
 
     public RightSideBarPanel(int width, int height) {
         maxImageWidth = width;
@@ -30,10 +32,21 @@ public class RightSideBarPanel extends JPanel implements ActionListener {
     public void initializeRightSideBar() {
         setBackground(Color.WHITE);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        JButton newImage = new JButton("Add Image");
+        newImage = new JButton("Add Image");
         newImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        newImage.addActionListener(this);
         add(newImage);
+    }
+
+    /**
+     * Get newImage
+     * @return Returns the button newImage
+     */
+    public JButton getNewImage() {
+        return newImage;
+    }
+
+    public void addActionListener(ActionListener listener) {
+        newImage.addActionListener(listener);
     }
 
     /**
@@ -66,15 +79,8 @@ public class RightSideBarPanel extends JPanel implements ActionListener {
         double widthRatio = (double) maxImageWidth / icon.getIconWidth();
         double heightRatio = (double) maxImageHeight / icon.getIconHeight();
         double ratio = Math.min(widthRatio, heightRatio);
-        Image newimg = img.getScaledInstance((int) (icon.getIconWidth() * ratio), (int) (icon.getIconHeight() * ratio), Image.SCALE_SMOOTH);
+        Image newimg = img.getScaledInstance((int) (icon.getIconWidth() * ratio), (int) (icon.getIconHeight() * ratio),
+                Image.SCALE_SMOOTH);
         return new ImageIcon(newimg);
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        /** Temporary alternative to a file picker dialog */
-        String path = JOptionPane.showInputDialog(this, "Provide a file path: ");
-        addImage(path);
     }
 }

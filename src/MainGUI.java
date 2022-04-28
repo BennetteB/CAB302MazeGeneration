@@ -1,5 +1,5 @@
- import java.awt.*;
-
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 public class MainGUI extends JFrame implements Runnable {
@@ -10,6 +10,9 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem export;
     private JMenuItem setting;
     private JMenuItem impImage;
+    private RightSideBarPanel rightSidePanel;
+    private LeftSideBarPanel leftSidePanel;
+    private GridPanel gridPanel;
 
 
     /**
@@ -31,17 +34,19 @@ public class MainGUI extends JFrame implements Runnable {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         //leftSidePanel
-        JPanel leftSidePanel = new LeftSideBarPanel();
+        leftSidePanel = new LeftSideBarPanel();
         leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
 
         //rightSidePanel
-        JPanel rightSidePanel = new RightSideBarPanel(200, 300);
+        rightSidePanel = new RightSideBarPanel(200, 300);
         rightSidePanel.setPreferredSize(new Dimension(200, 300));
         mainPanel.add(rightSidePanel, BorderLayout.EAST);
+        rightSidePanel.addActionListener(new Listener());
+
 
         //gridPanel
-        GridPanel gridPanel = new GridPanel();
+        gridPanel = new GridPanel();
         gridPanel.CreateGrid(10,10);
         JScrollPane GridPanel = new JScrollPane(gridPanel);
         mainPanel.add(GridPanel, BorderLayout.CENTER);
@@ -60,8 +65,6 @@ public class MainGUI extends JFrame implements Runnable {
         fileMenu.add(open);
         fileMenu.add(save);
         fileMenu.add(export);
-
-
         //endregion
 
         //region Edit on Menu bar
@@ -102,5 +105,15 @@ public class MainGUI extends JFrame implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    private class Listener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            Component source = (Component) e.getSource();
+            if (source == rightSidePanel.getNewImage()) {
+                String path = JOptionPane.showInputDialog("Provide a file path: ");
+                rightSidePanel.addImage(path);
+            }
+        }
     }
 }
