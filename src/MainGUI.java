@@ -30,6 +30,10 @@ public class MainGUI extends JFrame implements Runnable {
         initGUI();
     }
 
+
+    /**
+     * Initializes the Main GUI
+     */
     public void initGUI() {
         //region Panels
 
@@ -39,12 +43,22 @@ public class MainGUI extends JFrame implements Runnable {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         //leftSidePanel
+        /**
+         * Calls the leftSideBarPanel class:
+         * Sets up the dimension for the leftSidePanel
+         * Returns an interactive sidebar to the left of the main panel
+         */
         leftSidePanel = new LeftSideBarPanel();
         leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
         leftSidePanel.addActionListener(new Listener());
 
         //rightSidePanel
+        /**
+         * Calls the rightSideBarPanel class:
+         * Sets up the dimension for the rightSidePanel
+         * Return an interactive sidebar to the right side of the main panel
+         */
         rightSidePanel = new RightSideBarPanel(200, 300);
         rightSidePanel.setPreferredSize(new Dimension(200, 300));
         mainPanel.add(rightSidePanel, BorderLayout.EAST);
@@ -52,6 +66,11 @@ public class MainGUI extends JFrame implements Runnable {
 
 
         //gridPanel
+        /**
+         * Calls the gridPanel class:
+         * Sets up the dimensions for the gridPanel
+         * Returns a grid into the center of the main panel
+         */
         gridPanel = new GridPanel();
         gridPanel.CreateGrid(10,10);
         JScrollPane GridPanel = new JScrollPane(gridPanel);
@@ -81,6 +100,9 @@ public class MainGUI extends JFrame implements Runnable {
         //endregion
 
         //region Implementation of the Menu bar
+        /**
+         * Sets up the menu bar
+         */
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
