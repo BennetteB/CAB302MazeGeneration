@@ -98,8 +98,23 @@ public class MainGUI extends JFrame implements Runnable {
     }
 
     /**
-     * @param args
+     * Converts the maze data received by the Algorithm class into a type readable by the GridPanel class
+     * @param mazeData a two-dimensional int that represents a maze
+     * @return returns a two-dimensional component that represents a maze
      */
+    public Component[][] gridPanelMazeData(int[][] mazeData) {
+        return null;
+    }
+
+    /**
+     * Converts the maze data received by the GridPanel class into a type readable by the Algorithm class
+     * @param mazeData a two-dimensional component that represents a maze
+     * @return returns a two-dimensional int that represents a maze
+     */
+    public int[][] algorithmMazeData(Component[][] mazeData) {
+        return null;
+    }
+
     public static void main(String[] args) {
         JFrame.setDefaultLookAndFeelDecorated(true);
         new MainGUI();
