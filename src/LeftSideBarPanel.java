@@ -14,7 +14,7 @@ public class LeftSideBarPanel extends JPanel {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
     private JPanel leftsidePanel;
-    private JButton mazeStatsButton, editButton, solvableButton;
+    private JButton mazeStatsButton, editButton, solvableButton, optimalSolution;
 
     /**
      * constructor for left sidebar panel
