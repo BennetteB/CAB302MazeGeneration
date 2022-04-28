@@ -17,14 +17,17 @@ public class LeftSideBarPanel extends JPanel {
     private JButton mazeStatsButton, editButton, solvableButton;
 
     /**
-     * constructor for left sidebar panel
+     * constructor for left sidebar panel,
+     * calls the method that will begin filling up the panel with its components
      */
     public LeftSideBarPanel() {
         initLeftPanel();
     }
 
     /**
-     * Create maze stats, edit, solvable buttons and add them to the panel
+     * Create maze stats, edit, solvable buttons,
+     * buttons are added to the panel
+     * panel layout, background color and size dimensions are indicated here
      */
     private void initLeftPanel() {
         setSize(WIDTH, HEIGHT);
@@ -42,12 +45,9 @@ public class LeftSideBarPanel extends JPanel {
         solvableButton.setMaximumSize(new Dimension(100,100));
         mazeStatsButton.setMaximumSize(new Dimension(100,100));
         editButton.setMaximumSize(new Dimension(100,100));
-
         solvableButton.setText("Solvable");
         mazeStatsButton.setText("Maze Stats");
         editButton.setText("Edit");
-
-
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
         leftsidePanel.add(mazeStatsButton);
         leftsidePanel.add(editButton);
@@ -55,18 +55,31 @@ public class LeftSideBarPanel extends JPanel {
         add(leftsidePanel, BorderLayout.CENTER);
     }
 
+    /**
+     * @return maze stats button
+     */
     public JButton getMazeStatsButton() {
         return mazeStatsButton;
     }
 
+    /**
+     * @return edit button
+     */
     public JButton getEditButton() {
         return editButton;
     }
 
+    /**
+     * @return solvable button
+     */
     public JButton getSolvableButton() {
         return solvableButton;
     }
 
+    /**
+     * adds a listener to each of the buttons in the left sidebar panel
+     * @param listener the listener that each of the buttons will add
+     */
     public void addActionListener(ActionListener listener) {
         mazeStatsButton.addActionListener(listener);
         editButton.addActionListener(listener);
