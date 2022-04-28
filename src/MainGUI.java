@@ -10,6 +10,11 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem export;
     private JMenuItem setting;
     private JMenuItem impImage;
+    private int mazeHeight;
+    private int mazeWidth;
+    private String mazeName;
+    private String author;
+
     private RightSideBarPanel rightSidePanel;
     private LeftSideBarPanel leftSidePanel;
     private GridPanel gridPanel;
@@ -37,6 +42,7 @@ public class MainGUI extends JFrame implements Runnable {
         leftSidePanel = new LeftSideBarPanel();
         leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
+        leftSidePanel.addActionListener(new Listener());
 
         //rightSidePanel
         rightSidePanel = new RightSideBarPanel(200, 300);
@@ -84,9 +90,6 @@ public class MainGUI extends JFrame implements Runnable {
         //Making the panels visible on MainGUI window
         getContentPane().add(mainPanel);
 
-
-
-
         // Display the window.
         setPreferredSize(new Dimension(1600, 900));
         setLocation(new Point(100, 100));
@@ -113,6 +116,18 @@ public class MainGUI extends JFrame implements Runnable {
             if (source == rightSidePanel.getNewImage()) {
                 String path = JOptionPane.showInputDialog("Provide a file path: ");
                 rightSidePanel.addImage(path);
+            }
+            if (source == leftSidePanel.getMazeStatsButton()) {
+
+                // Remove me in submission branch
+                String buttons[] = {"button"};
+                JOptionPane.showOptionDialog(null, "message", "title,", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, "default");
+            }
+            if (source == leftSidePanel.getEditButton()) {
+
+            }
+            if (source == leftSidePanel.getSolvableButton()) {
+
             }
         }
     }

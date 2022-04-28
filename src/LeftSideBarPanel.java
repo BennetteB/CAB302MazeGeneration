@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 /**
  * Left Side Bar Panel class
  */
-public class LeftSideBarPanel extends JPanel implements ActionListener {
+public class LeftSideBarPanel extends JPanel {
     /**
      * properties of the left sidebar panel, which includes
      * width, height, base panel, and inner panel buttons.
@@ -20,13 +20,13 @@ public class LeftSideBarPanel extends JPanel implements ActionListener {
      * constructor for left sidebar panel
      */
     public LeftSideBarPanel() {
-        initComponents();
+        initLeftPanel();
     }
 
     /**
      * Create maze stats, edit, solvable buttons and add them to the panel
      */
-    private void initComponents() {
+    private void initLeftPanel() {
         setSize(WIDTH, HEIGHT);
         setLayout(new BorderLayout());
 
@@ -55,15 +55,21 @@ public class LeftSideBarPanel extends JPanel implements ActionListener {
         add(leftsidePanel, BorderLayout.CENTER);
     }
 
+    public JButton getMazeStatsButton() {
+        return mazeStatsButton;
+    }
+
+    public JButton getEditButton() {
+        return editButton;
+    }
+
+    public JButton getSolvableButton() {
+        return solvableButton;
+    }
+
     public void addActionListener(ActionListener listener) {
         mazeStatsButton.addActionListener(listener);
         editButton.addActionListener(listener);
         solvableButton.addActionListener(listener);
     }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
-
 }

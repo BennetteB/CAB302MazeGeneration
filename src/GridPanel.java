@@ -78,7 +78,7 @@ public class GridPanel extends JPanel {
     }
 
     /**
-     * Creates empty panel and adds it to GridComponentArray and  panel
+     * Creates empty panel and adds it to GridComponentArray and panel
      * @param x GridBagConstraints x position
      * @param y GridBagConstraints y position
      * @param i GridComponentArray x index

@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -23,13 +22,13 @@ public class RightSideBarPanel extends JPanel {
     public RightSideBarPanel(int width, int height) {
         maxImageWidth = width;
         maxImageHeight = height;
-        initializeRightSideBar();
+        initRightPanel();
     }
 
     /**
      * Initializes the rightSideBar
      */
-    public void initializeRightSideBar() {
+    public void initRightPanel() {
         setBackground(Color.WHITE);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         newImage = new JButton("Add Image");
@@ -45,6 +44,10 @@ public class RightSideBarPanel extends JPanel {
         return newImage;
     }
 
+    /**
+     * Adds an action listener from the class implementing the RightSideBarPanel to the newImage button
+     * @param listener The listener the newImage button is being added to
+     */
     public void addActionListener(ActionListener listener) {
         newImage.addActionListener(listener);
     }
