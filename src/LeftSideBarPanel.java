@@ -14,7 +14,7 @@ public class LeftSideBarPanel extends JPanel {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
     private JPanel leftsidePanel;
-    private JButton mazeStatsButton, editButton, solvableButton, optimalSolution;
+    private JButton mazeStatsButton, editButton, solvableButton, optimalSolutionButton;
 
     /**
      * constructor for left sidebar panel,
@@ -25,7 +25,7 @@ public class LeftSideBarPanel extends JPanel {
     }
 
     /**
-     * Create maze stats, edit, solvable buttons,
+     * Creates maze stats, edit, solvable and optimal solution buttons,
      * buttons are added to the panel
      * panel layout, background color and size dimensions are indicated here
      */
@@ -39,19 +39,28 @@ public class LeftSideBarPanel extends JPanel {
         mazeStatsButton = new JButton();
         editButton = new JButton();
         solvableButton = new JButton();
+        optimalSolutionButton = new JButton();
+
         mazeStatsButton.setBackground(Color.WHITE);
         solvableButton.setBackground(Color.WHITE);
         editButton.setBackground(Color.WHITE);
+        optimalSolutionButton.setBackground(Color.WHITE);
+
         solvableButton.setMaximumSize(new Dimension(100,100));
         mazeStatsButton.setMaximumSize(new Dimension(100,100));
         editButton.setMaximumSize(new Dimension(100,100));
+        optimalSolutionButton.setMaximumSize(new Dimension(100,100));
+
         solvableButton.setText("Solvable");
         mazeStatsButton.setText("Maze Stats");
         editButton.setText("Edit");
+        optimalSolutionButton.setText("Optimal Solution");
+
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
         leftsidePanel.add(mazeStatsButton);
         leftsidePanel.add(editButton);
         leftsidePanel.add(solvableButton);
+        leftsidePanel.add(optimalSolutionButton);
         add(leftsidePanel, BorderLayout.CENTER);
     }
 
