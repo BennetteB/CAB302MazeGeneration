@@ -144,6 +144,9 @@ public class MainGUI extends JFrame implements Runnable {
             if (source == leftSidePanel.getSolvableButton()) {
 
             }
+            if (source == leftSidePanel.getOptimalSolutionButton()) {
+
+            }
         }
     }
 }

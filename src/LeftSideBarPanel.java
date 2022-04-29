@@ -86,6 +86,13 @@ public class LeftSideBarPanel extends JPanel {
     }
 
     /**
+     * @return optimal solution button
+     */
+    public JButton getOptimalSolutionButton() {
+        return optimalSolutionButton;
+    }
+
+    /**
      * adds a listener to each of the buttons in the left sidebar panel
      * @param listener the listener that each of the buttons will add
      */
