@@ -25,7 +25,7 @@ public class GridPanel extends JPanel {
     private GridBagConstraints cst;
     private Component[][] GridComponentArray;
 
-    public GridPanel() {
+    protected GridPanel() {
         super();
         setLayout(new GridBagLayout());
         cst = new GridBagConstraints();

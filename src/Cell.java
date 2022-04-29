@@ -10,7 +10,7 @@ public class Cell extends JPanel {
     protected int i;
     protected int j;
 
-    public Cell(int x, int y, int width, int i, int j) {
+    protected Cell(int x, int y, int width, int i, int j) {
         this.x = x;
         this.y = y;
         this.width = width;
