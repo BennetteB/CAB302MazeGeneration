@@ -7,7 +7,7 @@ public class Algorithm {
      * @param height the height that the maze will generate with
      * @return returns a two-dimensional int that represents a maze
      */
-    public int[][] generateMaze(int width, int height) {
+    protected int[][] generateMaze(int width, int height) {
         return null;
     }
 
@@ -16,7 +16,7 @@ public class Algorithm {
      * @param mazeData a two-dimensional int that represents a maze
      * @return Checks a given maze for its solvability and returns a boolean
      */
-    public boolean mazeSolvability(int[][] mazeData) {
+    protected boolean mazeSolvability(int[][] mazeData) {
         return true;
     }
 
@@ -25,7 +25,7 @@ public class Algorithm {
      * @param mazeData a two-dimensional int that represents a maze
      * @return returns a two-dimensional int that represents a maze
      */
-    public int[][] optimalSolution(int[][] mazeData) {
+    protected int[][] optimalSolution(int[][] mazeData) {
         return null;
     }
 
@@ -34,7 +34,7 @@ public class Algorithm {
      * @param mazeData a two-dimensional int that represents a maze
      * @return returns a percentage representing the dead cells in a maze
      */
-    public float showDeadCells(int[][] mazeData) {
+    protected float showDeadCells(int[][] mazeData) {
         return 0;
     }
 }

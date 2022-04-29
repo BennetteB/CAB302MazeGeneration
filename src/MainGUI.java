@@ -10,20 +10,16 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem export;
     private JMenuItem setting;
     private JMenuItem impImage;
-    private int mazeHeight;
-    private int mazeWidth;
+    private int mazeCellHeight;
+    private int mazeCellWidth;
+    private int imageCellHeight;
+    private int imageCellWidth;
     private String mazeName;
     private String author;
 
     private RightSideBarPanel rightSidePanel;
     private LeftSideBarPanel leftSidePanel;
     private GridPanel gridPanel;
-
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6063203541510340633L;
 
     public MainGUI(){
         super("Main GUI");
@@ -164,7 +160,6 @@ public class MainGUI extends JFrame implements Runnable {
 
             }
             if (source == leftSidePanel.getSolvableButton()) {
-
             }
         }
     }

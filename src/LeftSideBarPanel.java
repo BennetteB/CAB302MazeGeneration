@@ -11,8 +11,8 @@ public class LeftSideBarPanel extends JPanel {
      * properties of the left sidebar panel, which includes
      * width, height, base panel, and inner panel buttons.
      */
-    public static final int WIDTH = 100;
-    public static final int HEIGHT = 100;
+    private static final int WIDTH = 100;
+    private static final int HEIGHT = 100;
     private JPanel leftsidePanel;
     private JButton mazeStatsButton, editButton, solvableButton, optimalSolutionButton;
 
@@ -20,7 +20,7 @@ public class LeftSideBarPanel extends JPanel {
      * constructor for left sidebar panel,
      * calls the method that will begin filling up the panel with its components
      */
-    public LeftSideBarPanel() {
+    protected LeftSideBarPanel() {
         initLeftPanel();
     }
 
@@ -67,21 +67,21 @@ public class LeftSideBarPanel extends JPanel {
     /**
      * @return maze stats button
      */
-    public JButton getMazeStatsButton() {
+    protected JButton getMazeStatsButton() {
         return mazeStatsButton;
     }
 
     /**
      * @return edit button
      */
-    public JButton getEditButton() {
+    protected JButton getEditButton() {
         return editButton;
     }
 
     /**
      * @return solvable button
      */
-    public JButton getSolvableButton() {
+    protected JButton getSolvableButton() {
         return solvableButton;
     }
 
@@ -89,7 +89,7 @@ public class LeftSideBarPanel extends JPanel {
      * adds a listener to each of the buttons in the left sidebar panel
      * @param listener the listener that each of the buttons will add
      */
-    public void addActionListener(ActionListener listener) {
+    protected void addActionListener(ActionListener listener) {
         mazeStatsButton.addActionListener(listener);
         editButton.addActionListener(listener);
         solvableButton.addActionListener(listener);

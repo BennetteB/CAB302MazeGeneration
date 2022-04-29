@@ -19,7 +19,7 @@ public class RightSideBarPanel extends JPanel {
 
     private JButton newImage;
 
-    public RightSideBarPanel(int width, int height) {
+    protected RightSideBarPanel(int width, int height) {
         maxImageWidth = width;
         maxImageHeight = height;
         initRightPanel();
@@ -28,7 +28,7 @@ public class RightSideBarPanel extends JPanel {
     /**
      * Initializes the rightSideBar
      */
-    public void initRightPanel() {
+    private void initRightPanel() {
         setBackground(Color.WHITE);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         newImage = new JButton("Add Image");
@@ -40,7 +40,7 @@ public class RightSideBarPanel extends JPanel {
      * Get newImage
      * @return Returns the button newImage
      */
-    public JButton getNewImage() {
+    protected JButton getNewImage() {
         return newImage;
     }
 
@@ -48,7 +48,7 @@ public class RightSideBarPanel extends JPanel {
      * Adds an action listener from the class implementing the RightSideBarPanel to the newImage button
      * @param listener The listener the newImage button is being added to
      */
-    public void addActionListener(ActionListener listener) {
+    protected void addActionListener(ActionListener listener) {
         newImage.addActionListener(listener);
     }
 
@@ -58,7 +58,7 @@ public class RightSideBarPanel extends JPanel {
      * @param path The path must be from the main directory. Temporary parameter for the path that an image will be
      *             found at. May be removed when the file picker dialog is implemented
      */
-    public void addImage(String path) {
+    protected void addImage(String path) {
         ImageIcon icon = new ImageIcon(path);
         ImageIcon newIcon = resizeImage(icon, 0, 0);
         JLabel label = new JLabel(newIcon);
@@ -77,7 +77,7 @@ public class RightSideBarPanel extends JPanel {
      * @param numCellsHeight number of vertical cells the image will encompass
      * @return resized imageIcon
      */
-    public ImageIcon resizeImage(ImageIcon icon, int numCellsWidth, int numCellsHeight) {
+    private ImageIcon resizeImage(ImageIcon icon, int numCellsWidth, int numCellsHeight) {
         Image img = icon.getImage();
         double widthRatio = (double) maxImageWidth / icon.getIconWidth();
         double heightRatio = (double) maxImageHeight / icon.getIconHeight();

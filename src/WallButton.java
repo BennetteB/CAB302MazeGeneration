@@ -19,7 +19,7 @@ public class WallButton extends JToggleButton {
      * @param i GridComponentArray x index
      * @param j GridComponentArray y index
      */
-    public WallButton(int x, int y, int width, int height, int i, int j) {
+    protected WallButton(int x, int y, int width, int height, int i, int j) {
         this.x = x;
         this.y = y;
         this.width = width;
