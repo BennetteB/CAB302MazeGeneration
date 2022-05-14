@@ -36,21 +36,25 @@ public class Maze {
         }
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (j == 0) {               // left case
-                    maze[i][j].right = maze[i][j+1];
-                } else if (j == width-1) {  // right case
-                    maze[i][j].left = maze[i][j-1];
-                } else {                    // other
-                    maze[i][j].left = maze[i][j-1];
-                    maze[i][j].right = maze[i][j+1];
+                if (j == 0) {               // left case (Leaves left cell null and toggle left wall to true)
+                    maze[i][j].setCellRight(maze[i][j+1]);
+                    maze[i][j].toggleWallLeft();
+                } else if (j == width-1) {  // right case (Leaves right cell null and toggles right wall to true)
+                    maze[i][j].setCellLeft(maze[i][j-1]);
+                    maze[i][j].toggleWallRight();
+                } else {                    // other (Case for all cells that aren't on an x-axis edge)
+                    maze[i][j].setCellLeft(maze[i][j-1]);
+                    maze[i][j].setCellRight(maze[i][j+1]);
                 }
-                if (i == 0) {               // top case
-                    maze[i][j].down = maze[i+1][j];
-                } else if (i == height-1) { // bottom case
-                    maze[i][j].up = maze[i-1][j];
-                } else {                    // other
-                    maze[i][j].up = maze[i - 1][j];
-                    maze[i][j].down = maze[i + 1][j];
+                if (i == 0) {               // top case (Leaves top cell null and toggles top wall to true)
+                    maze[i][j].setCellDown(maze[i+1][j]);
+                    maze[i][j].toggleWallUp();
+                } else if (i == height-1) { // bottom case (Leaves bottom cell null and toggles bottom wall to true)
+                    maze[i][j].setCellUp(maze[i-1][j]);
+                    maze[i][j].toggleWallDown();
+                } else {                    // other (Case for all cells that aren't on a y-axis edge)
+                    maze[i][j].setCellUp(maze[i-1][j]);
+                    maze[i][j].setCellDown(maze[i+1][j]);
                 }
             }
         }
@@ -59,7 +63,7 @@ public class Maze {
 
     /**
      * Returns the maze
-     * @return Returns the maze
+     * @return Returns a two-dimensional array representation of the maze
      */
     public MazeCell[][] getMaze() {
         return this.maze;
