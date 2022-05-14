@@ -1,15 +1,32 @@
-public class Maze {
 
+/**
+ * Class representing a maze
+ */
+public class Maze {
+    /** The cell height of the maze **/
     private int height;
+
+    /** The cell width of the maze **/
     private int width;
+
+    /** An array of MazeCells that represent the maze **/
     private MazeCell[][] maze;
 
+    /**
+     * Initializes the maze
+     * @param height The cell height of the maze
+     * @param width The cell width of the maze
+     */
     protected Maze(int height, int width) {
         this.height = height;
         this.width = width;
         this.maze = generateMaze();
     }
 
+    /**
+     * Generates a blank maze with a cell width of width and a cell height of height
+     * @return Returns a blank maze
+     */
     private MazeCell[][] generateMaze() {
         MazeCell[][] maze = new MazeCell[height][width];
         for (int i = 0; i < height; i++) {
@@ -40,6 +57,10 @@ public class Maze {
         return maze;
     }
 
+    /**
+     * Returns the maze
+     * @return Returns the maze
+     */
     public MazeCell[][] getMaze() {
         return this.maze;
     }
