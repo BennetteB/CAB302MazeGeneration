@@ -34,7 +34,6 @@ public class Algorithm {
                 "W"
         };
         MazeCell currentCell;
-        MazeCell previousCell = null;
         String previousDirection;
         while(!mazeStack.empty()) {
             // Sets the current cell to the top of the stack
@@ -50,22 +49,22 @@ public class Algorithm {
             // Adds the cells in all directions of the current cell to the maze stack
             // Adds the direction used to get to the cell to the top of the direction stack
             for (String direction : directions) {
-                if (direction == "N" && currentCell.getCellUp() != null) {
+                if (Objects.equals(direction, "N") && currentCell.getCellUp() != null) {
                     if (!currentCell.getCellUp().getVisited()) {
                         mazeStack.push(currentCell.getCellUp());
                         directionStack.push("N");
                     }
-                } else if (direction == "E" && currentCell.getCellRight() != null) {
+                } else if (Objects.equals(direction, "E") && currentCell.getCellRight() != null) {
                     if (!currentCell.getCellRight().getVisited()) {
                         mazeStack.push(currentCell.getCellRight());
                         directionStack.push("E");
                     }
-                } else if (direction == "S" && currentCell.getCellDown() != null) {
+                } else if (Objects.equals(direction, "S") && currentCell.getCellDown() != null) {
                     if (!currentCell.getCellDown().getVisited()) {
                         mazeStack.push(currentCell.getCellDown());
                         directionStack.push("S");
                     }
-                } else if (direction == "W" && currentCell.getCellLeft() != null) {
+                } else if (Objects.equals(direction, "W") && currentCell.getCellLeft() != null) {
                     if (!currentCell.getCellLeft().getVisited()) {
                         mazeStack.push(currentCell.getCellLeft());
                         directionStack.push("W");
@@ -76,28 +75,27 @@ public class Algorithm {
             // Removes the wall between the current cell and the previous cell if the current cell has not been visited
             if (!currentCell.getVisited()) {
                 currentCell.toggleVisited();
-                if (previousCell != null) {
+                if (previousDirection != null) {
                     switch (previousDirection) {
                         case "N" -> {
-                            previousCell.toggleWallUp();
+                            currentCell.getCellDown().toggleWallUp();
                             currentCell.toggleWallDown();
                         }
                         case "E" -> {
-                            previousCell.toggleWallRight();
+                            currentCell.getCellLeft().toggleWallRight();
                             currentCell.toggleWallLeft();
                         }
                         case "S" -> {
-                            previousCell.toggleWallDown();
+                            currentCell.getCellUp().toggleWallDown();
                             currentCell.toggleWallUp();
                         }
                         case "W" -> {
-                            previousCell.toggleWallLeft();
+                            currentCell.getCellRight().toggleWallLeft();
                             currentCell.toggleWallRight();
                         }
                     }
                 }
             }
-            previousCell = currentCell;
         }
         // toggles all the maze cell so that they are marked as not visited
         for (int i = 0; i < height; i++) {
