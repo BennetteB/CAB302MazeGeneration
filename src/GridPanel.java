@@ -45,6 +45,8 @@ public class GridPanel extends JPanel {
                 MazeCell mazeCell = mazeData[i][j];
                 int gridCoordinatei = (i*2) +1;
                 int gridCoordinatej = (j*2) +1;
+
+
                 changeWall(gridCoordinatei - 1, gridCoordinatej, mazeCell.getWallUp());
                 changeWall(gridCoordinatei, gridCoordinatej + 1, mazeCell.getWallRight());
                 changeWall(gridCoordinatei + 1, gridCoordinatej, mazeCell.getWallDown());
@@ -55,6 +57,19 @@ public class GridPanel extends JPanel {
 
     private void changeWall(int i, int j, boolean isSelected) {
         ((WallButton) GridComponentArray[i][j]).getModel().setSelected(isSelected);
+    }
+
+    private void emptyMaze() {
+        for (int i = 0; i < GridComponentArray.length; i++) {
+            for (int j = 0; j < GridComponentArray[0].length; j++){
+                if(i % 2 == 0 && j % 2 != 0) {
+                    ((WallButton) GridComponentArray[i][j]).getModel().setSelected(false);
+                }
+                else if(i % 2 != 0 && j % 2 == 0) {
+                    ((WallButton) GridComponentArray[i][j]).getModel().setSelected(false);
+                }
+            }
+        }
     }
 
     /**
