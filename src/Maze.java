@@ -25,6 +25,7 @@ public class Maze {
 
     /**
      * Generates a blank maze with a cell width of width and a cell height of height
+     * @param wallState the initial state of the cell walls
      * @return Returns a blank maze
      */
     private MazeCell[][] generateMaze(boolean wallState) {
