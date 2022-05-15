@@ -13,23 +13,37 @@ public class MazeCell {
     private MazeCell right;
 
     /** State of the wall above the cell */
-    private boolean wallUp = false;
+    private boolean wallUp;
 
     /** State of the wall below the cell */
-    private boolean wallDown = false;
+    private boolean wallDown;
 
     /** State of the wall to the left of the cell */
-    private boolean wallLeft = false;
+    private boolean wallLeft;
 
     /** State of the wall to the right of the cell */
-    private boolean wallRight = false;
+    private boolean wallRight;
 
-    /** Initializes the MazeCell */
-    protected MazeCell(MazeCell up, MazeCell down, MazeCell left, MazeCell right) {
+    /** The visited state of the cell */
+    private boolean visited = false;
+
+    /**
+     * Creates a MazeCell
+     * @param up the MazeCell above this cell
+     * @param down the MazeCell below this cell
+     * @param left the MazeCell to the left of this cell
+     * @param right The MazeCell to right of this cell
+     * @param wallState The initial state of all four walls
+     */
+    protected MazeCell(MazeCell up, MazeCell down, MazeCell left, MazeCell right, boolean wallState) {
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
+        this.wallUp = wallState;
+        this.wallDown = wallState;
+        this.wallLeft = wallState;
+        this.wallRight = wallState;
     }
 
     /**
@@ -123,4 +137,15 @@ public class MazeCell {
      * @return the state of the wall to the right of the cell
      */
     public boolean getWallRight() {return wallRight;}
+
+    /**
+     * Toggles the visited state of the cell
+     */
+    public void toggleVisited() {visited = !visited;}
+
+    /**
+     * Get the toggle state of the cell
+     * @return the toggle state of the cell
+     */
+    public boolean getVisited() {return visited;}
 }
