@@ -36,6 +36,28 @@ public class GridPanel extends JPanel {
     }
 
     /**
+     * Applies MazeData to Grid
+     * @param mazeData
+     */
+    protected void CreateMaze(MazeCell[][] mazeData) {
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                MazeCell mazeCell = mazeData[i][j];
+                int gridCoordinatei = (i*2) +1;
+                int gridCoordinatej = (j*2) +1;
+                changeWall(gridCoordinatei - 1, gridCoordinatej, mazeCell.getWallUp());
+                changeWall(gridCoordinatei, gridCoordinatej + 1, mazeCell.getWallRight());
+                changeWall(gridCoordinatei + 1, gridCoordinatej, mazeCell.getWallDown());
+                changeWall(gridCoordinatei, gridCoordinatej - 1, mazeCell.getWallLeft());
+            }
+        }
+    }
+
+    private void changeWall(int i, int j, boolean isSelected) {
+        ((WallButton) GridComponentArray[i][j]).getModel().setSelected(isSelected);
+    }
+
+    /**
      * Creates an Empty Grid
      * @param width Number of cells wide
      * @param height Number of cells high
