@@ -108,16 +108,71 @@ public class Algorithm {
 
     /**
      * The method checks if a maze represented by mazeData is solvable
-     * @param mazeData a two-dimensional int that represents a maze
+     * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return Checks a given maze for its solvability and returns a boolean
      */
     protected boolean mazeSolvability(MazeCell[][] mazeData) {
+
         return true;
     }
 
     /**
+     * The method checks all the outside cells for two outside openings
+     * @param mazeData a two-dimensional MazeCell that represents the maze
+     * @return a two-dimensional int containing the indexes for the two openings if two openings are found (represented
+     * as [height][width]), and null if two openings were not found
+     */
+    protected int[][] findOpenCells(MazeCell[][] mazeData) {
+        int[][] indexes = new int[2][2];
+        int openCellCount = 0;
+        int mazeHeight = mazeData.length;
+        int mazeWidth = mazeData[0].length;
+        for (int i = 0; i < mazeWidth; i++) {     //top and bottom cells search
+            if (!mazeData[0][i].getWallUp()) {
+                openCellCount++;
+                if (openCellCount > 2) {
+                    return null;
+                }
+                indexes[openCellCount-1][0] = 0;
+                indexes[openCellCount-1][1] = i;
+            }
+            if (!mazeData[mazeHeight-1][i].getWallDown()) {
+                openCellCount++;
+                if (openCellCount > 2) {
+                    return null;
+                }
+                indexes[openCellCount-1][0] = mazeHeight-1;
+                indexes[openCellCount-1][1] = i;
+            }
+        }
+        for (int i = 0; i < mazeHeight; i++) {  //right and left cells searched
+            if (!mazeData[i][0].getWallLeft()) {
+                openCellCount++;
+                if (openCellCount > 2) {
+                    return null;
+                }
+                indexes[openCellCount-1][0] = i;
+                indexes[openCellCount-1][1] = 0;
+            }
+            if (!mazeData[i][mazeWidth-1].getWallRight()) {
+                openCellCount++;
+                if (openCellCount > 2) {
+                    return null;
+                }
+                indexes[openCellCount-1][0] = i;
+                indexes[openCellCount-1][1] = mazeWidth-1;
+            }
+        }
+        if (openCellCount == 2) {
+            return indexes;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * The method checks for the optimal solution for the maze represented by mazeData
-     * @param mazeData a two-dimensional int that represents a maze
+     * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a two-dimensional int that represents a maze
      */
     protected MazeCell[][] optimalSolution(int[][] mazeData) {
@@ -126,7 +181,7 @@ public class Algorithm {
 
     /**
      * The method checks for all the dead cells within the maze represented by mazeData and returns a percentage of them
-     * @param mazeData a two-dimensional int that represents a maze
+     * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a percentage representing the dead cells in a maze
      */
     protected float showDeadCells(int[][] mazeData) {

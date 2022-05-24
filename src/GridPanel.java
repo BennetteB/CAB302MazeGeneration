@@ -46,7 +46,6 @@ public class GridPanel extends JPanel {
                 int gridCoordinatei = (i*2) +1;
                 int gridCoordinatej = (j*2) +1;
 
-
                 changeWall(gridCoordinatei - 1, gridCoordinatej, mazeCell.getWallUp());
                 changeWall(gridCoordinatei, gridCoordinatej + 1, mazeCell.getWallRight());
                 changeWall(gridCoordinatei + 1, gridCoordinatej, mazeCell.getWallDown());
