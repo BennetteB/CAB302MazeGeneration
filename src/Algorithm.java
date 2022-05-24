@@ -74,7 +74,7 @@ public class Algorithm {
 
             // Removes the wall between the current cell and the previous cell if the current cell has not been visited
             if (!currentCell.getVisited()) {
-                currentCell.toggleVisited();
+                currentCell.setVisited(true);
                 if (previousDirection != null) {
                     switch (previousDirection) {
                         case "N" -> {
@@ -100,7 +100,7 @@ public class Algorithm {
         // toggles all the maze cell so that they are marked as not visited
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                mazeData[i][j].toggleVisited();
+                mazeData[i][j].setVisited(false);
             }
         }
         return mazeData;
@@ -109,21 +109,63 @@ public class Algorithm {
     /**
      * The method checks if a maze represented by mazeData is solvable
      * @param mazeData a two-dimensional MazeCell that represents the maze
-     * @return Checks a given maze for its solvability and returns a boolean
+     * @return Returns true if the given maze is solvable and false otherwise
      */
     protected boolean mazeSolvability(MazeCell[][] mazeData) {
+        MazeCell[] indexes = findOpenCells(mazeData);
+        if (indexes == null) {
+            return false;
+        }
+        MazeCell startIndex;
+        MazeCell endIndex;
+        startIndex = indexes[0];
+        endIndex = indexes[1];
 
-        return true;
+        Stack<MazeCell> mazeStack = new Stack<>();
+        mazeStack.push(startIndex);
+        startIndex.setVisited(true);
+
+        while(!mazeStack.empty()) {
+            MazeCell current = mazeStack.pop();
+            if (current.equals(endIndex)) {
+                return true;
+            } else {
+                if (current.getCellUp() != null && !current.getCellUp().getVisited() && !current.getWallUp()) {
+                    mazeStack.push(current.getCellUp());
+                    current.getCellUp().setVisited(true);
+                }
+                if (current.getCellRight() != null && !current.getCellRight().getVisited()
+                        && !current.getWallRight()) {
+                    mazeStack.push(current.getCellRight());
+                    current.getCellRight().setVisited(true);
+                }
+                if (current.getCellDown() != null && !current.getCellDown().getVisited()
+                        && !current.getWallDown()) {
+                    mazeStack.push(current.getCellDown());
+                    current.getCellDown().setVisited(true);
+                }
+                if (current.getCellLeft() != null && !current.getCellLeft().getVisited()
+                        && !current.getWallLeft()) {
+                    mazeStack.push(current.getCellLeft());
+                    current.getCellLeft().setVisited(true);
+                }
+            }
+        }
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setVisited(false);
+            }
+        }
+        return false;
     }
 
     /**
      * The method checks all the outside cells for two outside openings
      * @param mazeData a two-dimensional MazeCell that represents the maze
-     * @return a two-dimensional int containing the indexes for the two openings if two openings are found (represented
-     * as [height][width]), and null if two openings were not found
+     * @return a MazeCell array containing the two openings if they were found, and null if they were not found
      */
-    protected int[][] findOpenCells(MazeCell[][] mazeData) {
-        int[][] indexes = new int[2][2];
+    protected MazeCell[] findOpenCells(MazeCell[][] mazeData) {
+        MazeCell[] openEnds = new MazeCell[2];
         int openCellCount = 0;
         int mazeHeight = mazeData.length;
         int mazeWidth = mazeData[0].length;
@@ -133,16 +175,14 @@ public class Algorithm {
                 if (openCellCount > 2) {
                     return null;
                 }
-                indexes[openCellCount-1][0] = 0;
-                indexes[openCellCount-1][1] = i;
+                openEnds[openCellCount-1] = mazeData[0][i];
             }
             if (!mazeData[mazeHeight-1][i].getWallDown()) {
                 openCellCount++;
                 if (openCellCount > 2) {
                     return null;
                 }
-                indexes[openCellCount-1][0] = mazeHeight-1;
-                indexes[openCellCount-1][1] = i;
+                openEnds[openCellCount-1] = mazeData[mazeHeight-1][i];
             }
         }
         for (int i = 0; i < mazeHeight; i++) {  //right and left cells searched
@@ -151,20 +191,18 @@ public class Algorithm {
                 if (openCellCount > 2) {
                     return null;
                 }
-                indexes[openCellCount-1][0] = i;
-                indexes[openCellCount-1][1] = 0;
+                openEnds[openCellCount-1] = mazeData[i][0];
             }
             if (!mazeData[i][mazeWidth-1].getWallRight()) {
                 openCellCount++;
                 if (openCellCount > 2) {
                     return null;
                 }
-                indexes[openCellCount-1][0] = i;
-                indexes[openCellCount-1][1] = mazeWidth-1;
+                openEnds[openCellCount-1] = mazeData[i][mazeWidth-1];
             }
         }
         if (openCellCount == 2) {
-            return indexes;
+            return openEnds;
         } else {
             return null;
         }

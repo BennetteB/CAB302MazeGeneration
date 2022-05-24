@@ -139,9 +139,9 @@ public class MazeCell {
     public boolean getWallRight() {return wallRight;}
 
     /**
-     * Toggles the visited state of the cell
+     * Sets the visited state of the cell
      */
-    public void toggleVisited() {visited = !visited;}
+    public void setVisited(boolean bool) {visited = bool;}
 
     /**
      * Get the toggle state of the cell
