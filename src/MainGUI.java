@@ -73,16 +73,6 @@ public class MainGUI extends JFrame implements Runnable {
         mainPanel.add(GridPanel, BorderLayout.CENTER);
         //endregion
 
-        MazeCell[][] maze = new Algorithm().generateMaze(10,10);
-
-        maze[0][0].toggleWallUp();
-        maze[3][0].toggleWallLeft();
-
-        int[][] test = new Algorithm().findOpenCells(maze);
-
-        System.out.println(test[0][0]+ " " + test[0][1]+ " " + test[1][0] + " " + test[1][1]);
-
-
         //region File on Menu bar
         // File Menu Bar Implementation
         createMaze = new JMenuItem("Create new maze");
