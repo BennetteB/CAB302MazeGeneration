@@ -10,16 +10,18 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem export;
     private JMenuItem setting;
     private JMenuItem impImage;
-    private int mazeCellHeight;
-    private int mazeCellWidth;
-    private int imageCellHeight;
-    private int imageCellWidth;
-    private String mazeName;
-    private String author;
+    private int mazeCellHeight = 10;
+    private int mazeCellWidth = 10;
+    private int imageCellHeight = 2;
+    private int imageCellWidth = 2;
+    private String mazeName = "New Maze";
+    private String author = "Unknown";
 
+    private JPanel mainPanel;
     private RightSideBarPanel rightSidePanel;
     private LeftSideBarPanel leftSidePanel;
     private GridPanel gridPanel;
+    private JScrollPane GridPanel;
 
     public MainGUI(){
         super("Main GUI");
@@ -36,7 +38,7 @@ public class MainGUI extends JFrame implements Runnable {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //Main Panel for the other panels
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
 
         //leftSidePanel
         /**
@@ -68,39 +70,10 @@ public class MainGUI extends JFrame implements Runnable {
          * Returns a grid into the center of the main panel
          */
         gridPanel = new GridPanel();
-        gridPanel.CreateGrid(10,10);
-        JScrollPane GridPanel = new JScrollPane(gridPanel);
+        gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+        GridPanel = new JScrollPane(gridPanel);
         mainPanel.add(GridPanel, BorderLayout.CENTER);
         //endregion
-
-        //Start pseudo test region
-
-//        MazeCell[][] maze = new Algorithm().generateMaze(10, 10);
-//
-//        maze[0][0].toggleWallUp();
-//        maze[3][0].toggleWallLeft();
-//
-//        // Deliberately break the maze
-////        if (!maze[3][0].getWallUp()) {
-////            maze[3][0].toggleWallUp();
-////            maze[3][0].getCellUp().toggleWallDown();
-////        }
-////        if (!maze[3][0].getWallRight()) {
-////            maze[3][0].toggleWallRight();
-////            maze[3][0].getCellRight().toggleWallLeft();
-////        }
-////        if (!maze[3][0].getWallDown()) {
-////            maze[3][0].toggleWallDown();
-////            maze[3][0].getCellDown().toggleWallUp();
-////        }
-//
-//        gridPanel.CreateMaze(maze);
-//
-//        boolean state = new Algorithm().mazeSolvability(maze);
-//
-//        System.out.println(state);
-//
-//        //End pseudo test region
 
         //region File on Menu bar
         // File Menu Bar Implementation
@@ -124,6 +97,8 @@ public class MainGUI extends JFrame implements Runnable {
         editMenu.add(impImage);
         //endregion
 
+        addActionListener(new Listener());
+
         //region Implementation of the Menu bar
         /**
          * Sets up the menu bar
@@ -142,6 +117,19 @@ public class MainGUI extends JFrame implements Runnable {
         setLocation(new Point(100, 100));
         pack();
         setVisible(true);
+    }
+
+    /**
+     * Adds an action listener to the newImage button
+     * @param listener The listener the newImage button is being added to
+     */
+    protected void addActionListener(ActionListener listener) {
+        createMaze.addActionListener(listener);
+        setting.addActionListener(listener);
+        open.addActionListener(listener);
+        save.addActionListener(listener);
+        export.addActionListener(listener);
+        impImage.addActionListener(listener);
     }
 
     /**
@@ -175,22 +163,104 @@ public class MainGUI extends JFrame implements Runnable {
     private class Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
-            if (source == rightSidePanel.getNewImage()) {
+            if (source == rightSidePanel.getNewImage() || source == impImage) {
                 String path = JOptionPane.showInputDialog("Provide a file path: ");
                 rightSidePanel.addImage(path);
             }
             if (source == leftSidePanel.getMazeStatsButton()) {
 
-                // Remove me in submission branch
-                String buttons[] = {"button"};
-                JOptionPane.showOptionDialog(null, "message", "title,", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, "default");
             }
             if (source == leftSidePanel.getEditButton()) {
 
             }
             if (source == leftSidePanel.getSolvableButton()) {
+
             }
             if (source == leftSidePanel.getOptimalSolutionButton()) {
+
+            }
+            if (source == createMaze) {
+                // Possibly make a new method for most of this part
+                boolean randomiseMaze = false;
+
+                // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
+                KeyAdapter onlyInt = new KeyAdapter() {
+                    public void keyTyped(KeyEvent e) {
+                        char c = e.getKeyChar();
+                        if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                            e.consume();  // if it's not a number, ignore the event
+                        }
+                    }
+                };
+
+                JTextField mazeHeightText = new JTextField("10", 5);
+                mazeHeightText.addKeyListener(onlyInt);
+
+                JTextField mazeWidthText = new JTextField("10", 5);
+                mazeWidthText.addKeyListener(onlyInt);
+
+                JTextField imageWidthText = new JTextField("2", 5);
+                imageWidthText.addKeyListener(onlyInt);
+
+                JTextField imageHeightText = new JTextField("2", 5);
+                imageHeightText.addKeyListener(onlyInt);
+
+                JTextField mazeNameText = new JTextField("New Maze", 20);
+                JTextField mazeAuthorText = new JTextField("Unknown", 20);
+
+                JCheckBox randomMazeOption = new JCheckBox();
+
+                JPanel newMazeOptions = new JPanel();
+                newMazeOptions.setLayout(new GridLayout(7, 1, 0, 10));
+                newMazeOptions.add(new JLabel("Maze Cell Height:"));
+                newMazeOptions.add(mazeHeightText);
+                newMazeOptions.add(new JLabel("Maze Cell Width:"));
+                newMazeOptions.add(mazeWidthText);
+                newMazeOptions.add(new JLabel("Image Cell Height"));
+                newMazeOptions.add(imageHeightText);
+                newMazeOptions.add(new JLabel("Image Cell Width"));
+                newMazeOptions.add(imageWidthText);
+                newMazeOptions.add(new JLabel("Maze Name"));
+                newMazeOptions.add(mazeNameText);
+                newMazeOptions.add(new JLabel("Author"));
+                newMazeOptions.add(mazeAuthorText);
+                newMazeOptions.add(new JLabel("Randomise Maze"));
+                newMazeOptions.add(randomMazeOption);
+
+                int result = JOptionPane.showConfirmDialog(null, newMazeOptions,
+                        "Create new maze", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
+                    mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
+                    imageCellHeight = Integer.parseInt(imageHeightText.getText());
+                    imageCellWidth = Integer.parseInt(imageWidthText.getText());
+                    mazeName = mazeNameText.getText();
+                    author = mazeAuthorText.getText();
+                    randomiseMaze = randomMazeOption.isSelected();
+
+                    // Threads required to fix
+
+                    //mainPanel.remove(GridPanel);
+                    //gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+                    //GridPanel = new JScrollPane(gridPanel);
+                    //mainPanel.add(GridPanel, BorderLayout.CENTER);
+
+                    if (randomiseMaze) {
+                        MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
+                        gridPanel.CreateMaze(newMaze);
+                    }
+                }
+            }
+            if (source == setting) {
+
+            }
+            if (source == open) {
+
+            }
+            if (source == save) {
+
+            }
+            if (source == export) {
 
             }
         }
