@@ -240,10 +240,12 @@ public class MainGUI extends JFrame implements Runnable {
 
                     // Threads required to fix
 
-                    //mainPanel.remove(GridPanel);
-                    //gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
-                    //GridPanel = new JScrollPane(gridPanel);
-                    //mainPanel.add(GridPanel, BorderLayout.CENTER);
+                    mainPanel.remove(GridPanel);
+                    gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+                    GridPanel = new JScrollPane(gridPanel);
+                    mainPanel.add(GridPanel, BorderLayout.CENTER);
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
 
                     if (randomiseMaze) {
                         MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
