@@ -46,6 +46,17 @@ public class MazeCell {
         this.wallRight = wallState;
     }
 
+    protected MazeCell(boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight) {
+        this.up = null;
+        this.down = null;
+        this.left = null;
+        this.right = null;
+        this.wallUp = wallUp;
+        this.wallDown = wallDown;
+        this.wallLeft = wallLeft;
+        this.wallRight = wallRight;
+    }
+
     /**
      * Sets the cell above this cell
      * @param cell MazeCell

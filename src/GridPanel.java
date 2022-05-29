@@ -24,6 +24,7 @@ public class GridPanel extends JPanel {
     private final int WALLSHORT = 2;
     private GridBagConstraints cst;
     private Component[][] GridComponentArray;
+    private MazeCell[][] GridMazeCellArray;
 
     protected GridPanel() {
         super();
@@ -78,6 +79,7 @@ public class GridPanel extends JPanel {
      */
     protected void CreateGrid(int width, int height) {
         GridComponentArray = new Component[(height * 2) + 1][(width * 2) + 1];
+        GridMazeCellArray = new MazeCell[width][height];
         int x = 0;
         int y = 0;
         for(int i = 0; i < (height * 2) + 1; i++) {
@@ -85,21 +87,22 @@ public class GridPanel extends JPanel {
                 if(i % 2 == 0) {
                     if(j % 2 == 0) {
                         createIntersect(x,y,i,j);
-                        x += 2;
+                        x += WALLSHORT;
                     }
                     else {
                         createWall(x,y,Orientation.HORIZONTAL,i,j);
-                        x += 10;
+                        x += CELLWIDTH;
                     }
                 }
                 else{
                     if(j % 2 == 0) {
                         createWall(x,y,Orientation.VERTICAl,i,j);
-                        x += 2;
+                        x += WALLSHORT;
                     }
                     else {
                         createCell(x,y,i,j);
-                        x += 10;
+                        x += CELLWIDTH;
+                        GridMazeCellArray[(i - 1) / 2][(j - 1) / 2] = new MazeCell(false, false, false, false);
                     }
                 }
             }
@@ -195,10 +198,13 @@ public class GridPanel extends JPanel {
                     if(btn.orientation == Orientation.HORIZONTAL) {
                         GridComponentArray[btn.i][btn.j-1].setBackground(SELECTEDCOLOR);
                         GridComponentArray[btn.i][btn.j+1].setBackground(SELECTEDCOLOR);
+                        MazeCellWallOn(btn.i,btn.j,Orientation.HORIZONTAL, true);
+
                     }
                     else {
                         GridComponentArray[btn.i-1][btn.j].setBackground(SELECTEDCOLOR);
                         GridComponentArray[btn.i+1][btn.j].setBackground(SELECTEDCOLOR);
+                        MazeCellWallOn(btn.i,btn.j,Orientation.VERTICAl, true);
                     }
                 }
                 else {
@@ -209,6 +215,7 @@ public class GridPanel extends JPanel {
                         if(!isAdjacentToWall(btn.i,btn.j + 1)) {
                             GridComponentArray[btn.i][btn.j + 1].setBackground(GRIDCOLOR);
                         }
+                        MazeCellWallOn(btn.i,btn.j,Orientation.HORIZONTAL, false);
                     }
                     else {
                         if(!isAdjacentToWall(btn.i - 1,btn.j)) {
@@ -217,6 +224,7 @@ public class GridPanel extends JPanel {
                         if(!isAdjacentToWall(btn.i + 1,btn.j)) {
                             GridComponentArray[btn.i + 1][btn.j].setBackground(GRIDCOLOR);
                         }
+                        MazeCellWallOn(btn.i,btn.j,Orientation.VERTICAl, false);
                     }
                 }
 
@@ -231,6 +239,84 @@ public class GridPanel extends JPanel {
         add(GridComponentArray[i][j],cst);
     }
 
+    private void MazeCellWallOn(int i, int j, Orientation orien, boolean isOn) {
+        int x = 0;
+        int y = 0;
+        if(orien == Orientation.HORIZONTAL) {
+            if(i == 0) {
+                x = (j - 1) / 2;
+                if(GridMazeCellArray[i][x].getWallUp() != isOn) {
+                    GridMazeCellArray[i][x].toggleWallUp();
+                    System.out.println(x);
+                    System.out.println("Up");
+                }
+            }
+            else if (i == GridComponentArray.length - 1) {
+                x = (j - 1) / 2;
+                y = (i / 2) - 1;
+                if(GridMazeCellArray[y][x].getWallDown() != isOn) {
+                    GridMazeCellArray[y][x].toggleWallDown();
+                    System.out.println(x);
+                    System.out.println(y);
+                    System.out.println("down");
+                }
+            }
+            else {
+                x = (j - 1) / 2;
+                y = (i  / 2)  - 1;
+                if(GridMazeCellArray[y][x].getWallDown() != isOn) {
+                    GridMazeCellArray[y][x].toggleWallDown();
+                    System.out.println(x);
+                    System.out.println(y);
+                    System.out.println("down");
+                }
+                if(GridMazeCellArray[y + 1][x].getWallUp() != isOn) {
+                    GridMazeCellArray[y + 1][x].toggleWallUp();
+                    System.out.println(x);
+                    System.out.println(y + 1);
+                    System.out.println("up");
+                }
+            }
+        }
+        else {
+            if(j == 0) {
+                y = (j - 1) / 2;
+                if(GridMazeCellArray[y][j].getWallLeft() != isOn) {
+                    GridMazeCellArray[y][j].toggleWallLeft();
+                    System.out.println(y);
+                    System.out.println("left");
+                }
+            }
+            else if(j == GridComponentArray[0].length - 1) {
+                x = (j / 2) - 1;
+                y = (i - 1) / 2;
+                if(GridMazeCellArray[y][x].getWallRight() != isOn) {
+                    GridMazeCellArray[y][x].toggleWallRight();
+                    System.out.println(x);
+                    System.out.println(y);
+                    System.out.println("right");
+                }
+            }
+            else {
+                x = (j / 2) - 1;
+                y = (i - 1) / 2;
+                if(GridMazeCellArray[y][x].getWallRight() != isOn) {
+                    GridMazeCellArray[y][x].toggleWallRight();
+                    System.out.println(x);
+                    System.out.println(y);
+                    System.out.println("right");
+                }
+                if(GridMazeCellArray[y][x + 1].getWallLeft() != isOn) {
+                    GridMazeCellArray[y][x + 1].toggleWallLeft();
+                    System.out.println(x + 1);
+                    System.out.println(y);
+                    System.out.println("left");
+                }
+            }
+        }
+
+    }
+
     /**
      * Checks if Intersect at provided coordinates has a selected wall next to it
      * @param i
@@ -238,7 +324,6 @@ public class GridPanel extends JPanel {
      * @return
      */
     private boolean isAdjacentToWall(int i, int j) {
-        int size =  GridComponentArray[0].length;
         if(i == 0) {
             if (j == 0) {
                 return ((WallButton) GridComponentArray[i][j+1]).getModel().isSelected() ||
