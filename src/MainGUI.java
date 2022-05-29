@@ -196,6 +196,7 @@ public class MainGUI extends JFrame implements Runnable {
                     JLabel label = new JLabel(pane.resizeImage(200, 200));
                     label.setAlignmentX(Component.CENTER_ALIGNMENT);
                     rightSidePanel.addImage(label);
+                    // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
                     label.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
@@ -213,13 +214,58 @@ public class MainGUI extends JFrame implements Runnable {
 
             }
             if (source == leftSidePanel.getMazeStatsButton()) {
+                int testWidth = mazeCellWidth;
+                int testHeight = mazeCellHeight;
 
+                MazeCell[][] test = gridPanel.getGridMazeCellArray();
+                //MazeCell[][] test = maze.getMaze();
+                System.out.println();
+                System.out.print("-");
+                for (int x = 0; x < testWidth; x++) {
+                    if (test[0][x].getWallUp()) {
+                        System.out.print("-");
+                    } else if (!test[0][x].getWallUp()){
+                        System.out.print("#");
+                    }
+                    System.out.print("-");
+                }
+                System.out.println();
+
+                for (int i = 0; i < testHeight; i++) {
+                    for (int j = 0; j < testWidth; j++) {
+                        if (test[i][j].getWallLeft()) {
+                            System.out.print("|#");
+                        } else {
+                            System.out.print("##");
+                        }
+
+                    }
+                    if (test[i][testWidth-1].getWallRight()) {
+                        System.out.print("|");
+                    } else if (!test[i][testWidth-1].getWallRight()){
+                        System.out.print("#");
+                    }
+                    System.out.println();
+                    System.out.print("-");
+                    for (int x = 0; x < testWidth; x++) {
+                        if (test[i][x].getWallDown()) {
+                            System.out.print("--");
+                        } else {
+                            System.out.print("#-");
+                        }
+                    }
+                    System.out.println();
+                }
             }
             if (source == leftSidePanel.getEditButton()) {
 
             }
             if (source == leftSidePanel.getSolvableButton()) {
-
+                if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray())) {
+                    JOptionPane.showMessageDialog(mainPanel, "The maze is solvable");
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
+                }
             }
             if (source == leftSidePanel.getOptimalSolutionButton()) {
 

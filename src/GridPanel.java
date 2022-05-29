@@ -79,7 +79,9 @@ public class GridPanel extends JPanel {
      */
     protected void CreateGrid(int width, int height) {
         GridComponentArray = new Component[(height * 2) + 1][(width * 2) + 1];
-        GridMazeCellArray = new MazeCell[height][width];
+        Maze maze = new Maze(height, width, false);
+        GridMazeCellArray = maze.getMaze();
+        //GridMazeCellArray = new MazeCell[height][width];
         int x = 0;
         int y = 0;
         for(int i = 0; i < (height * 2) + 1; i++) {
@@ -102,7 +104,7 @@ public class GridPanel extends JPanel {
                     else {
                         createCell(x,y,i,j);
                         x += CELLWIDTH;
-                        GridMazeCellArray[(i - 1) / 2][(j - 1) / 2] = new MazeCell(false, false, false, false);
+                        //GridMazeCellArray[(i - 1) / 2][(j - 1) / 2] = new MazeCell(false, false, false, false);
                     }
                 }
             }
@@ -339,6 +341,10 @@ public class GridPanel extends JPanel {
                 ((WallButton) GridComponentArray[i][j+1]).getModel().isSelected() ||
                 ((WallButton) GridComponentArray[i-1][j]).getModel().isSelected() ||
                 ((WallButton) GridComponentArray[i+1][j]).getModel().isSelected();
+    }
+
+    public MazeCell[][] getGridMazeCellArray() {
+        return GridMazeCellArray;
     }
 }
 
