@@ -1,6 +1,12 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainGUI extends JFrame implements Runnable {
 
@@ -22,6 +28,7 @@ public class MainGUI extends JFrame implements Runnable {
     private LeftSideBarPanel leftSidePanel;
     private GridPanel gridPanel;
     private JScrollPane GridPanel;
+    private ArrayList<ImagePane> paneList = new ArrayList<>();
 
     public MainGUI(){
         super("Main GUI");
@@ -57,7 +64,7 @@ public class MainGUI extends JFrame implements Runnable {
          * Sets up the dimension for the rightSidePanel
          * Return an interactive sidebar to the right side of the main panel
          */
-        rightSidePanel = new RightSideBarPanel(200, 300);
+        rightSidePanel = new RightSideBarPanel();
         rightSidePanel.setPreferredSize(new Dimension(200, 300));
         mainPanel.add(rightSidePanel, BorderLayout.EAST);
         rightSidePanel.addActionListener(new Listener());
@@ -164,8 +171,46 @@ public class MainGUI extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
-                String path = JOptionPane.showInputDialog("Provide a file path: ");
-                rightSidePanel.addImage(path);
+                JFileChooser fileChooser = new JFileChooser();
+                FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+                FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+                FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+
+                fileChooser.addChoosableFileFilter(jpg);
+                fileChooser.addChoosableFileFilter(jpeg);
+                fileChooser.addChoosableFileFilter(png);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                File file;
+                int option = fileChooser.showOpenDialog(mainPanel);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    file = fileChooser.getSelectedFile();
+
+                    BufferedImage image;
+                    try {
+                        image = ImageIO.read(file);
+                    } catch (IOException ev) {
+                        return;
+                    }
+                    ImageIcon icon = new ImageIcon(image);
+                    ImagePane pane = new ImagePane(icon, 2, 2);
+                    JLabel label = new JLabel(pane.resizeImage(200, 200));
+                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    rightSidePanel.addImage(label);
+                    label.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            if (e.getButton() == MouseEvent.BUTTON1) {          //Left click
+                                System.out.println("button 1");
+                            } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
+                                System.out.println("button 3");
+                            }
+                        }
+                    });
+
+                    paneList.add(pane);
+
+                }
+
             }
             if (source == leftSidePanel.getMazeStatsButton()) {
 
@@ -238,9 +283,8 @@ public class MainGUI extends JFrame implements Runnable {
                     author = mazeAuthorText.getText();
                     randomiseMaze = randomMazeOption.isSelected();
 
-                    // Threads required to fix
-
                     mainPanel.remove(GridPanel);
+                    gridPanel = new GridPanel();
                     gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
                     GridPanel = new JScrollPane(gridPanel);
                     mainPanel.add(GridPanel, BorderLayout.CENTER);
