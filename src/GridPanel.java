@@ -271,7 +271,7 @@ public class GridPanel extends JPanel {
         }
         else {
             if(j == 0) {
-                y = (j - 1) / 2;
+                y = (i - 1) / 2;
                 if(GridMazeCellArray[y][j].getWallLeft() != isOn) {
                     GridMazeCellArray[y][j].toggleWallLeft();
                 }
