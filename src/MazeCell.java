@@ -27,6 +27,11 @@ public class MazeCell {
     /** The visited state of the cell */
     private boolean visited = false;
 
+    /** The parent cell of this cell*/
+    private MazeCell parent;
+
+    private boolean solutionCell = false;
+
     /**
      * Creates a MazeCell
      * @param up the MazeCell above this cell
@@ -44,17 +49,6 @@ public class MazeCell {
         this.wallDown = wallState;
         this.wallLeft = wallState;
         this.wallRight = wallState;
-    }
-
-    protected MazeCell(boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight) {
-        this.up = null;
-        this.down = null;
-        this.left = null;
-        this.right = null;
-        this.wallUp = wallUp;
-        this.wallDown = wallDown;
-        this.wallLeft = wallLeft;
-        this.wallRight = wallRight;
     }
 
     /**
@@ -159,4 +153,24 @@ public class MazeCell {
      * @return the toggle state of the cell
      */
     public boolean getVisited() {return visited;}
+
+    /**
+     * Get the parent cell of this cell
+     * @return the parent cell of this cell
+     */
+    public MazeCell getParent() {return parent;}
+
+    /**
+     * Set the parent cell of this cell
+     * @param cell the parent cell of this cell
+     */
+    public void setParent(MazeCell cell) {
+        this.parent = cell;
+    }
+
+    public boolean getSolutionCell() {return solutionCell;}
+
+    public void setSolutionCell(boolean solution) {
+        solutionCell = solution;
+    }
 }

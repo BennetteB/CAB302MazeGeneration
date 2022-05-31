@@ -100,5 +100,6 @@ public class LeftSideBarPanel extends JPanel {
         mazeStatsButton.addActionListener(listener);
         editButton.addActionListener(listener);
         solvableButton.addActionListener(listener);
+        optimalSolutionButton.addActionListener(listener);
     }
 }

@@ -260,26 +260,37 @@ public class MainGUI extends JFrame implements Runnable {
                     });
 
                     paneList.add(pane);
-
                 }
 
             }
-            if (source == leftSidePanel.getMazeStatsButton()) {
 
+            if (source == leftSidePanel.getMazeStatsButton()) {
+                float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
+                JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
+                        deadCellsPercentage + "%");
             }
             if (source == leftSidePanel.getEditButton()) {
-
+                // Edit Button
             }
+
             if (source == leftSidePanel.getSolvableButton()) {
-                if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray())) {
+                if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray()) != null) {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is solvable");
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
                 }
             }
-            if (source == leftSidePanel.getOptimalSolutionButton()) {
 
+            if (source == leftSidePanel.getOptimalSolutionButton()) {
+                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+                if (maze != null) {
+                    // maze below needs to be used to display the maze
+                    maze = new Algorithm().optimalSolution(maze);
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
+                }
             }
+
             if (source == createMaze) {
                 // Possibly make a new method for most of this part
                 boolean randomiseMaze = false;
@@ -353,15 +364,19 @@ public class MainGUI extends JFrame implements Runnable {
                     }
                 }
             }
+
             if (source == setting) {
 
             }
+
             if (source == open) {
                 openMaze();
             }
+
             if (source == save) {
                 saveMaze();
             }
+
             if (source == export) {
             }
         }
