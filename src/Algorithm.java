@@ -111,52 +111,50 @@ public class Algorithm {
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return Returns true if the given maze is solvable and false otherwise
      */
-    protected boolean mazeSolvability(MazeCell[][] mazeData) {
+    protected MazeCell[][] mazeSolvability(MazeCell[][] mazeData) {
         MazeCell[] indexes = findOpenCells(mazeData);
         if (indexes == null) {
-            return false;
+            return null;
         }
-        MazeCell startIndex;
-        MazeCell endIndex;
-        startIndex = indexes[0];
-        endIndex = indexes[1];
+        MazeCell startIndex = indexes[0];
+        MazeCell endIndex = indexes[1];
 
-        Stack<MazeCell> mazeStack = new Stack<>();
-        mazeStack.push(startIndex);
+        Queue<MazeCell> queue = new LinkedList<>();
+        queue.add(startIndex);
         startIndex.setVisited(true);
 
-        while(!mazeStack.empty()) {
-            MazeCell current = mazeStack.pop();
+        while(!queue.isEmpty()) {
+            MazeCell current = queue.remove();
+
             if (current.equals(endIndex)) {
-                return true;
-            } else {
-                if (current.getCellUp() != null && !current.getCellUp().getVisited() && !current.getWallUp()) {
-                    mazeStack.push(current.getCellUp());
-                    current.getCellUp().setVisited(true);
-                }
-                if (current.getCellRight() != null && !current.getCellRight().getVisited()
-                        && !current.getWallRight()) {
-                    mazeStack.push(current.getCellRight());
-                    current.getCellRight().setVisited(true);
-                }
-                if (current.getCellDown() != null && !current.getCellDown().getVisited()
-                        && !current.getWallDown()) {
-                    mazeStack.push(current.getCellDown());
-                    current.getCellDown().setVisited(true);
-                }
-                if (current.getCellLeft() != null && !current.getCellLeft().getVisited()
-                        && !current.getWallLeft()) {
-                    mazeStack.push(current.getCellLeft());
-                    current.getCellLeft().setVisited(true);
-                }
+                return mazeData;
+            }
+
+            if (current.getCellUp() != null && !current.getCellUp().getVisited() && !current.getWallUp()) {
+                queue.add(current.getCellUp());
+                current.getCellUp().setVisited(true);
+                current.getCellUp().setParent(current);
+            }
+            if (current.getCellRight() != null && !current.getCellRight().getVisited()
+                    && !current.getWallRight()) {
+                queue.add(current.getCellRight());
+                current.getCellRight().setVisited(true);
+                current.getCellRight().setParent(current);
+            }
+            if (current.getCellDown() != null && !current.getCellDown().getVisited()
+                    && !current.getWallDown()) {
+                queue.add(current.getCellDown());
+                current.getCellDown().setVisited(true);
+                current.getCellDown().setParent(current);
+            }
+            if (current.getCellLeft() != null && !current.getCellLeft().getVisited()
+                    && !current.getWallLeft()) {
+                queue.add(current.getCellLeft());
+                current.getCellLeft().setVisited(true);
+                current.getCellLeft().setParent(current);
             }
         }
-        for (int i = 0; i < mazeData.length; i++) {
-            for (int j = 0; j < mazeData[0].length; j++) {
-                mazeData[i][j].setVisited(false);
-            }
-        }
-        return false;
+        return null;
     }
 
     /**
@@ -213,8 +211,35 @@ public class Algorithm {
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a two-dimensional int that represents a maze
      */
-    protected MazeCell[][] optimalSolution(int[][] mazeData) {
-        return null;
+    protected ArrayList<MazeCell> optimalSolution(MazeCell[][] mazeData) {
+        MazeCell[] indexes = findOpenCells(mazeData);
+        ArrayList<MazeCell> optimalSolution = new ArrayList<>();
+        MazeCell startIndex = indexes[0];
+        MazeCell endIndex = indexes[1];
+        MazeCell current = endIndex;
+        while (current != startIndex) {
+            optimalSolution.add(current);
+            current = current.getParent();
+        }
+
+        // Test case
+        current = endIndex;
+        for (int i = 0; i < optimalSolution.size(); i++) {
+            if (current.getParent() == current.getCellUp()) {
+                System.out.println("N");
+            } else if (current.getParent() == current.getCellRight()) {
+                System.out.println("E");
+            } else if (current.getParent() == current.getCellDown()) {
+                System.out.println("S");
+            } else if (current.getParent() == current.getCellLeft()) {
+                System.out.println("W");
+            } else {
+                System.out.println("Error");
+            }
+            current = current.getParent();
+        }
+
+        return optimalSolution;
     }
 
     /**

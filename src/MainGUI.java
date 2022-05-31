@@ -263,7 +263,9 @@ public class MainGUI extends JFrame implements Runnable {
 
             }
             if (source == leftSidePanel.getSolvableButton()) {
-                if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray())) {
+                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+                if (maze != null) {
+                    new Algorithm().optimalSolution(maze);
                     JOptionPane.showMessageDialog(mainPanel, "The maze is solvable");
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
