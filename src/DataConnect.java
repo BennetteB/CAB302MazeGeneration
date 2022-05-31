@@ -8,7 +8,7 @@ import java.util.Properties;
 public class DataConnect {
     // init database constants
     private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DATABASE_URL = "jdbc:mysql://127.0.0.1:3306/mazeProgram";
+    private static final String DATABASE_URL = "jdbc:mysql://127.0.0.1:3306/mazeprogram";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "password";
     private static final String MAX_POOL = "250";
