@@ -3,6 +3,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -29,10 +31,14 @@ public class MainGUI extends JFrame implements Runnable {
     private GridPanel gridPanel;
     private JScrollPane GridPanel;
     private ArrayList<ImagePane> paneList = new ArrayList<>();
+    private Connection connection;
+    private String CREATE_TABLE;
+    private String CREATE_USER;
 
     public MainGUI(){
         super("Main GUI");
         initGUI();
+        initDatabase();
     }
 
 
@@ -125,6 +131,43 @@ public class MainGUI extends JFrame implements Runnable {
         pack();
         setVisible(true);
     }
+
+    /**
+     *  Initialises database,
+     *  creates database table for the maze program,
+     *  adds current user to the database table */
+    public void initDatabase() {
+        connection = DataConnect.getInstance();
+        CREATE_TABLE =
+                "CREATE TABLE IF NOT EXISTS maze_program ("
+                + "idx INTEGER PRIMARY KEY /*140101 AUTO_INCREMENT */ NOT NULL UNIQUE,"
+                + "author VARCHAR(50),"
+                + "date_time DATETIME,"
+                + "maze_data VARCHAR(500),"
+                + "image_cell_height INT,"
+                + "image_cell_width INT,"
+                + "image LONGBLOB,"
+                + "maze_name VARCHAR(50),"
+                + "maze_cell_height INT,"
+                + "maze_cell_width INT" + ");";
+        try {
+            connection.createStatement().execute(CREATE_TABLE);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+//    public Set<String> mazeSet() {
+//        Set<String> maze = new TreeSet<~>();
+//        ResultSet rs = null;
+//        try {
+//            while(rs.next()) {
+//
+//            }
+//        } catch(SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     /**
      * Adds an action listener to the newImage button

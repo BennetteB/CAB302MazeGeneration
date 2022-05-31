@@ -1,20 +1,34 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+//import java.sql.ResultSet;
+//import java.sql.Statement;
 import java.util.Properties;
 
 public class DataConnect {
     // init database constants
     private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/database_name";
+    private static final String DATABASE_URL = "jdbc:mysql://127.0.0.1:3306/mazeProgram";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "password";
     private static final String MAX_POOL = "250";
 
     // init connection object
-    private Connection connection;
+    private static Connection instance = null;
     // init properties object
     private Properties properties;
+
+    // connect database
+    private DataConnect() {
+        if (instance == null) {
+            try {
+                Class.forName(DATABASE_DRIVER);
+                instance = DriverManager.getConnection(DATABASE_URL, getProperties());
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // create properties
     private Properties getProperties() {
@@ -27,31 +41,22 @@ public class DataConnect {
         return properties;
     }
 
-    // connect database
-    public Connection connect() {
-        if (connection == null) {
-            try {
-                Class.forName(DATABASE_DRIVER);
-                connection = DriverManager.getConnection(DATABASE_URL, getProperties());
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return connection;
-    }
-
     // disconnect database
     public void disconnect() {
-        if (connection != null) {
+        if (instance != null) {
             try {
-                connection.close();
-                connection = null;
+                instance.close();
+                instance = null;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-}
 
-// call DataConnect databaseConnector = new DataConnect() in the main class??
-// then call databaseConnector.connect() to connect to database??
+    public static Connection getInstance() {
+        if (instance == null) {
+            new DataConnect();
+        }
+        return instance;
+    }
+}
