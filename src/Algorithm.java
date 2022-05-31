@@ -1,3 +1,4 @@
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.*;
 import java.util.List;
 
@@ -127,6 +128,11 @@ public class Algorithm {
             MazeCell current = queue.remove();
 
             if (current.equals(endIndex)) {
+                for (int i = 0; i < mazeData.length; i++) {
+                    for (int j = 0; j < mazeData[0].length; j++) {
+                        mazeData[i][j].setVisited(false);
+                    }
+                }
                 return mazeData;
             }
 
@@ -152,6 +158,11 @@ public class Algorithm {
                 queue.add(current.getCellLeft());
                 current.getCellLeft().setVisited(true);
                 current.getCellLeft().setParent(current);
+            }
+        }
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setVisited(false);
             }
         }
         return null;
@@ -211,35 +222,23 @@ public class Algorithm {
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a two-dimensional int that represents a maze
      */
-    protected ArrayList<MazeCell> optimalSolution(MazeCell[][] mazeData) {
+    protected MazeCell[][] optimalSolution(MazeCell[][] mazeData) {
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setSolutionCell(false);
+            }
+        }
         MazeCell[] indexes = findOpenCells(mazeData);
         ArrayList<MazeCell> optimalSolution = new ArrayList<>();
         MazeCell startIndex = indexes[0];
         MazeCell endIndex = indexes[1];
         MazeCell current = endIndex;
         while (current != startIndex) {
-            optimalSolution.add(current);
+            current.setSolutionCell(true);
             current = current.getParent();
         }
 
-        // Test case
-        current = endIndex;
-        for (int i = 0; i < optimalSolution.size(); i++) {
-            if (current.getParent() == current.getCellUp()) {
-                System.out.println("N");
-            } else if (current.getParent() == current.getCellRight()) {
-                System.out.println("E");
-            } else if (current.getParent() == current.getCellDown()) {
-                System.out.println("S");
-            } else if (current.getParent() == current.getCellLeft()) {
-                System.out.println("W");
-            } else {
-                System.out.println("Error");
-            }
-            current = current.getParent();
-        }
-
-        return optimalSolution;
+        return mazeData;
     }
 
     /**
@@ -247,7 +246,32 @@ public class Algorithm {
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a percentage representing the dead cells in a maze
      */
-    protected float showDeadCells(int[][] mazeData) {
-        return 0;
+    protected float showDeadCells(MazeCell[][] mazeData) {
+        MazeCell currentCell;
+        float totalCells = mazeData[0].length * mazeData.length;
+        float deadCells = 0;
+        for (int i = 0; i < mazeData[0].length; i++) {
+            for (int j = 0; j < mazeData.length; j++) {
+                int numWalls = 0;
+                currentCell = mazeData[i][j];
+                if (currentCell.getWallUp()) {
+                    numWalls++;
+                }
+                if (currentCell.getWallRight()) {
+                    numWalls++;
+                }
+                if (currentCell.getWallDown()) {
+                    numWalls++;
+                }
+                if (currentCell.getWallLeft()) {
+                    numWalls++;
+                }
+                if (numWalls == 3) {
+                    deadCells++;
+                }
+            }
+        }
+        return (deadCells / totalCells) * 100;
     }
+
 }
