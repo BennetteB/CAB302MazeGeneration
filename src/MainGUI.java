@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,7 +27,8 @@ public class MainGUI extends JFrame implements Runnable {
     private int imageCellWidth = 2;
     private String mazeName = "New Maze";
     private String author = "Unknown";
-    private MazeCell[][] mazeData = null;
+    private java.sql.Timestamp currentDate;
+    private String RANDOM_MAZE_DATA = "abcd1234";
 
     private JPanel mainPanel;
     private RightSideBarPanel rightSidePanel;
@@ -37,7 +39,7 @@ public class MainGUI extends JFrame implements Runnable {
     private Connection connection;
     private String CREATE_TABLE;
     private String CREATE_USER;
-    private File imageFile = null;
+    private FileInputStream imageDataFile = null;
 
     public MainGUI(){
         super("Main GUI");
@@ -145,7 +147,7 @@ public class MainGUI extends JFrame implements Runnable {
         CREATE_TABLE =
                 "CREATE TABLE IF NOT EXISTS maze_program ("
 //                + "idx INTEGER PRIMARY KEY /*140101 AUTO_INCREMENT */ NOT NULL UNIQUE,"
-                + "maze_name VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,"
+                + "maze_name VARCHAR(50) NOT NULL,"
                 + "author VARCHAR(50),"
                 + "date_time DATETIME,"
                 + "maze_data VARCHAR(500),"
@@ -163,12 +165,20 @@ public class MainGUI extends JFrame implements Runnable {
 
     public void saveMaze() {
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO maze_program(maze_name, maze_data," +
-                    "maze_cell_width, maze_cell_height, image, image_cell_height, image_cell_width) VALUES(?,?)");
-            statement.setString(1, mazeName);
-            //statement.setString(2, Maze.getMaze().toString());
-            //statement.setString(3, )
-            // I have commented out the above two lines so that the code still works
+            java.util.Date utilDate = new java.util.Date();
+            currentDate = new java.sql.Timestamp(utilDate.getTime());
+
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO maze_program(author, maze_name, maze_data," +
+                    "maze_cell_width, maze_cell_height, image, image_cell_height, image_cell_width, date_time) VALUES(?,?,?,?,?,?,?,?,?)");
+            statement.setString(1, author);
+            statement.setString(2, mazeName);
+            statement.setString(3, RANDOM_MAZE_DATA);
+            statement.setInt(4, mazeCellWidth);
+            statement.setInt(5, mazeCellHeight);
+            statement.setBlob(6,imageDataFile);
+            statement.setInt(7, imageCellHeight);
+            statement.setInt(8, imageCellWidth);
+            statement.setTimestamp(9, currentDate);
             statement.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -238,13 +248,12 @@ public class MainGUI extends JFrame implements Runnable {
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 int option = fileChooser.showOpenDialog(mainPanel);
                 if (option == JFileChooser.APPROVE_OPTION) {
-                    imageFile = fileChooser.getSelectedFile();
                     // I have duplicated the above line so that the program still functions
                     File file = fileChooser.getSelectedFile();
-
                     BufferedImage image;
                     try {
                         image = ImageIO.read(file);
+                        imageDataFile = new FileInputStream(file);
                     } catch (IOException ev) {
                         return;
                     }
