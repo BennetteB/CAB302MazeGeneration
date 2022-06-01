@@ -217,7 +217,7 @@ public class GridPanel extends JPanel {
     }
 
     protected void ImagePlaceState() {
-        imagePane = new ImagePane(null,2,2);
+        imagePane = new ImagePane(null,6,6);
         State = GridState.IMAGEPLACE;
         allowGridWallSelection(false);
     }
@@ -294,7 +294,7 @@ public class GridPanel extends JPanel {
                                     remove(GridComponentArray[i][cell.j]);
                                     GridComponentArray[i][cell.j].isDisabled = true;
                                     if(GridComponentArray[i][cell.j].isCell) {
-                                        GridMazeCellArray[i][cell.j].setDisabled(true);
+                                        GridMazeCellArray[(i - 1) / 2][(cell.j - 1) / 2].setDisabled(true);
                                     }
                                 }
                                 for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
@@ -304,14 +304,14 @@ public class GridPanel extends JPanel {
                                                 remove(GridComponentArray[cell.i + k][j]);
                                                 GridComponentArray[cell.i + k][j].isDisabled = true;
                                                 if(GridComponentArray[cell.i + k][j].isCell) {
-                                                    GridMazeCellArray[cell.i + k][j].setDisabled(true);
+                                                    GridMazeCellArray[(cell.i + k - 1) / 2][(j - 1) / 2].setDisabled(true);
                                                 }
                                             }
                                         } else {
                                             remove(GridComponentArray[cell.i + k][j]);
                                             GridComponentArray[cell.i + k][j].isDisabled = true;
                                             if(GridComponentArray[cell.i + k][j].isCell) {
-                                                GridMazeCellArray[cell.i + k][j].setDisabled(true);
+                                                GridMazeCellArray[(cell.i + k - 1) / 2][(j - 1) / 2].setDisabled(true);
                                             }
                                         }
                                     }
@@ -325,9 +325,16 @@ public class GridPanel extends JPanel {
                                 add(panel, cst);
                                 revalidate();
                                 repaint();
+                                ToggleEdit();
+                                ToggleEdit();
                             }
                         }
 
+                    }
+                }
+                else {
+                    if(cell.getModel().isSelected()) {
+                        cell.getModel().setSelected(false);
                     }
                 }
             }
@@ -357,6 +364,14 @@ public class GridPanel extends JPanel {
         isc.setBackground(GRIDCOLOR);
         isc.setRolloverEnabled(false);
         isc.setPreferredSize(new Dimension(WALLSHORT * sizeMultiplier,WALLSHORT * sizeMultiplier));
+        isc.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(isc.getModel().isSelected()){
+                    isc.setSelected(false);
+                }
+            }
+        });
         GridComponentArray[i][j] = isc;
         GridBagConstraints cst = new GridBagConstraints();
         cst.gridx = x;
