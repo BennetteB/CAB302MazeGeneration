@@ -284,6 +284,7 @@ public class GridPanel extends JPanel {
                                         GridComponentArray[cell.i + k][j].setBackground(ROLLOVERCOLOR);
                                     }
                                 }
+                                repaint();
                             }
                         }
                     }
@@ -335,7 +336,7 @@ public class GridPanel extends JPanel {
                                 JPanel panel = new JPanel();
                                 JLabel label = new JLabel(imagePane.getResizedImage());
                                 panel.add(label);
-                                panel.setBackground(Color.ORANGE);
+                                panel.setBackground(GRIDCOLOR);
                                 panel.setPreferredSize(new Dimension(
                                         ((imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT)) * sizeMultiplier,
                                         ((imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT)) * sizeMultiplier
@@ -381,6 +382,7 @@ public class GridPanel extends JPanel {
         isc.setBorderPainted(false);
         isc.setBackground(GRIDCOLOR);
         isc.setRolloverEnabled(false);
+        isc.setEnabled(false);
         isc.setPreferredSize(new Dimension(WALLSHORT * sizeMultiplier,WALLSHORT * sizeMultiplier));
         isc.setUI(new MetalToggleButtonUI() {
             @Override
@@ -493,7 +495,9 @@ public class GridPanel extends JPanel {
                 if(i % 2 == 0) {
                     if(j % 2 == 0) {
                         // Intersect
-                        GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        if(GridComponentArray[i][j].getBackground() == ROLLOVERCOLOR) {
+                            GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        }
                         x += WALLSHORT;
                     }
                     else {
@@ -523,6 +527,7 @@ public class GridPanel extends JPanel {
             }
             x = 0;
         }
+        repaint();
     }
     private void MazeCellWallOn(int i, int j, Orientation orien, boolean isOn) {
         int x = 0;
