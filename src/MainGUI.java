@@ -167,8 +167,9 @@ public class MainGUI extends JFrame implements Runnable {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO maze_program(maze_name, maze_data," +
                     "maze_cell_width, maze_cell_height, image, image_cell_height, image_cell_width) VALUES(?,?)");
             statement.setString(1, mazeName);
-            statement.setString(2, Maze.getMaze().toString());
-            statement.setString(3, )
+            //statement.setString(2, Maze.getMaze().toString());
+            //statement.setString(3, )
+            // I have commented out the above two lines so that the code still works
             statement.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -236,6 +237,8 @@ public class MainGUI extends JFrame implements Runnable {
                 int option = fileChooser.showOpenDialog(mainPanel);
                 if (option == JFileChooser.APPROVE_OPTION) {
                     imageFile = fileChooser.getSelectedFile();
+                    // I have duplicated the above line so that the program still functions
+                    File file = fileChooser.getSelectedFile();
 
                     BufferedImage image;
                     try {
