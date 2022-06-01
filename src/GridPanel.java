@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Creates the Grid Panel with editable cells for Maze construction
  */
 public class GridPanel extends JPanel {
-    enum GridState {EDIT, NOEDIT, IMAGEPLACE}
+    enum GridState {EDIT, NOEDIT, IMAGEPLACE, REMOVEIMAGE}
     private GridState State;
     private int sizeMultiplier = 5;
     private Color GRIDCOLOR = Color.WHITE;
@@ -132,11 +132,18 @@ public class GridPanel extends JPanel {
         if(State != GridState.NOEDIT) {
             State = GridState.NOEDIT;
             allowGridbuttonSelection(false);
-
         }
         else {
             State = GridState.EDIT;
             allowGridbuttonSelection(true);
+        }
+    }
+
+    protected void SetEdit(boolean bool) {
+        if(bool) {
+            State = GridState.EDIT;
+        }else {
+            State = GridState.NOEDIT;
         }
     }
 
@@ -216,8 +223,8 @@ public class GridPanel extends JPanel {
         }
     }
 
-    protected void ImagePlaceState() {
-        imagePane = new ImagePane(null,2,2);
+    protected void ImagePlaceState(ImagePane pane) {
+        imagePane = pane;
         State = GridState.IMAGEPLACE;
         allowGridWallSelection(false);
     }
@@ -323,6 +330,8 @@ public class GridPanel extends JPanel {
                                     }
                                 }
                                 JPanel panel = new JPanel();
+                                JLabel label = new JLabel(imagePane.getResizedImage());
+                                panel.add(label);
                                 panel.setBackground(Color.ORANGE);
                                 panel.setPreferredSize(new Dimension(
                                         ((imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT)) * sizeMultiplier,
@@ -331,6 +340,8 @@ public class GridPanel extends JPanel {
                                 add(panel, cst);
                                 revalidate();
                                 repaint();
+                                SetEdit(false);
+                                System.out.println(State);
                             }
                         }
 
