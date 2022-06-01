@@ -88,7 +88,6 @@ public class MainGUI extends JFrame implements Runnable {
          */
         gridPanel = new GridPanel();
         gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
-        gridPanel.ImagePlaceState();
         GridPanel = new JScrollPane(gridPanel);
         mainPanel.add(GridPanel, BorderLayout.CENTER);
         //endregion
@@ -226,6 +225,9 @@ public class MainGUI extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
+                JPopupMenu popup = new JPopupMenu();
+                popup.add(new JMenuItem("Delete"));
+
                 JFileChooser fileChooser = new JFileChooser();
                 FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
                 FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
@@ -256,9 +258,11 @@ public class MainGUI extends JFrame implements Runnable {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == MouseEvent.BUTTON1) {          //Left click
-                                System.out.println("button 1");
+                                gridPanel.ImagePlaceState(pane);
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
-                                System.out.println("button 3");
+                                popup.show(gridPanel, gridPanel.getWidth() + e.getX(), e.getY());
+                                paneList.remove(pane);
+
                             }
                         }
                     });
@@ -293,6 +297,10 @@ public class MainGUI extends JFrame implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
                 }
+            }
+
+            if (source == leftSidePanel.getDeleteImage()) {
+
             }
 
             if (source == createMaze) {
