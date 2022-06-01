@@ -142,9 +142,12 @@ public class GridPanel extends JPanel {
     protected void SetEdit(boolean bool) {
         if(bool) {
             State = GridState.EDIT;
+            allowGridbuttonSelection(true);
         }else {
             State = GridState.NOEDIT;
+            allowGridbuttonSelection(false);
         }
+
     }
 
     private void allowGridWallSelection(boolean enable) {
@@ -340,7 +343,7 @@ public class GridPanel extends JPanel {
                                 add(panel, cst);
                                 revalidate();
                                 repaint();
-                                SetEdit(false);
+                                SetEdit(true);
                                 System.out.println(State);
                             }
                         }
