@@ -80,7 +80,7 @@ public class GridPanel extends JPanel {
     }
 
     /**
-     * Creates an Empty Grid
+     * Creates an Empty Grid.
      * @param width Number of cells wide
      * @param height Number of cells high
      */
