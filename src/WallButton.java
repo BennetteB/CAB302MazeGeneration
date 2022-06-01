@@ -1,12 +1,8 @@
 import javax.swing.*;
 
-public class WallButton extends JToggleButton {
-    protected int x;
-    protected int y;
+public class WallButton extends GridComponent {
     protected int width;
     protected int height;
-    protected int i;
-    protected int j;
     protected GridPanel.Orientation orientation;
 
 
@@ -20,6 +16,7 @@ public class WallButton extends JToggleButton {
      * @param j GridComponentArray y index
      */
     protected WallButton(int x, int y, int width, int height, int i, int j) {
+        super();
         this.x = x;
         this.y = y;
         this.width = width;

@@ -88,6 +88,7 @@ public class MainGUI extends JFrame implements Runnable {
          */
         gridPanel = new GridPanel();
         gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+        gridPanel.ImagePlaceState();
         GridPanel = new JScrollPane(gridPanel);
         mainPanel.add(GridPanel, BorderLayout.CENTER);
         //endregion

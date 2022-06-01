@@ -15,6 +15,8 @@ import java.util.ArrayList;
  * Creates the Grid Panel with editable cells for Maze construction
  */
 public class GridPanel extends JPanel {
+    enum GridState {EDIT, NOEDIT, IMAGEPLACE}
+    private GridState State;
     private int sizeMultiplier = 5;
     private Color GRIDCOLOR = Color.WHITE;
     private Color ROLLOVERCOLOR = Color.RED;
@@ -23,8 +25,13 @@ public class GridPanel extends JPanel {
     private final int CELLWIDTH = 10;
     private final int WALLSHORT = 2;
     private GridBagConstraints cst;
-    private Component[][] GridComponentArray;
+    private GridComponent[][] GridComponentArray;
     private MazeCell[][] GridMazeCellArray;
+
+    private int HEIGHT;
+    private int WIDTH;
+
+    private ImagePane imagePane;
 
     protected GridPanel() {
         super();
@@ -78,14 +85,17 @@ public class GridPanel extends JPanel {
      * @param height Number of cells high
      */
     protected void CreateGrid(int width, int height) {
-        GridComponentArray = new Component[(height * 2) + 1][(width * 2) + 1];
+        State = GridState.EDIT;
+        WIDTH = width;
+        HEIGHT = height;
+        GridComponentArray = new GridComponent[(height * 2) + 1][(width * 2) + 1];
         Maze maze = new Maze(height, width, false);
         GridMazeCellArray = maze.getMaze();
         //GridMazeCellArray = new MazeCell[height][width];
         int x = 0;
         int y = 0;
-        for(int i = 0; i < (height * 2) + 1; i++) {
-            for(int j = 0; j < (width * 2) + 1; j++) {
+        for(int i = 0; i < (HEIGHT * 2) + 1; i++) {
+            for(int j = 0; j < (WIDTH * 2) + 1; j++) {
                 if(i % 2 == 0) {
                     if(j % 2 == 0) {
                         createIntersect(x,y,i,j);
@@ -118,6 +128,100 @@ public class GridPanel extends JPanel {
         }
     }
 
+    protected void ToggleEdit() {
+        if(State != GridState.NOEDIT) {
+            State = GridState.NOEDIT;
+            allowGridbuttonSelection(false);
+
+        }
+        else {
+            State = GridState.EDIT;
+            allowGridbuttonSelection(true);
+        }
+    }
+
+    private void allowGridWallSelection(boolean enable) {
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < (HEIGHT * 2) + 1; i++) {
+            for(int j = 0; j < (WIDTH * 2) + 1; j++) {
+                if(i % 2 == 0) {
+                    if(j % 2 == 0) {
+                        // Intersect
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Horizontal Wall
+                        GridComponentArray[i][j].getModel().setEnabled(enable);
+                        x += CELLWIDTH;
+                    }
+                }
+                else{
+                    if(j % 2 == 0) {
+                        // Vertical Wall
+                        GridComponentArray[i][j].getModel().setEnabled(enable);
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Cell
+                        x += CELLWIDTH;
+                    }
+                }
+            }
+            if(i % 2 == 0) {
+                y += 2;
+            }
+            else {
+                y += 10;
+            }
+            x = 0;
+        }
+    }
+    private void allowGridbuttonSelection(boolean enable) {
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < (HEIGHT * 2) + 1; i++) {
+            for(int j = 0; j < (WIDTH * 2) + 1; j++) {
+                if(i % 2 == 0) {
+                    if(j % 2 == 0) {
+                        // Intersect
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Horizontal Wall
+                        GridComponentArray[i][j].getModel().setEnabled(enable);
+                        x += CELLWIDTH;
+                    }
+                }
+                else{
+                    if(j % 2 == 0) {
+                        // Vertical Wall
+                        GridComponentArray[i][j].getModel().setEnabled(enable);
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Cell
+                        GridComponentArray[i][j].getModel().setEnabled(enable);
+                        x += CELLWIDTH;
+                    }
+                }
+            }
+            if(i % 2 == 0) {
+                y += 2;
+            }
+            else {
+                y += 10;
+            }
+            x = 0;
+        }
+    }
+
+    protected void ImagePlaceState() {
+        imagePane = new ImagePane(null,2,2);
+        State = GridState.IMAGEPLACE;
+        allowGridWallSelection(false);
+    }
+
     /**
      * Creates empty panel and adds it to GridComponentArray and panel
      * @param x GridBagConstraints x position
@@ -128,7 +232,106 @@ public class GridPanel extends JPanel {
     private void createCell(int x, int y, int i, int j) {
         Cell cell = new Cell(x,y,CELLWIDTH,i,j);
         cell.setBackground(GRIDCOLOR);
+        cell.setBorderPainted(false);
+        cell.setBackground(GRIDCOLOR);
+        cell.setRolloverEnabled(true);
         cell.setPreferredSize(new Dimension(CELLWIDTH * sizeMultiplier,CELLWIDTH * sizeMultiplier));
+        cell.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                repaint();
+                if(State == GridState.IMAGEPLACE) {
+                    ResetGridColors();
+                    if(cell.getModel().isSelected()) {
+                        cell.getModel().setSelected(false);
+                    }
+                    if (cell.getModel().isRollover()) {
+                        if ((((imagePane.getImageCellWidth() * 2) - 1) + cell.j) > GridComponentArray[0].length - 1 ||
+                                (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
+                        } else {
+                            boolean DisabledComps = false;
+                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                                if (GridComponentArray[i][cell.j].isDisabled) {DisabledComps = true; break;}
+                            }
+                            for(int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                                for(int k = 0; k < (imagePane.getImageCellHeight()*2) -1; k++) {
+                                    if(GridComponentArray[cell.i + k][j].isDisabled) {DisabledComps = true; break;}
+                                }
+                            }
+                            if(DisabledComps) {}
+                            else {
+                                for (int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                                    GridComponentArray[i][cell.j].setBackground(ROLLOVERCOLOR);
+                                }
+                                for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                                    for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
+                                        GridComponentArray[cell.i + k][j].setBackground(ROLLOVERCOLOR);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(cell.getModel().isPressed()) {
+                        if ((((imagePane.getImageCellWidth() * 2) - 1) + cell.j) > GridComponentArray[0].length - 1 ||
+                                (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
+                        } else {
+                            boolean DisabledComps = false;
+                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                                if (GridComponentArray[i][cell.j].isDisabled) {DisabledComps = true; break;}
+                            }
+                            for(int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                                for(int k = 0; k < (imagePane.getImageCellHeight()*2) -1; k++) {
+                                    if(GridComponentArray[cell.i + k][j].isDisabled) {DisabledComps = true; break;}
+                                }
+                            }
+                            if(DisabledComps) {}
+                            else {
+                                cst.gridx = cell.x;
+                                cst.gridy = cell.y;
+                                cst.gridwidth = (imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT);
+                                cst.gridheight = (imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT);
+                                for (int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                                    remove(GridComponentArray[i][cell.j]);
+                                    GridComponentArray[i][cell.j].isDisabled = true;
+                                    if(GridComponentArray[i][cell.j].isCell) {
+                                        GridMazeCellArray[i][cell.j].setDisabled(true);
+                                    }
+                                }
+                                for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                                    for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
+                                        if (k == 0) {
+                                            if (j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j) - 1) {
+                                                remove(GridComponentArray[cell.i + k][j]);
+                                                GridComponentArray[cell.i + k][j].isDisabled = true;
+                                                if(GridComponentArray[cell.i + k][j].isCell) {
+                                                    GridMazeCellArray[cell.i + k][j].setDisabled(true);
+                                                }
+                                            }
+                                        } else {
+                                            remove(GridComponentArray[cell.i + k][j]);
+                                            GridComponentArray[cell.i + k][j].isDisabled = true;
+                                            if(GridComponentArray[cell.i + k][j].isCell) {
+                                                GridMazeCellArray[cell.i + k][j].setDisabled(true);
+                                            }
+                                        }
+                                    }
+                                }
+                                JPanel panel = new JPanel();
+                                panel.setBackground(Color.ORANGE);
+                                panel.setPreferredSize(new Dimension(
+                                        ((imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT)) * sizeMultiplier,
+                                        ((imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT)) * sizeMultiplier
+                                ));
+                                add(panel, cst);
+                                revalidate();
+                                repaint();
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
         GridComponentArray[i][j] = cell;
         GridBagConstraints cst = new GridBagConstraints();
         cst.gridx = x;
@@ -138,6 +341,7 @@ public class GridPanel extends JPanel {
         add(GridComponentArray[i][j],cst);
     }
 
+
     /**
      * Creates small empty panel and adds it to GridComponentArray and panel
      * @param x GridBagConstraints x position
@@ -146,10 +350,14 @@ public class GridPanel extends JPanel {
      * @param j GridComponentArray y index
      */
     private void createIntersect(int x, int y, int i, int j) {
-        Cell cell = new Cell(x,y,WALLSHORT,i,j);
-        cell.setBackground(GRIDCOLOR);
-        cell.setPreferredSize(new Dimension(WALLSHORT * sizeMultiplier,WALLSHORT * sizeMultiplier));
-        GridComponentArray[i][j] = cell;
+        Intersect isc = new Intersect(x,y,WALLSHORT,i,j);
+        isc.setBackground(GRIDCOLOR);
+        isc.setBackground(GRIDCOLOR);
+        isc.setBorderPainted(false);
+        isc.setBackground(GRIDCOLOR);
+        isc.setRolloverEnabled(false);
+        isc.setPreferredSize(new Dimension(WALLSHORT * sizeMultiplier,WALLSHORT * sizeMultiplier));
+        GridComponentArray[i][j] = isc;
         GridBagConstraints cst = new GridBagConstraints();
         cst.gridx = x;
         cst.gridy = y;
@@ -189,47 +397,44 @@ public class GridPanel extends JPanel {
         btn.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(btn.getModel().isRollover()) {
-                    btn.setBackground(ROLLOVERCOLOR);
-                }
-                else{
-                    btn.setBackground(GRIDCOLOR);
-                }
-                if(btn.getModel().isSelected()) {
+                if(State == GridState.EDIT) {
+                    if (btn.getModel().isRollover()) {
+                        btn.setBackground(ROLLOVERCOLOR);
+                    } else {
+                        btn.setBackground(GRIDCOLOR);
+                    }
+                    if (btn.getModel().isSelected()) {
 
-                    if(btn.orientation == Orientation.HORIZONTAL) {
-                        GridComponentArray[btn.i][btn.j-1].setBackground(SELECTEDCOLOR);
-                        GridComponentArray[btn.i][btn.j+1].setBackground(SELECTEDCOLOR);
-                        MazeCellWallOn(btn.i,btn.j,Orientation.HORIZONTAL, true);
+                        if (btn.orientation == Orientation.HORIZONTAL) {
+                            GridComponentArray[btn.i][btn.j - 1].setBackground(SELECTEDCOLOR);
+                            GridComponentArray[btn.i][btn.j + 1].setBackground(SELECTEDCOLOR);
+                            MazeCellWallOn(btn.i, btn.j, Orientation.HORIZONTAL, true);
 
-                    }
-                    else {
-                        GridComponentArray[btn.i-1][btn.j].setBackground(SELECTEDCOLOR);
-                        GridComponentArray[btn.i+1][btn.j].setBackground(SELECTEDCOLOR);
-                        MazeCellWallOn(btn.i,btn.j,Orientation.VERTICAl, true);
+                        } else {
+                            GridComponentArray[btn.i - 1][btn.j].setBackground(SELECTEDCOLOR);
+                            GridComponentArray[btn.i + 1][btn.j].setBackground(SELECTEDCOLOR);
+                            MazeCellWallOn(btn.i, btn.j, Orientation.VERTICAl, true);
+                        }
+                    } else {
+                        if (btn.orientation == Orientation.HORIZONTAL) {
+                            if (!isAdjacentToWall(btn.i, btn.j - 1)) {
+                                GridComponentArray[btn.i][btn.j - 1].setBackground(GRIDCOLOR);
+                            }
+                            if (!isAdjacentToWall(btn.i, btn.j + 1)) {
+                                GridComponentArray[btn.i][btn.j + 1].setBackground(GRIDCOLOR);
+                            }
+                            MazeCellWallOn(btn.i, btn.j, Orientation.HORIZONTAL, false);
+                        } else {
+                            if (!isAdjacentToWall(btn.i - 1, btn.j)) {
+                                GridComponentArray[btn.i - 1][btn.j].setBackground(GRIDCOLOR);
+                            }
+                            if (!isAdjacentToWall(btn.i + 1, btn.j)) {
+                                GridComponentArray[btn.i + 1][btn.j].setBackground(GRIDCOLOR);
+                            }
+                            MazeCellWallOn(btn.i, btn.j, Orientation.VERTICAl, false);
+                        }
                     }
                 }
-                else {
-                    if(btn.orientation == Orientation.HORIZONTAL) {
-                        if(!isAdjacentToWall(btn.i,btn.j - 1)) {
-                            GridComponentArray[btn.i][btn.j - 1].setBackground(GRIDCOLOR);
-                        }
-                        if(!isAdjacentToWall(btn.i,btn.j + 1)) {
-                            GridComponentArray[btn.i][btn.j + 1].setBackground(GRIDCOLOR);
-                        }
-                        MazeCellWallOn(btn.i,btn.j,Orientation.HORIZONTAL, false);
-                    }
-                    else {
-                        if(!isAdjacentToWall(btn.i - 1,btn.j)) {
-                            GridComponentArray[btn.i - 1][btn.j].setBackground(GRIDCOLOR);
-                        }
-                        if(!isAdjacentToWall(btn.i + 1,btn.j)) {
-                            GridComponentArray[btn.i + 1][btn.j].setBackground(GRIDCOLOR);
-                        }
-                        MazeCellWallOn(btn.i,btn.j,Orientation.VERTICAl, false);
-                    }
-                }
-
             }
         });
         btn.setPreferredSize(new Dimension(width * sizeMultiplier, height * sizeMultiplier));
@@ -241,6 +446,45 @@ public class GridPanel extends JPanel {
         add(GridComponentArray[i][j],cst);
     }
 
+    private void ResetGridColors() {
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < (HEIGHT * 2) + 1; i++) {
+            for(int j = 0; j < (WIDTH * 2) + 1; j++) {
+                if(i % 2 == 0) {
+                    if(j % 2 == 0) {
+                        // Intersect
+                        GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Horizontal Wall
+                        GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        x += CELLWIDTH;
+                    }
+                }
+                else{
+                    if(j % 2 == 0) {
+                        // Vertical Wall
+                        GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        x += WALLSHORT;
+                    }
+                    else {
+                        // Cell
+                        GridComponentArray[i][j].setBackground(GRIDCOLOR);
+                        x += CELLWIDTH;
+                    }
+                }
+            }
+            if(i % 2 == 0) {
+                y += 2;
+            }
+            else {
+                y += 10;
+            }
+            x = 0;
+        }
+    }
     private void MazeCellWallOn(int i, int j, Orientation orien, boolean isOn) {
         int x = 0;
         int y = 0;

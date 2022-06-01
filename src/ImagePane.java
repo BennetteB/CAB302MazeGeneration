@@ -14,7 +14,7 @@ public class ImagePane {
         this.imageCellHeight = imageCellHeight;
         int maxImageWidth = (imageCellWidth * 50) + ((imageCellWidth-1) * 10);
         int maxImageHeight = (imageCellHeight * 50) + ((imageCellHeight-1) * 10);
-        resizedImage = resizeImage(maxImageWidth, maxImageHeight);
+        //resizedImage = resizeImage(maxImageWidth, maxImageHeight);
     }
 
 
