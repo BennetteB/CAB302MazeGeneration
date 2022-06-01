@@ -217,7 +217,7 @@ public class GridPanel extends JPanel {
     }
 
     protected void ImagePlaceState() {
-        imagePane = new ImagePane(null,6,6);
+        imagePane = new ImagePane(null,2,2);
         State = GridState.IMAGEPLACE;
         allowGridWallSelection(false);
     }
@@ -236,6 +236,12 @@ public class GridPanel extends JPanel {
         cell.setBackground(GRIDCOLOR);
         cell.setRolloverEnabled(true);
         cell.setPreferredSize(new Dimension(CELLWIDTH * sizeMultiplier,CELLWIDTH * sizeMultiplier));
+        cell.setUI(new MetalToggleButtonUI() {
+            @Override
+            protected Color getSelectColor() {
+                return GRIDCOLOR;
+            }
+        });
         cell.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -250,7 +256,7 @@ public class GridPanel extends JPanel {
                                 (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
                         } else {
                             boolean DisabledComps = false;
-                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) ) + cell.i); i++) {
                                 if (GridComponentArray[i][cell.j].isDisabled) {DisabledComps = true; break;}
                             }
                             for(int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
@@ -276,7 +282,7 @@ public class GridPanel extends JPanel {
                                 (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
                         } else {
                             boolean DisabledComps = false;
-                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
+                            for(int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) ) + cell.i); i++) {
                                 if (GridComponentArray[i][cell.j].isDisabled) {DisabledComps = true; break;}
                             }
                             for(int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
@@ -297,7 +303,7 @@ public class GridPanel extends JPanel {
                                         GridMazeCellArray[(i - 1) / 2][(cell.j - 1) / 2].setDisabled(true);
                                     }
                                 }
-                                for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                                for (int j = cell.j + 1; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
                                     for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
                                         if (k == 0) {
                                             if (j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j) - 1) {
@@ -325,8 +331,6 @@ public class GridPanel extends JPanel {
                                 add(panel, cst);
                                 revalidate();
                                 repaint();
-                                ToggleEdit();
-                                ToggleEdit();
                             }
                         }
 
@@ -364,6 +368,12 @@ public class GridPanel extends JPanel {
         isc.setBackground(GRIDCOLOR);
         isc.setRolloverEnabled(false);
         isc.setPreferredSize(new Dimension(WALLSHORT * sizeMultiplier,WALLSHORT * sizeMultiplier));
+        isc.setUI(new MetalToggleButtonUI() {
+            @Override
+            protected Color getSelectColor() {
+                return GRIDCOLOR;
+            }
+        });
         isc.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
