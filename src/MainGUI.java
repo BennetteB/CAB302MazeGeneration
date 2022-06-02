@@ -237,7 +237,10 @@ public class MainGUI extends JFrame implements Runnable {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
                 JPopupMenu popup = new JPopupMenu();
-                popup.add(new JMenuItem("Delete"));
+                JMenuItem delete = new JMenuItem("Delete");
+                JMenuItem settings = new JMenuItem("Settings");
+                popup.add(delete);
+                popup.add(settings);
 
                 JFileChooser fileChooser = new JFileChooser();
                 FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
@@ -263,6 +266,21 @@ public class MainGUI extends JFrame implements Runnable {
                     JLabel label = new JLabel(pane.resizeImage(200, 200));
                     label.setAlignmentX(Component.CENTER_ALIGNMENT);
                     rightSidePanel.addImage(label);
+                    paneList.add(pane);
+
+                    delete.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            rightSidePanel.removeImage(label);
+                            paneList.remove(pane);
+                        }
+                    });
+                    settings.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                        }
+                    });
+
                     // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
                     label.addMouseListener(new MouseAdapter() {
                         @Override
@@ -271,15 +289,11 @@ public class MainGUI extends JFrame implements Runnable {
                                 gridPanel.ImagePlaceState(pane);
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
                                 popup.show(label, e.getX(), e.getY());
-                                paneList.remove(pane);
 
                             }
                         }
                     });
-
-                    paneList.add(pane);
                 }
-
             }
 
             if (source == leftSidePanel.getMazeStatsButton()) {
@@ -304,10 +318,6 @@ public class MainGUI extends JFrame implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
                 }
-            }
-
-            if (source == leftSidePanel.getDeleteImage()) {
-
             }
 
             if (source == createMaze) {
@@ -397,6 +407,7 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
+
             }
         }
 
