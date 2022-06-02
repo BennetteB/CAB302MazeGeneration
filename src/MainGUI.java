@@ -172,7 +172,7 @@ public class MainGUI extends JFrame implements Runnable {
                     "maze_cell_width, maze_cell_height, image, image_cell_height, image_cell_width, date_time) VALUES(?,?,?,?,?,?,?,?,?)");
             statement.setString(1, author);
             statement.setString(2, mazeName);
-            statement.setString(3, RANDOM_MAZE_DATA);
+            statement.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
             statement.setInt(4, mazeCellWidth);
             statement.setInt(5, mazeCellHeight);
             statement.setBlob(6,imageDataFile);
@@ -188,6 +188,19 @@ public class MainGUI extends JFrame implements Runnable {
 
     public void openMaze(){
 
+        // Code below converts a database string to MazeCell[][] and then prints that out on the grid
+//        String string = mazeToString(gridPanel.getGridMazeCellArray());
+//        // You will need to swap mazeheight and mazewidth below with their corresponding values from the database
+//        MazeCell[][] maze = stringToMaze(string, mazeheight, mazewidth);
+//        mainPanel.remove(GridPanel);
+//        gridPanel = new GridPanel();
+//        gridPanel.CreateGrid(mazewidth, mazeheight);
+//        GridPanel = new JScrollPane(gridPanel);
+//        mainPanel.add(GridPanel, BorderLayout.CENTER);
+//        mainPanel.revalidate();
+//        mainPanel.repaint();
+//        gridPanel.CreateMaze(maze);
+//        gridPanel.SetEditState(false);
     }
 
 
@@ -212,6 +225,59 @@ public class MainGUI extends JFrame implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    public String mazeToString(MazeCell[][] mazeData) {
+        StringBuilder mazeString = new StringBuilder();
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                if (mazeData[i][j].getWallUp()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallRight()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallDown()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallLeft()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+            }
+        }
+        return mazeString.toString();
+    }
+
+    public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
+        Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
+        MazeCell[][] mazeCells = maze.getMaze();
+        int x = 0;
+        for (int i = 0; i < mazeCells.length; i++) {
+            for (int j = 0; j < mazeCells[0].length; j++) {
+                if (mazeString.charAt(x) == '1') {
+                    mazeCells[i][j].toggleWallUp();
+                }
+                if (mazeString.charAt(x+1) == '1') {
+                    mazeCells[i][j].toggleWallRight();
+                }
+                if (mazeString.charAt(x+2) == '1') {
+                    mazeCells[i][j].toggleWallDown();
+                }
+                if (mazeString.charAt(x+3) == '1') {
+                    mazeCells[i][j].toggleWallLeft();
+                }
+                x += 4;
+            }
+        }
+        return mazeCells;
     }
 
     private class Listener implements ActionListener, ItemListener {
