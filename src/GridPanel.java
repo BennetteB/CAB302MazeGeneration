@@ -140,7 +140,7 @@ public class GridPanel extends JPanel {
         }
     }
 
-    protected void SetEdit(boolean bool) {
+    protected void SetEditState(boolean bool) {
         if(bool) {
             State = GridState.EDIT;
             allowGridbuttonSelection(true);
@@ -150,12 +150,12 @@ public class GridPanel extends JPanel {
         }
 
     }
-    protected void ImagePlaceState(ImagePane pane) {
+    protected void SetImagePlaceState(ImagePane pane) {
         imagePane = pane;
         State = GridState.IMAGEPLACE;
         allowGridWallSelection(false);
     }
-    protected void SetRemoveImage() {
+    protected void SetRemoveImageState() {
         State = GridState.REMOVEIMAGE;
         allowGridWallSelection(false);
     }
