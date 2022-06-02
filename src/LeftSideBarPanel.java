@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 /**
  * Left Side Bar Panel class
@@ -14,7 +15,8 @@ public class LeftSideBarPanel extends JPanel {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 100;
     private JPanel leftsidePanel;
-    private JButton mazeStatsButton, editButton, solvableButton, optimalSolutionButton, deleteImage;
+    private JButton mazeStatsButton, solvableButton, optimalSolutionButton, deleteImage;
+    private JToggleButton editButton;
 
     /**
      * constructor for left sidebar panel,
@@ -37,7 +39,7 @@ public class LeftSideBarPanel extends JPanel {
         leftsidePanel.setBackground(Color.WHITE);
 
         mazeStatsButton = new JButton();
-        editButton = new JButton();
+        editButton = new JToggleButton();
         solvableButton = new JButton();
         optimalSolutionButton = new JButton();
         deleteImage = new JButton();
@@ -79,7 +81,7 @@ public class LeftSideBarPanel extends JPanel {
     /**
      * @return edit button
      */
-    protected JButton getEditButton() {
+    protected JToggleButton getEditButton() {
         return editButton;
     }
 
@@ -105,9 +107,12 @@ public class LeftSideBarPanel extends JPanel {
      */
     protected void addActionListener(ActionListener listener) {
         mazeStatsButton.addActionListener(listener);
-        editButton.addActionListener(listener);
         solvableButton.addActionListener(listener);
         optimalSolutionButton.addActionListener(listener);
         deleteImage.addActionListener(listener);
+    }
+
+    protected void addItemListener(ItemListener listener) {
+        editButton.addItemListener(listener);
     }
 }

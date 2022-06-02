@@ -69,6 +69,7 @@ public class MainGUI extends JFrame implements Runnable {
         leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
         leftSidePanel.addActionListener(new Listener());
+        leftSidePanel.addItemListener(new Listener());
 
         //rightSidePanel
         /**
@@ -231,7 +232,7 @@ public class MainGUI extends JFrame implements Runnable {
 
     }
 
-    private class Listener implements ActionListener {
+    private class Listener implements ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
@@ -267,9 +268,9 @@ public class MainGUI extends JFrame implements Runnable {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == MouseEvent.BUTTON1) {          //Left click
-                                gridPanel.ImagePlaceState(pane);
+                                    gridPanel.ImagePlaceState(pane);
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
-                                popup.show(gridPanel, gridPanel.getWidth() + e.getX(), e.getY());
+                                popup.show(gridPanel, gridPanel.getWidth() + e.getX(), (label.getHeight() - (label.getHeight() - e.getY())));
                                 paneList.remove(pane);
 
                             }
@@ -285,9 +286,6 @@ public class MainGUI extends JFrame implements Runnable {
                 float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
                 JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
                         deadCellsPercentage + "%");
-            }
-            if (source == leftSidePanel.getEditButton()) {
-                // Edit Button
             }
 
             if (source == leftSidePanel.getSolvableButton()) {
@@ -399,6 +397,13 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
+            }
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            Component source = (Component) e.getSource();
+            if (source == leftSidePanel.getEditButton()) {
+                gridPanel.SetEdit(!leftSidePanel.getEditButton().isSelected());
             }
         }
     }

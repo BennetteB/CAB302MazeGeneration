@@ -128,7 +128,7 @@ public class GridPanel extends JPanel {
         }
     }
 
-    protected void ToggleEdit() {
+    protected void ToggleEdit() {   // Broken
         if(State != GridState.NOEDIT) {
             State = GridState.NOEDIT;
             allowGridbuttonSelection(false);
@@ -140,10 +140,10 @@ public class GridPanel extends JPanel {
     }
 
     protected void SetEdit(boolean bool) {
-        if(bool) {
+        if(bool) {  // Enable edit grid
             State = GridState.EDIT;
             allowGridbuttonSelection(true);
-        }else {
+        }else {     // Disable edit grid
             State = GridState.NOEDIT;
             allowGridbuttonSelection(false);
         }
