@@ -4,10 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,8 +22,8 @@ public class MainGUI extends JFrame implements Runnable {
     private int mazeCellWidth = 10;
     private String mazeName = "New Maze";
     private String author = "Unknown";
-    private java.sql.Timestamp currentDate;
-    private String RANDOM_MAZE_DATA = "abcd1234";
+//    private String RANDOM_MAZE_DATA = "abcd1234";
+    private boolean newMaze = false;
 
     private JPanel mainPanel;
     private RightSideBarPanel rightSidePanel;
@@ -146,13 +143,11 @@ public class MainGUI extends JFrame implements Runnable {
         connection = DataConnect.getInstance();
         CREATE_TABLE =
                 "CREATE TABLE IF NOT EXISTS maze_program ("
-//                + "idx INTEGER PRIMARY KEY /*140101 AUTO_INCREMENT */ NOT NULL UNIQUE,"
+                + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
                 + "maze_name VARCHAR(50) NOT NULL,"
                 + "author VARCHAR(50),"
                 + "date_time DATETIME,"
-                + "maze_data VARCHAR(500),"
-                + "image_cell_height INT,"
-                + "image_cell_width INT,"
+                + "maze_data LONGBLOB,"
                 + "image LONGBLOB,"
                 + "maze_cell_height INT,"
                 + "maze_cell_width INT" + ");";
@@ -163,31 +158,55 @@ public class MainGUI extends JFrame implements Runnable {
         }
     }
 
+    /**
+     * Saves existing/ new maze into the database with custom parameters
+     */
     public void saveMaze() {
         try {
-            java.util.Date utilDate = new java.util.Date();
-            currentDate = new java.sql.Timestamp(utilDate.getTime());
+            if (newMaze) {
+                /** Create a new entry for fresh mazes **/
+                PreparedStatement saveMazeData = connection.prepareStatement("INSERT INTO " +
+                        "maze_program(author, " +
+                        "maze_name," +
+                        "maze_cell_width, maze_cell_height, image, " +
+                        "date_time) VALUES(?,?,?,?,?,?)");
+                saveMazeData.setString(1, author);
+                saveMazeData.setString(2, mazeName);
+//               saveMazeData.set;
+                saveMazeData.setInt(3, mazeCellWidth);
+                saveMazeData.setInt(4, mazeCellHeight);
+                saveMazeData.setBlob(5,imageDataFile);
+                saveMazeData.setTimestamp(6, new java.sql.Timestamp(new java.util.Date().getTime()));
+                saveMazeData.execute();
+            } else {
+                /** Update existing entry for existing mazes **/
 
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO maze_program(author, maze_name, maze_data," +
-                    "maze_cell_width, maze_cell_height, image, image_cell_height, image_cell_width, date_time) VALUES(?,?,?,?,?,?,?,?,?)");
-            statement.setString(1, author);
-            statement.setString(2, mazeName);
-            statement.setString(3, RANDOM_MAZE_DATA);
-            statement.setInt(4, mazeCellWidth);
-            statement.setInt(5, mazeCellHeight);
-            statement.setBlob(6,imageDataFile);
-            //statement.setInt(7, imageCellHeight);
-            //statement.setInt(8, imageCellWidth);
-            // Not too sure whats happening here but I have removed the above two value from the settings
-            statement.setTimestamp(9, currentDate);
-            statement.execute();
+            }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
     public void openMaze(){
+        ResultSet rs = null;
+        try {
+            /** retrieve data from SQL database **/
+            PreparedStatement openMazeData = connection.prepareStatement("SELECT * FROM maze_program");
+            rs = openMazeData.executeQuery();
+//            while (rs.next()) {
+//                Integer id = rs.getInt("id");
+//                String mazeName = rs.getString("maze_name");
+//                java.sql.Blob mazeImage = rs.getBlob("image");
+//            }
 
+            /** display retrieved data as a list into a dialog box **/
+
+            /** add a click listener to each item in the list **/
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+       }
     }
 
 
@@ -390,6 +409,8 @@ public class MainGUI extends JFrame implements Runnable {
                         gridPanel.CreateMaze(newMaze);
                         gridPanel.SetEditState(false);
                     }
+
+                    newMaze = true;
                 }
             }
 
@@ -422,6 +443,10 @@ public class MainGUI extends JFrame implements Runnable {
             if (source == export) {
 
             }
+
+//            if (source == /* editMaze (?) */) {
+//
+//            }
         }
 
         public void itemStateChanged(ItemEvent e) {
