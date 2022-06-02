@@ -173,6 +173,8 @@ public class MainGUI extends JFrame implements Runnable {
                 saveMazeData.setString(1, author);
                 saveMazeData.setString(2, mazeName);
 //               saveMazeData.set;
+                //The line below converts mazedata to a string
+                //mazeToString(gridPanel.getGridMazeCellArray());
                 saveMazeData.setInt(3, mazeCellWidth);
                 saveMazeData.setInt(4, mazeCellHeight);
                 saveMazeData.setBlob(5,imageDataFile);
