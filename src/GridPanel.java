@@ -85,7 +85,7 @@ public class GridPanel extends JPanel {
      * @param height Number of cells high
      */
     protected void CreateGrid(int width, int height) {
-        State = GridState.EDIT;
+        State = GridState.NOEDIT;
         WIDTH = width;
         HEIGHT = height;
         GridComponentArray = new GridComponent[(height * 2) + 1][(width * 2) + 1];

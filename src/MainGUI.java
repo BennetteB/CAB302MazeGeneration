@@ -177,7 +177,7 @@ public class MainGUI extends JFrame implements Runnable {
             statement.setBlob(6,imageDataFile);
             //statement.setInt(7, imageCellHeight);
             //statement.setInt(8, imageCellWidth);
-            // Not too sure whats happening here but I am removing the above two value from the settings
+            // Not too sure whats happening here but I have removed the above two value from the settings
             statement.setTimestamp(9, currentDate);
             statement.execute();
         } catch (SQLException ex) {
@@ -201,24 +201,6 @@ public class MainGUI extends JFrame implements Runnable {
         save.addActionListener(listener);
         export.addActionListener(listener);
         impImage.addActionListener(listener);
-    }
-
-    /**
-     * Converts the maze data received by the Algorithm class into a type readable by the GridPanel class
-     * @param mazeData a two-dimensional int that represents a maze
-     * @return returns a two-dimensional component that represents a maze
-     */
-    public Component[][] gridPanelMazeData(int[][] mazeData) {
-        return null;
-    }
-
-    /**
-     * Converts the maze data received by the GridPanel class into a type readable by the Algorithm class
-     * @param mazeData a two-dimensional component that represents a maze
-     * @return returns a two-dimensional int that represents a maze
-     */
-    public int[][] algorithmMazeData(Component[][] mazeData) {
-        return null;
     }
 
     public static void main(String[] args) {
@@ -251,7 +233,6 @@ public class MainGUI extends JFrame implements Runnable {
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 int option = fileChooser.showOpenDialog(mainPanel);
                 if (option == JFileChooser.APPROVE_OPTION) {
-                    // I have duplicated the above line so that the program still functions
                     File file = fileChooser.getSelectedFile();
                     BufferedImage image;
                     try {
@@ -301,7 +282,7 @@ public class MainGUI extends JFrame implements Runnable {
                             imageSettings.add(imageWidthText);
 
                             int result = JOptionPane.showConfirmDialog(null, imageSettings,
-                                    "Create new maze", JOptionPane.OK_CANCEL_OPTION);
+                                    "Image Settings", JOptionPane.OK_CANCEL_OPTION);
                             if (result == JOptionPane.OK_OPTION) {
                                 pane.setImageCellHeight(Integer.parseInt(imageHeightText.getText()));
                                 pane.setImageCellWidth(Integer.parseInt(imageWidthText.getText()));
@@ -411,7 +392,21 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == setting) {
+                JTextField mazeNameText = new JTextField(mazeName, 20);
+                JTextField mazeAuthorText = new JTextField(author, 20);
+                JPanel mazeSettings = new JPanel();
+                mazeSettings.setLayout(new GridLayout(2, 1, 0, 10));
+                mazeSettings.add(new JLabel("Maze Name"));
+                mazeSettings.add(mazeNameText);
+                mazeSettings.add(new JLabel("Author"));
+                mazeSettings.add(mazeAuthorText);
 
+                int result = JOptionPane.showConfirmDialog(null, mazeSettings,
+                        "Maze Settings", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    mazeName = mazeNameText.getText();
+                    author = mazeAuthorText.getText();
+                }
             }
 
             if (source == open) {
@@ -430,7 +425,7 @@ public class MainGUI extends JFrame implements Runnable {
         public void itemStateChanged(ItemEvent e) {
             Component source = (Component) e.getSource();
             if (source == leftSidePanel.getEditButton()) {
-                gridPanel.SetEdit(!leftSidePanel.getEditButton().isSelected());
+                gridPanel.SetEdit(leftSidePanel.getEditButton().isSelected());
             }
         }
     }
