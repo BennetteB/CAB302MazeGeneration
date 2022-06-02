@@ -23,8 +23,6 @@ public class MainGUI extends JFrame implements Runnable {
     private JMenuItem impImage;
     private int mazeCellHeight = 10;
     private int mazeCellWidth = 10;
-    private int imageCellHeight = 2;
-    private int imageCellWidth = 2;
     private String mazeName = "New Maze";
     private String author = "Unknown";
     private java.sql.Timestamp currentDate;
@@ -177,8 +175,9 @@ public class MainGUI extends JFrame implements Runnable {
             statement.setInt(4, mazeCellWidth);
             statement.setInt(5, mazeCellHeight);
             statement.setBlob(6,imageDataFile);
-            statement.setInt(7, imageCellHeight);
-            statement.setInt(8, imageCellWidth);
+            //statement.setInt(7, imageCellHeight);
+            //statement.setInt(8, imageCellWidth);
+            // Not too sure whats happening here but I am removing the above two value from the settings
             statement.setTimestamp(9, currentDate);
             statement.execute();
         } catch (SQLException ex) {
@@ -278,6 +277,35 @@ public class MainGUI extends JFrame implements Runnable {
                     settings.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                            // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
+                            KeyAdapter onlyInt = new KeyAdapter() {
+                                public void keyTyped(KeyEvent e) {
+                                    char c = e.getKeyChar();
+                                    if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                                        e.consume();  // if it's not a number, ignore the event
+                                    }
+                                }
+                            };
+
+                            JTextField imageWidthText = new JTextField("2", 5);
+                            imageWidthText.addKeyListener(onlyInt);
+
+                            JTextField imageHeightText = new JTextField("2", 5);
+                            imageHeightText.addKeyListener(onlyInt);
+
+                            JPanel imageSettings = new JPanel();
+                            imageSettings.setLayout(new GridLayout(2, 1, 0, 10));
+                            imageSettings.add(new JLabel("Maze Cell Height:"));
+                            imageSettings.add(imageHeightText);
+                            imageSettings.add(new JLabel("Maze Cell Width:"));
+                            imageSettings.add(imageWidthText);
+
+                            int result = JOptionPane.showConfirmDialog(null, imageSettings,
+                                    "Create new maze", JOptionPane.OK_CANCEL_OPTION);
+                            if (result == JOptionPane.OK_OPTION) {
+                                pane.setImageCellHeight(Integer.parseInt(imageHeightText.getText()));
+                                pane.setImageCellWidth(Integer.parseInt(imageWidthText.getText()));
+                            }
                         }
                     });
 
@@ -322,7 +350,7 @@ public class MainGUI extends JFrame implements Runnable {
 
             if (source == createMaze) {
                 // Possibly make a new method for most of this part
-                boolean randomiseMaze = false;
+                boolean randomiseMaze;
 
                 // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
                 KeyAdapter onlyInt = new KeyAdapter() {
@@ -340,27 +368,17 @@ public class MainGUI extends JFrame implements Runnable {
                 JTextField mazeWidthText = new JTextField("10", 5);
                 mazeWidthText.addKeyListener(onlyInt);
 
-                JTextField imageWidthText = new JTextField("2", 5);
-                imageWidthText.addKeyListener(onlyInt);
-
-                JTextField imageHeightText = new JTextField("2", 5);
-                imageHeightText.addKeyListener(onlyInt);
-
                 JTextField mazeNameText = new JTextField("New Maze", 20);
                 JTextField mazeAuthorText = new JTextField("Unknown", 20);
 
                 JCheckBox randomMazeOption = new JCheckBox();
 
                 JPanel newMazeOptions = new JPanel();
-                newMazeOptions.setLayout(new GridLayout(7, 1, 0, 10));
+                newMazeOptions.setLayout(new GridLayout(5, 1, 0, 10));
                 newMazeOptions.add(new JLabel("Maze Cell Height:"));
                 newMazeOptions.add(mazeHeightText);
                 newMazeOptions.add(new JLabel("Maze Cell Width:"));
                 newMazeOptions.add(mazeWidthText);
-                newMazeOptions.add(new JLabel("Image Cell Height"));
-                newMazeOptions.add(imageHeightText);
-                newMazeOptions.add(new JLabel("Image Cell Width"));
-                newMazeOptions.add(imageWidthText);
                 newMazeOptions.add(new JLabel("Maze Name"));
                 newMazeOptions.add(mazeNameText);
                 newMazeOptions.add(new JLabel("Author"));
@@ -373,8 +391,6 @@ public class MainGUI extends JFrame implements Runnable {
                 if (result == JOptionPane.OK_OPTION) {
                     mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
                     mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
-                    imageCellHeight = Integer.parseInt(imageHeightText.getText());
-                    imageCellWidth = Integer.parseInt(imageWidthText.getText());
                     mazeName = mazeNameText.getText();
                     author = mazeAuthorText.getText();
                     randomiseMaze = randomMazeOption.isSelected();
