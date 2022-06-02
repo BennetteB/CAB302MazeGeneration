@@ -133,7 +133,7 @@ public class GridPanel extends JPanel {
             State = GridState.NOEDIT;
             allowGridbuttonSelection(false);
         }
-        else {
+        else if (State != GridState.EDIT) {
             State = GridState.EDIT;
             allowGridbuttonSelection(true);
         }
@@ -228,8 +228,15 @@ public class GridPanel extends JPanel {
 
     protected void ImagePlaceState(ImagePane pane) {
         imagePane = pane;
-        State = GridState.IMAGEPLACE;
-        allowGridWallSelection(false);
+        if (State != GridState.IMAGEPLACE) {
+            State = GridState.IMAGEPLACE;
+            allowGridWallSelection(false);
+        } else {
+            SetEdit(true);
+            allowGridWallSelection(true);
+        }
+
+
     }
 
     /**
@@ -345,7 +352,6 @@ public class GridPanel extends JPanel {
                                 revalidate();
                                 repaint();
                                 SetEdit(true);
-                                System.out.println(State);
                             }
                         }
 

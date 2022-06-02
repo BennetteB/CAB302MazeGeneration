@@ -7,16 +7,6 @@ import java.awt.event.ActionListener;
  */
 public class RightSideBarPanel extends JPanel {
 
-    /**
-     * The maximum width of an image
-     */
-    private final int maxImageWidth = 200;
-
-    /**
-     * The maximum height of an image
-     */
-    private final int maxImageHeight = 200;
-
     private JButton newImage;
 
     protected RightSideBarPanel() {
