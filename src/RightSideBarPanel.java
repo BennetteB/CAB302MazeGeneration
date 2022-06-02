@@ -53,4 +53,9 @@ public class RightSideBarPanel extends JPanel {
         add(label);
         updateUI();
     }
+
+    protected void removeImage(JLabel label) {
+        remove(label);
+        updateUI();
+    }
 }
