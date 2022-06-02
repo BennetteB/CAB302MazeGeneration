@@ -228,10 +228,8 @@ public class Algorithm {
             }
         }
         MazeCell[] indexes = findOpenCells(mazeData);
-        ArrayList<MazeCell> optimalSolution = new ArrayList<>();
         MazeCell startIndex = indexes[0];
-        MazeCell endIndex = indexes[1];
-        MazeCell current = endIndex;
+        MazeCell current = indexes[1];
         while (current != startIndex) {
             current.setSolutionCell(true);
             current = current.getParent();

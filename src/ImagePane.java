@@ -3,7 +3,6 @@ import java.awt.*;
 
 public class ImagePane {
     private final ImageIcon originalImage;
-    private ImageIcon resizedImage;
     private int imageCellWidth;
     private int imageCellHeight;
     private JPanel imagePanel;
