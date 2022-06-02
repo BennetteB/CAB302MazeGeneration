@@ -267,10 +267,10 @@ public class MainGUI extends JFrame implements Runnable {
                     label.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            if (e.getButton() == MouseEvent.BUTTON1) {          //Left click
-                                    gridPanel.ImagePlaceState(pane);
+                            if (e.getButton() == MouseEvent.BUTTON1) {//Left click
+                                gridPanel.ImagePlaceState(pane);
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
-                                popup.show(gridPanel, gridPanel.getWidth() + e.getX(), (label.getHeight() - (label.getHeight() - e.getY())));
+                                popup.show(label, e.getX(), e.getY());
                                 paneList.remove(pane);
 
                             }
