@@ -378,7 +378,7 @@ public class GridPanel extends JPanel {
                         add(GridImages.get(Arrays.asList(cell.i,cell.j)), cst);
                         revalidate();
                         repaint();
-                        SetEdit(true);
+                        SetEditState(true);
                         //SetRemoveImage();
                         System.out.println(State);
                     }

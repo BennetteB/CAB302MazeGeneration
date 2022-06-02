@@ -91,6 +91,7 @@ public class MainGUI extends JFrame implements Runnable {
         gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
         GridPanel = new JScrollPane(gridPanel);
         mainPanel.add(GridPanel, BorderLayout.CENTER);
+        gridPanel.SetEditState(false);
         //endregion
 
         //region File on Menu bar
@@ -268,10 +269,10 @@ public class MainGUI extends JFrame implements Runnable {
                                 }
                             };
 
-                            JTextField imageWidthText = new JTextField("2", 5);
+                            JTextField imageWidthText = new JTextField(Integer.toString(pane.getImageCellWidth()), 5);
                             imageWidthText.addKeyListener(onlyInt);
 
-                            JTextField imageHeightText = new JTextField("2", 5);
+                            JTextField imageHeightText = new JTextField(Integer.toString(pane.getImageCellHeight()) , 5);
                             imageHeightText.addKeyListener(onlyInt);
 
                             JPanel imageSettings = new JPanel();
@@ -387,6 +388,7 @@ public class MainGUI extends JFrame implements Runnable {
                     if (randomiseMaze) {
                         MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
                         gridPanel.CreateMaze(newMaze);
+                        gridPanel.SetEditState(false);
                     }
                 }
             }
@@ -426,6 +428,15 @@ public class MainGUI extends JFrame implements Runnable {
             Component source = (Component) e.getSource();
             if (source == leftSidePanel.getEditButton()) {
                 gridPanel.SetEditState(leftSidePanel.getEditButton().isSelected());
+            }
+
+            if (source == leftSidePanel.getDeleteButton()) {
+                if (leftSidePanel.getDeleteButton().isSelected()) {
+                    gridPanel.SetRemoveImageState();
+                } else {
+                    gridPanel.SetEditState(false);
+                }
+
             }
         }
     }
