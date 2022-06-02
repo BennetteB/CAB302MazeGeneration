@@ -295,7 +295,7 @@ public class MainGUI extends JFrame implements Runnable {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == MouseEvent.BUTTON1) {//Left click
-                                gridPanel.ImagePlaceState(pane);
+                                gridPanel.SetImagePlaceState(pane);
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
                                 popup.show(label, e.getX(), e.getY());
 
@@ -425,7 +425,7 @@ public class MainGUI extends JFrame implements Runnable {
         public void itemStateChanged(ItemEvent e) {
             Component source = (Component) e.getSource();
             if (source == leftSidePanel.getEditButton()) {
-                gridPanel.SetEdit(leftSidePanel.getEditButton().isSelected());
+                gridPanel.SetEditState(leftSidePanel.getEditButton().isSelected());
             }
         }
     }
