@@ -29,5 +29,6 @@ public class WallButton extends GridComponent {
         else {
             orientation = GridPanel.Orientation.HORIZONTAL;
         }
+        this.isWall = true;
     }
 }
