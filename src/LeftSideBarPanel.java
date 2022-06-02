@@ -16,7 +16,7 @@ public class LeftSideBarPanel extends JPanel {
     private static final int HEIGHT = 100;
     private JPanel leftsidePanel;
     private JButton mazeStatsButton, solvableButton, optimalSolutionButton;
-    private JToggleButton editButton;
+    private JToggleButton editButton, deleteButton;
 
     /**
      * constructor for left sidebar panel,
@@ -40,22 +40,26 @@ public class LeftSideBarPanel extends JPanel {
 
         mazeStatsButton = new JButton();
         editButton = new JToggleButton();
+        deleteButton = new JToggleButton();
         solvableButton = new JButton();
         optimalSolutionButton = new JButton();
 
         mazeStatsButton.setBackground(Color.WHITE);
         solvableButton.setBackground(Color.WHITE);
         editButton.setBackground(Color.WHITE);
+        deleteButton.setBackground(Color.WHITE);
         optimalSolutionButton.setBackground(Color.WHITE);
 
         solvableButton.setMaximumSize(new Dimension(100,100));
         mazeStatsButton.setMaximumSize(new Dimension(100,100));
         editButton.setMaximumSize(new Dimension(100,100));
+        deleteButton.setMaximumSize(new Dimension(100,100));
         optimalSolutionButton.setMaximumSize(new Dimension(100,100));
 
         solvableButton.setText("Solvable");
         mazeStatsButton.setText("Maze Stats");
         editButton.setText("Edit");
+        deleteButton.setText("Delete Image");
         optimalSolutionButton.setText("Optimal Solution");
 
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
@@ -63,6 +67,7 @@ public class LeftSideBarPanel extends JPanel {
         leftsidePanel.add(editButton);
         leftsidePanel.add(solvableButton);
         leftsidePanel.add(optimalSolutionButton);
+        leftsidePanel.add(deleteButton);
         add(leftsidePanel, BorderLayout.CENTER);
     }
 
@@ -94,6 +99,10 @@ public class LeftSideBarPanel extends JPanel {
         return optimalSolutionButton;
     }
 
+    public JToggleButton getDeleteButton() {
+        return deleteButton;
+    }
+
 
     /**
      * adds a listener to each of the buttons in the left sidebar panel
@@ -107,5 +116,6 @@ public class LeftSideBarPanel extends JPanel {
 
     protected void addItemListener(ItemListener listener) {
         editButton.addItemListener(listener);
+        deleteButton.addItemListener(listener);
     }
 }
