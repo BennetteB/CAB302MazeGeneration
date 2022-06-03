@@ -66,7 +66,7 @@ public class GridPanel extends JPanel {
         if(bool) {
             State = GridState.EDIT;
             allowGridWallSelection(true);
-            allowGridCellSelection(true);
+            allowGridCellSelection(false);
         }else {
             State = GridState.NOEDIT;
             allowGridWallSelection(false);
@@ -421,6 +421,7 @@ public class GridPanel extends JPanel {
                             }
                         });
                         JLabel label = new JLabel(imagePane.getResizedImage());
+                        label.setPreferredSize(new Dimension(1000,1000));
                         imgButton.add(label);
                         imgButton.setBackground(GRIDCOLOR);
                         imgButton.setPreferredSize(new Dimension(
@@ -431,9 +432,8 @@ public class GridPanel extends JPanel {
                         add(GridImages.get(Arrays.asList(cell.i,cell.j)), cst);
                         revalidate();
                         repaint();
-                        SetEditState(true);
+                        SetEditState(false);
                         //SetRemoveImage();
-                        System.out.println(State);
                     }
                 }
 
