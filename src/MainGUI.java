@@ -546,12 +546,9 @@ public class MainGUI extends JFrame implements Runnable {
                         leftSidePanel.getOptimalSolutionButton().setSelected(false);
                     }
                 } else {
-
+                    gridPanel.ShowSolutionLine(false);
+                    gridPanel.ResetGridColors();
                 }
-
-
-
-
             }
         }
     }
