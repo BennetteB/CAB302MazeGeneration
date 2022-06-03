@@ -355,21 +355,14 @@ public class GridPanel extends JPanel {
                     }
                     if(DisabledComps) {}
                     else {
-                        for (int i = cell.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + cell.i); i++) {
-                            if(GridComponentArray[i][cell.j].isWall) {
-                                deselectWall((WallButton)GridComponentArray[i][cell.j]);
-                            }
-                            remove(GridComponentArray[i][cell.j]);
-                            GridComponentArray[i][cell.j].isDisabled = true;
-                        }
-                        for (int j = cell.j + 1; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+                        for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
                             for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
                                 if(GridComponentArray[cell.i + k][j].isWall) {
                                     deselectWall((WallButton) GridComponentArray[cell.i + k][j]);
                                 }
                                     remove(GridComponentArray[cell.i + k][j]);
                                     GridComponentArray[cell.i + k][j].isDisabled = true;
-                                    if(j == cell.j + 1) {
+                                    if(j == cell.j) {
                                         if(GridComponentArray[cell.i + k][cell.j - 1].isWall) {
                                             selectWall((WallButton) GridComponentArray[cell.i + k][cell.j - 1]);
                                         }
