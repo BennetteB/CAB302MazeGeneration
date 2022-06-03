@@ -502,7 +502,22 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == save) {
-                saveMaze();
+                JTextField mazeNameText = new JTextField(mazeName, 20);
+                JTextField mazeAuthorText = new JTextField(author, 20);
+                JPanel saveMaze = new JPanel();
+                saveMaze.setLayout(new GridLayout(2, 1, 0, 10));
+                saveMaze.add(new JLabel("Maze Name"));
+                saveMaze.add(mazeNameText);
+                saveMaze.add(new JLabel("Author"));
+                saveMaze.add(mazeAuthorText);
+
+                int result = JOptionPane.showConfirmDialog(null, saveMaze,
+                        "Maze Settings", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    mazeName = mazeNameText.getText();
+                    author = mazeAuthorText.getText();
+                    saveMaze();
+                }
             }
 
             if (source == export) {
