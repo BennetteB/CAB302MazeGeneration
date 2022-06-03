@@ -169,7 +169,7 @@ public class GridPanel extends JPanel {
         }
     }
 
-    public void ShowSolutionLine(MazeCell[][] data) {
+    protected void ShowSolutionLine(MazeCell[][] data) {
         ShowSolutionLine(true);
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[0].length; j++) {

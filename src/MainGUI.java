@@ -418,6 +418,7 @@ public class MainGUI extends JFrame implements Runnable {
                 if (maze != null) {
                     // maze below needs to be used to display the maze
                     maze = new Algorithm().optimalSolution(maze);
+                    gridPanel.ShowSolutionLine(maze);
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
                 }
