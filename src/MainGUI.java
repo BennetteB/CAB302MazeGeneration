@@ -211,7 +211,6 @@ public class MainGUI extends JFrame implements Runnable {
        }
 
         // Code below converts a database string to MazeCell[][] and then prints that out on the grid
-//        String string = mazeToString(gridPanel.getGridMazeCellArray());
 //        // You will need to swap mazeheight and mazewidth below with their corresponding values from the database
 //        MazeCell[][] maze = stringToMaze(string, mazeheight, mazewidth);
 //        mainPanel.remove(GridPanel);
@@ -384,7 +383,13 @@ public class MainGUI extends JFrame implements Runnable {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == MouseEvent.BUTTON1) {//Left click
-                                gridPanel.SetImagePlaceState(pane);
+                                leftSidePanel.getDeleteButton().setSelected(false);
+                                leftSidePanel.getEditButton().setSelected(false);
+                                if (gridPanel.IsPlaceImageState()) {
+                                    gridPanel.SetEditState(false);
+                                } else {
+                                    gridPanel.SetImagePlaceState(pane);
+                                }
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
                                 popup.show(label, e.getX(), e.getY());
 
@@ -476,9 +481,8 @@ public class MainGUI extends JFrame implements Runnable {
                     if (randomiseMaze) {
                         MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
                         gridPanel.CreateMaze(newMaze);
-                        gridPanel.SetEditState(false);
                     }
-
+                    gridPanel.SetEditState(false);
                     newMaze = true;
                 }
             }
@@ -521,16 +525,21 @@ public class MainGUI extends JFrame implements Runnable {
         public void itemStateChanged(ItemEvent e) {
             Component source = (Component) e.getSource();
             if (source == leftSidePanel.getEditButton()) {
-                gridPanel.SetEditState(leftSidePanel.getEditButton().isSelected());
+                if (leftSidePanel.getEditButton().isSelected()) {
+                    leftSidePanel.getDeleteButton().setSelected(false);
+                    gridPanel.SetEditState(true);
+                } else {
+                    gridPanel.SetEditState(false);
+                }
             }
 
             if (source == leftSidePanel.getDeleteButton()) {
                 if (leftSidePanel.getDeleteButton().isSelected()) {
+                    leftSidePanel.getEditButton().setSelected(false);
                     gridPanel.SetRemoveImageState();
                 } else {
                     gridPanel.SetEditState(false);
                 }
-
             }
         }
     }
