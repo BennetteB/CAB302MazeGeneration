@@ -35,7 +35,7 @@ public class GridPanel extends JPanel {
     private int HEIGHT;
     private int WIDTH;
     private boolean showSolutionLine = false;
-    public void ShowSolutionLine(boolean bool) {showSolutionLine = bool;}
+    protected void ShowSolutionLine(boolean bool) {showSolutionLine = bool;}
 
     private ImagePane imagePane;
 
@@ -616,7 +616,7 @@ public class GridPanel extends JPanel {
         }
     }
 
-    private void ResetGridColors() {
+    protected void ResetGridColors() {
         int x = 0;
         int y = 0;
         for(int i = 0; i < (HEIGHT * 2) + 1; i++) {
