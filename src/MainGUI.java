@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 
 public class MainGUI extends JFrame implements Runnable {
 
@@ -22,7 +25,8 @@ public class MainGUI extends JFrame implements Runnable {
     private int mazeCellWidth = 10;
     private String mazeName = "New Maze";
     private String author = "Unknown";
-//    private String RANDOM_MAZE_DATA = "abcd1234";
+    //private String RANDOM_MAZE_DATA = "abcd1234";
+    private String list = "hey";
     private boolean newMaze = false;
 
     private JPanel mainPanel;
@@ -499,6 +503,19 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == open) {
+                JPanel openMaze = new JPanel();
+                DefaultListModel dataList = new DefaultListModel();
+                dataList.addElement(list);
+
+                JList dataOpen = new JList(dataList);
+                openMaze.add(dataOpen);
+
+
+                openMaze.setLayout(new GridLayout(2, 1, 0, 10));
+                int result = JOptionPane.showConfirmDialog(null, openMaze,
+                        "Open Maze", JOptionPane.OK_CANCEL_OPTION);
+
+
                 openMaze();
             }
 
