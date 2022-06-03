@@ -209,6 +209,19 @@ public class MainGUI extends JFrame implements Runnable {
         } catch (SQLException ex) {
             ex.printStackTrace();
        }
+
+        // Code below converts a database string to MazeCell[][] and then prints that out on the grid
+//        // You will need to swap mazeheight and mazewidth below with their corresponding values from the database
+//        MazeCell[][] maze = stringToMaze(string, mazeheight, mazewidth);
+//        mainPanel.remove(GridPanel);
+//        gridPanel = new GridPanel();
+//        gridPanel.CreateGrid(mazewidth, mazeheight);
+//        GridPanel = new JScrollPane(gridPanel);
+//        mainPanel.add(GridPanel, BorderLayout.CENTER);
+//        mainPanel.revalidate();
+//        mainPanel.repaint();
+//        gridPanel.CreateMaze(maze);
+//        gridPanel.SetEditState(false);
     }
 
 
@@ -233,6 +246,59 @@ public class MainGUI extends JFrame implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    public String mazeToString(MazeCell[][] mazeData) {
+        StringBuilder mazeString = new StringBuilder();
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                if (mazeData[i][j].getWallUp()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallRight()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallDown()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+                if (mazeData[i][j].getWallLeft()) {
+                    mazeString.append("1");
+                } else {
+                    mazeString.append("0");
+                }
+            }
+        }
+        return mazeString.toString();
+    }
+
+    public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
+        Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
+        MazeCell[][] mazeCells = maze.getMaze();
+        int x = 0;
+        for (int i = 0; i < mazeCells.length; i++) {
+            for (int j = 0; j < mazeCells[0].length; j++) {
+                if (mazeString.charAt(x) == '1') {
+                    mazeCells[i][j].toggleWallUp();
+                }
+                if (mazeString.charAt(x+1) == '1') {
+                    mazeCells[i][j].toggleWallRight();
+                }
+                if (mazeString.charAt(x+2) == '1') {
+                    mazeCells[i][j].toggleWallDown();
+                }
+                if (mazeString.charAt(x+3) == '1') {
+                    mazeCells[i][j].toggleWallLeft();
+                }
+                x += 4;
+            }
+        }
+        return mazeCells;
     }
 
     private class Listener implements ActionListener, ItemListener {
@@ -317,7 +383,13 @@ public class MainGUI extends JFrame implements Runnable {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == MouseEvent.BUTTON1) {//Left click
-                                gridPanel.SetImagePlaceState(pane);
+                                leftSidePanel.getDeleteButton().setSelected(false);
+                                leftSidePanel.getEditButton().setSelected(false);
+                                if (gridPanel.IsPlaceImageState()) {
+                                    gridPanel.SetEditState(false);
+                                } else {
+                                    gridPanel.SetImagePlaceState(pane);
+                                }
                             } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
                                 popup.show(label, e.getX(), e.getY());
 
@@ -409,9 +481,8 @@ public class MainGUI extends JFrame implements Runnable {
                     if (randomiseMaze) {
                         MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
                         gridPanel.CreateMaze(newMaze);
-                        gridPanel.SetEditState(false);
                     }
-
+                    gridPanel.SetEditState(false);
                     newMaze = true;
                 }
             }
@@ -454,16 +525,21 @@ public class MainGUI extends JFrame implements Runnable {
         public void itemStateChanged(ItemEvent e) {
             Component source = (Component) e.getSource();
             if (source == leftSidePanel.getEditButton()) {
-                gridPanel.SetEditState(leftSidePanel.getEditButton().isSelected());
+                if (leftSidePanel.getEditButton().isSelected()) {
+                    leftSidePanel.getDeleteButton().setSelected(false);
+                    gridPanel.SetEditState(true);
+                } else {
+                    gridPanel.SetEditState(false);
+                }
             }
 
             if (source == leftSidePanel.getDeleteButton()) {
                 if (leftSidePanel.getDeleteButton().isSelected()) {
+                    leftSidePanel.getEditButton().setSelected(false);
                     gridPanel.SetRemoveImageState();
                 } else {
                     gridPanel.SetEditState(false);
                 }
-
             }
         }
     }
