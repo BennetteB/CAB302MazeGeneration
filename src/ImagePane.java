@@ -45,8 +45,8 @@ public class ImagePane {
     }
 
     public ImageIcon getResizedImage() {
-        int maxImageWidth = (imageCellWidth * 50) + ((imageCellWidth-1) * 10);
-        int maxImageHeight = (imageCellHeight * 50) + ((imageCellHeight-1) * 10);
+        int maxImageWidth = (imageCellWidth * 50) + ((imageCellWidth-2) * 10);
+        int maxImageHeight = (imageCellHeight * 50) + ((imageCellHeight-2) * 10);
         return resizeImage(maxImageWidth, maxImageHeight);
     }
 
