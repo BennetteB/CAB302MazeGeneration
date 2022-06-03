@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Creates the Grid Panel with editable cells for Maze construction
@@ -84,6 +85,10 @@ public class GridPanel extends JPanel {
         State = GridState.REMOVEIMAGE;
         allowGridWallSelection(false);
         allowGridCellSelection(false);
+    }
+
+    protected HashMap<List<Integer>, GridImage> GetImageMap() {
+        return GridImages;
     }
 
     /**
@@ -404,7 +409,7 @@ public class GridPanel extends JPanel {
                         cst.gridy = cell.y;
                         cst.gridwidth = (imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT);
                         cst.gridheight = (imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT);
-                        GridImage imgButton = new GridImage(cell.x,cell.y,cell.i, cell.j, imagePane.getImageCellWidth(), imagePane.getImageCellHeight());
+                        GridImage imgButton = new GridImage(cell.x,cell.y,cell.i, cell.j, imagePane.getImageCellWidth(), imagePane.getImageCellHeight(),imagePane.getOriginalImage());
                         imgButton.setBorderPainted(false);
                         imgButton.setBackground(GRIDCOLOR);
                         imgButton.setUI(new MetalToggleButtonUI() {
@@ -469,17 +474,17 @@ public class GridPanel extends JPanel {
             if(imgPane.getModel().isSelected()) {
                 imgPane.getModel().setSelected(false);
                 remove(GridImages.get(Arrays.asList(imgPane.i,imgPane.j)));
-                GridImages.remove(Arrays.asList(imgPane.i,imgPane.j));
-                for (int i = imgPane.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + imgPane.i); i++) {
+                for (int i = imgPane.i; i < (((imgPane.HEIGHT * 2) - 1) + imgPane.i); i++) {
                     addGridComponentToPanel(i, imgPane.j);
                     GridComponentArray[i][imgPane.j].isDisabled = false;
                 }
-                for (int j = imgPane.j + 1; j < (((imagePane.getImageCellWidth() * 2) - 1) + imgPane.j); j++) {
-                    for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
+                for (int j = imgPane.j + 1; j < (((imgPane.WIDTH * 2) - 1) + imgPane.j); j++) {
+                    for (int k = 0; k < (imgPane.HEIGHT * 2) - 1; k++) {
                             addGridComponentToPanel(imgPane.i + k, j);
                             GridComponentArray[imgPane.i + k][j].isDisabled = false;
                     }
                 }
+                GridImages.remove(Arrays.asList(imgPane.i,imgPane.j));
                 revalidate();
                 repaint();
             }
