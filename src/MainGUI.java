@@ -385,6 +385,7 @@ public class MainGUI extends JFrame implements Runnable {
                             if (e.getButton() == MouseEvent.BUTTON1) {//Left click
                                 leftSidePanel.getDeleteButton().setSelected(false);
                                 leftSidePanel.getEditButton().setSelected(false);
+                                leftSidePanel.getOptimalSolutionButton().setSelected(false);
                                 if (gridPanel.IsPlaceImageState()) {
                                     gridPanel.SetEditState(false);
                                 } else {
