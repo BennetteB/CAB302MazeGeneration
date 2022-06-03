@@ -234,7 +234,13 @@ public class Algorithm {
             current.setSolutionCell(true);
             current = current.getParent();
         }
+        startIndex.setSolutionCell(true);
 
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setParent(null);
+            }
+        }
         return mazeData;
     }
 
