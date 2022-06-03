@@ -23,6 +23,7 @@ public class GridPanel extends JPanel {
     private Color GRIDCOLOR = Color.WHITE;
     private Color ROLLOVERCOLOR = Color.RED;
     private Color SELECTEDCOLOR = Color.BLACK;
+    private Color SOLUTIONCOLOR = Color.GREEN;
     enum Orientation {HORIZONTAL,VERTICAl}
     private final int CELLWIDTH = 10;
     private final int WALLSHORT = 2;
@@ -33,6 +34,8 @@ public class GridPanel extends JPanel {
 
     private int HEIGHT;
     private int WIDTH;
+    private boolean showSolutionLine = false;
+    public void ShowSolutionLine(boolean bool) {showSolutionLine = bool;}
 
     private ImagePane imagePane;
 
@@ -166,6 +169,25 @@ public class GridPanel extends JPanel {
         }
     }
 
+    public void ShowSolutionLine(MazeCell[][] data) {
+        ShowSolutionLine(true);
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[0].length; j++) {
+                if(data[i][j].getSolutionCell()) {
+                    int gridCoordinatei = (i*2) +1;
+                    int gridCoordinatej = (j*2) +1;
+
+                    GridComponentArray[gridCoordinatei][gridCoordinatej].setBackground(SOLUTIONCOLOR);
+                }
+            }
+        }
+        repaint();
+    }
+
+    public void DisableShowSolutionLine() {
+        ShowSolutionLine(false);
+    }
+
 
     private void allowGridWallSelection(boolean enable) {
         int x = 0;
@@ -282,7 +304,6 @@ public class GridPanel extends JPanel {
         if(State == GridState.IMAGEPLACE) {
             ResetGridColors();
             if (cell.getModel().isRollover()) {
-                System.out.println(cell.isDisabled);
                 if ((((imagePane.getImageCellWidth() * 2) - 1) + cell.j) > GridComponentArray[0].length - 1 ||
                         (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
                 } else {
@@ -339,12 +360,6 @@ public class GridPanel extends JPanel {
                         }
                         for (int j = cell.j + 1; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
                             for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
-                                /*if (k == 0) {
-                                    if (j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j) - 1) {
-                                        remove(GridComponentArray[cell.i + k][j]);
-                                        GridComponentArray[cell.i + k][j].isDisabled = true;
-                                    }
-                                } else { */
                                 if(GridComponentArray[cell.i + k][j].isWall) {
                                     deselectWall((WallButton) GridComponentArray[cell.i + k][j]);
                                 }
@@ -452,26 +467,19 @@ public class GridPanel extends JPanel {
     }
     private void imagePanelStateChange(GridImage imgPane) {
         if(State == GridState.REMOVEIMAGE) {
-            if(imgPane.getModel().isPressed()) {
+            if(imgPane.getModel().isSelected()) {
+                imgPane.getModel().setSelected(false);
+                System.out.println(imgPane.j);
                 remove(GridImages.get(Arrays.asList(imgPane.i,imgPane.j)));
+                GridImages.remove(Arrays.asList(imgPane.i,imgPane.j));
                 for (int i = imgPane.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + imgPane.i); i++) {
                     addGridComponentToPanel(i, imgPane.j);
                     GridComponentArray[i][imgPane.j].isDisabled = false;
                 }
                 for (int j = imgPane.j + 1; j < (((imagePane.getImageCellWidth() * 2) - 1) + imgPane.j); j++) {
                     for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
-                        /*if (k == 0) {
-                            if (j < (((imagePane.getImageCellWidth() * 2) - 1) + imgPane.j) - 1) {
-                                addGridComponentToPanel(imgPane.i + k, j);
-                                GridComponentArray[imgPane.i + k][j].isDisabled = false;
-                                if(GridComponentArray[imgPane.i + k][j].isCell) {
-                                    GridMazeCellArray[(imgPane.i + k - 1) / 2][(j - 1) / 2].setDisabled(false);
-                                }
-                            }
-                        } else { */
                             addGridComponentToPanel(imgPane.i + k, j);
                             GridComponentArray[imgPane.i + k][j].isDisabled = false;
-                        //}
                     }
                 }
                 revalidate();
@@ -635,6 +643,11 @@ public class GridPanel extends JPanel {
                     }
                     else {
                         // Cell
+                        int mazeCelli = (i - 1) / 2;
+                        int mazeCellj = (j - 1) / 2;
+                        if(showSolutionLine && GridMazeCellArray[mazeCellj][mazeCellj].getSolutionCell()) {
+                            GridComponentArray[i][j].setBackground(SOLUTIONCOLOR);
+                        }
                         GridComponentArray[i][j].setBackground(GRIDCOLOR);
                         x += CELLWIDTH;
                     }

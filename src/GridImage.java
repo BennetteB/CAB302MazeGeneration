@@ -1,6 +1,6 @@
 import javax.swing.*;
 
-public class GridImage extends JButton {
+public class GridImage extends JToggleButton {
     protected int x;
     protected int y;
     protected int i;
