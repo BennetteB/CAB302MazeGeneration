@@ -413,17 +413,6 @@ public class MainGUI extends JFrame implements Runnable {
                 }
             }
 
-            if (source == leftSidePanel.getOptimalSolutionButton()) {
-                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
-                if (maze != null) {
-                    // maze below needs to be used to display the maze
-                    maze = new Algorithm().optimalSolution(maze);
-                    gridPanel.ShowSolutionLine(maze);
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
-                }
-            }
-
             if (source == createMaze) {
                 // Possibly make a new method for most of this part
                 boolean randomiseMaze;
@@ -543,6 +532,26 @@ public class MainGUI extends JFrame implements Runnable {
                 } else {
                     gridPanel.SetEditState(false);
                 }
+            }
+
+            if (source == leftSidePanel.getOptimalSolutionButton()) {
+                if (leftSidePanel.getOptimalSolutionButton().isSelected()) {
+                    MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+                    if (maze != null) {
+                        // maze below needs to be used to display the maze
+                        maze = new Algorithm().optimalSolution(maze);
+                        gridPanel.ShowSolutionLine(maze);
+                    } else {
+                        JOptionPane.showMessageDialog(mainPanel, "The maze is not solvable");
+                        leftSidePanel.getOptimalSolutionButton().setSelected(false);
+                    }
+                } else {
+
+                }
+
+
+
+
             }
         }
     }

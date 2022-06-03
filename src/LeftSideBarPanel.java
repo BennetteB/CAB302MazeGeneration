@@ -15,8 +15,8 @@ public class LeftSideBarPanel extends JPanel {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 100;
     private JPanel leftsidePanel;
-    private JButton mazeStatsButton, solvableButton, optimalSolutionButton;
-    private JToggleButton editButton, deleteButton;
+    private JButton mazeStatsButton, solvableButton;
+    private JToggleButton editButton, deleteButton, optimalSolutionButton;
 
     /**
      * constructor for left sidebar panel,
@@ -42,7 +42,7 @@ public class LeftSideBarPanel extends JPanel {
         editButton = new JToggleButton();
         deleteButton = new JToggleButton();
         solvableButton = new JButton();
-        optimalSolutionButton = new JButton();
+        optimalSolutionButton = new JToggleButton();
 
         mazeStatsButton.setBackground(Color.WHITE);
         solvableButton.setBackground(Color.WHITE);
@@ -95,7 +95,7 @@ public class LeftSideBarPanel extends JPanel {
     /**
      * @return optimal solution button
      */
-    public JButton getOptimalSolutionButton() {
+    public JToggleButton getOptimalSolutionButton() {
         return optimalSolutionButton;
     }
 
@@ -111,11 +111,11 @@ public class LeftSideBarPanel extends JPanel {
     protected void addActionListener(ActionListener listener) {
         mazeStatsButton.addActionListener(listener);
         solvableButton.addActionListener(listener);
-        optimalSolutionButton.addActionListener(listener);
     }
 
     protected void addItemListener(ItemListener listener) {
         editButton.addItemListener(listener);
         deleteButton.addItemListener(listener);
+        optimalSolutionButton.addItemListener(listener);
     }
 }

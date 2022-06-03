@@ -336,7 +336,6 @@ public class GridPanel extends JPanel {
             }
             if(cell.getModel().isSelected()) {
                 cell.getModel().setSelected(false);
-                System.out.println("Selected");
                 if ((((imagePane.getImageCellWidth() * 2) - 1) + cell.j) > GridComponentArray[0].length - 1 ||
                         (((imagePane.getImageCellHeight() * 2) - 1) + cell.i) > GridComponentArray.length - 1) {
                 } else {
@@ -469,7 +468,6 @@ public class GridPanel extends JPanel {
         if(State == GridState.REMOVEIMAGE) {
             if(imgPane.getModel().isSelected()) {
                 imgPane.getModel().setSelected(false);
-                System.out.println(imgPane.j);
                 remove(GridImages.get(Arrays.asList(imgPane.i,imgPane.j)));
                 GridImages.remove(Arrays.asList(imgPane.i,imgPane.j));
                 for (int i = imgPane.i; i < (((imagePane.getImageCellHeight() * 2) - 1) + imgPane.i); i++) {
