@@ -483,6 +483,8 @@ public class MainGUI extends JFrame implements Runnable {
                         MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
                         gridPanel.CreateMaze(newMaze);
                     }
+                    leftSidePanel.getEditButton().setSelected(false);
+                    leftSidePanel.getDeleteButton().setSelected(false);
                     gridPanel.SetEditState(false);
                     newMaze = true;
                 }
