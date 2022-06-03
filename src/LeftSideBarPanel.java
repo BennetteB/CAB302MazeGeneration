@@ -63,11 +63,12 @@ public class LeftSideBarPanel extends JPanel {
         optimalSolutionButton.setText("Optimal Solution");
 
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
-        leftsidePanel.add(mazeStatsButton);
         leftsidePanel.add(editButton);
+        leftsidePanel.add(deleteButton);
         leftsidePanel.add(solvableButton);
         leftsidePanel.add(optimalSolutionButton);
-        leftsidePanel.add(deleteButton);
+        leftsidePanel.add(mazeStatsButton);
+
         add(leftsidePanel, BorderLayout.CENTER);
     }
 
