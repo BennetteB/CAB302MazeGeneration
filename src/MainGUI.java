@@ -176,6 +176,7 @@ public class MainGUI extends JFrame implements Runnable {
                 saveMazeData.setString(2, mazeName);
                 saveMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
                 saveMazeData.setString(4, gridImagesToString(gridPanel.GetImageMap()));
+                System.out.println("image string" + gridImagesToString(gridPanel.GetImageMap()));
                 saveMazeData.setInt(5, mazeCellWidth);
                 saveMazeData.setInt(6, mazeCellHeight);
                 saveMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
@@ -238,6 +239,8 @@ public class MainGUI extends JFrame implements Runnable {
     public void openSelectedMaze(HashMap< Integer, Integer> mazeIdList, int selectedId) {
         int selectedMazeId = mazeIdList.get(selectedId);
         ResultSet mazeResult = null;
+        System.out.println(mazeIdList);
+        System.out.println(selectedId);
         try {
             PreparedStatement openMaze = connection.prepareStatement("SELECT * FROM maze_program WHERE `id` = ?");
             openMaze.setInt(1, selectedMazeId);
@@ -249,11 +252,6 @@ public class MainGUI extends JFrame implements Runnable {
                 Blob imageData = mazeResult.getBlob("image_data");
                 int mazeCellHeight = mazeResult.getInt("maze_cell_height");
                 int mazeCellWidth = mazeResult.getInt("maze_cell_width");
-
-                System.out.println(new String(imageData.getBytes(1, (int) imageData.length())));
-                System.out.println(new String(mazeData.getBytes(1, (int) mazeData.length())));
-
-                stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
                 MazeCell[][] maze = stringToMaze(new String(mazeData.getBytes(1, (int) mazeData.length())), mazeCellHeight, mazeCellWidth);
                 mainPanel.remove(GridPanel);
                 gridPanel = new GridPanel();
@@ -264,6 +262,9 @@ public class MainGUI extends JFrame implements Runnable {
                 mainPanel.repaint();
                 gridPanel.CreateMaze(maze);
                 gridPanel.SetEditState(false);
+
+//                stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
+                // commented above for now ^
                 newMaze = false;
             }
         } catch (Exception ex) {
