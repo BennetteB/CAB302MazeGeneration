@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -662,6 +663,8 @@ public class MainGUI extends JFrame implements Runnable {
                 JPanel openMazePanel = new JPanel();
                 JPanel buttonPanel = new JPanel();
                 JDialog openDialog = new JDialog();
+                openDialog.setTitle("Open Maze");
+                openDialog.setModal(true);
                 JButton delete = new JButton("Delete");
                 JButton okButton = new JButton("Ok");
                 JButton cancelButton = new JButton("Cancel");
