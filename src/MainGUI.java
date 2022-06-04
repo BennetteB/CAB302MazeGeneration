@@ -626,6 +626,7 @@ public class MainGUI extends JFrame implements Runnable {
                 openMaze(dataList);
                 JList dataOpen = new JList(dataList);
                 JScrollPane openList = new JScrollPane(dataOpen);
+                openMazePanel.add(openList);
 //                dataOpen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //                try (PreparedStatement deleteData = connection.prepareStatement("Delete from foo where columnToDelete = ?")){
 //                    delete.addActionListener((e)->{
