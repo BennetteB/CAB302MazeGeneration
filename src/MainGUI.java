@@ -621,10 +621,21 @@ public class MainGUI extends JFrame implements Runnable {
 
             if (source == open) {
                 JPanel openMazePanel = new JPanel();
+//              JButton delete = new JButton("Delete");
                 DefaultListModel dataList = new DefaultListModel();
                 openMaze(dataList);
                 JList dataOpen = new JList(dataList);
+                JScrollPane openList = new JScrollPane(dataOpen);
+//                dataOpen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//                try (PreparedStatement deleteData = connection.prepareStatement("Delete from foo where columnToDelete = ?")){
+//                    delete.addActionListener((e)->{
+//                        valueToDelete = dataOpen.getSelectedValue();
+//                        deleteData.setString(1, valueToDelete);
+//                        int deleteCount = deleteData.executeUpdate();
+//                    }
+//                }
                 openMazePanel.add(dataOpen);
+                //JScrollPane openList = new JScrollPane(dataOpen);
                 openMazePanel.setLayout(new GridLayout(2, 1, 0, 10));
                 int result = JOptionPane.showConfirmDialog(null, openMazePanel,
                         "Open Maze", JOptionPane.OK_CANCEL_OPTION);
