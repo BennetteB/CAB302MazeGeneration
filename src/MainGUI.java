@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
@@ -658,29 +660,67 @@ public class MainGUI extends JFrame implements Runnable {
 
             if (source == open) {
                 JPanel openMazePanel = new JPanel();
-//              JButton delete = new JButton("Delete");
+                JPanel buttonPanel = new JPanel();
+                JDialog openDialog = new JDialog();
+                JButton delete = new JButton("Delete");
+                JButton okButton = new JButton("Ok");
+                JButton cancelButton = new JButton("Cancel");
+
                 DefaultListModel dataList = new DefaultListModel();
                 HashMap<Integer, Integer> mazeIdList = openMazeList(dataList);
                 dataOpen = new JList(dataList);
                 addDataListListener(new Listener(), dataOpen);
                 JScrollPane openList = new JScrollPane(dataOpen);
-                openMazePanel.add(openList);
-//                dataOpen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//                try (PreparedStatement deleteData = connection.prepareStatement("Delete from foo where columnToDelete = ?")){
-//                    delete.addActionListener((e)->{
-//                        valueToDelete = dataOpen.getSelectedValue();
-//                        deleteData.setString(1, valueToDelete);
-//                        int deleteCount = deleteData.executeUpdate();
-//                    }
-//                }
-//                openMazePanel.add(dataOpen);
-                //JScrollPane openList = new JScrollPane(dataOpen);
-                        openMazePanel.setLayout(new GridLayout(2, 1, 0, 10));
-                int result = JOptionPane.showConfirmDialog(null, openMazePanel,
-                        "Open Maze", JOptionPane.OK_CANCEL_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                        openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
+                openMazePanel.setLayout(new BorderLayout());
+                openMazePanel.add(openList,BorderLayout.CENTER);
+                buttonPanel.add(okButton);
+                buttonPanel.add(cancelButton);
+                buttonPanel.add(delete);
+                openMazePanel.setSize(400, 200);
+
+                openDialog.setLayout(new BorderLayout());
+                openDialog.add(openMazePanel, BorderLayout.CENTER);
+                buttonPanel.setSize(400,50);
+                openDialog.add(buttonPanel,BorderLayout.SOUTH);
+                openDialog.setSize(new Dimension(500, 250));
+                openDialog.setVisible(true);
+
+                delete.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (delete.getModel().isPressed()){
+
+                        }
+
                     }
+                });
+
+                okButton.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (okButton.getModel().isPressed()){
+                            openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
+                        }
+
+                    }
+                });
+
+                cancelButton.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (cancelButton.getModel().isPressed()){
+
+                        }
+
+                    }
+                });
+//
+//                        openMazePanel.setLayout(new GridLayout(2, 1, 0, 10));
+//                int result = JOptionPane.showConfirmDialog(null, openMazePanel,
+//                        "Open Maze", JOptionPane.OK_CANCEL_OPTION);
+//                if (result == JOptionPane.OK_OPTION) {
+//                        openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
+//                    }
             }
 
             if (source == save) {
