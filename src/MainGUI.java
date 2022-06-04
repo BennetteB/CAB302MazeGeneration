@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -246,6 +246,36 @@ public class MainGUI extends JFrame implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
+    // Sourced from http://electrocarta.blogspot.com/2017/05/how-to-convert-imageicon-to-base64.html
+    public String imageToString(ImageIcon icon) {
+        BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.createGraphics();
+        icon.paintIcon(null, g, 0, 0);
+        g.dispose();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", bos );
+        } catch (IOException ex){
+            return null;
+        }
+        byte[] data = bos.toByteArray();
+        return Base64.getEncoder().encodeToString(data);
+    }
+
+    // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
+    public BufferedImage stringToImage(String string) {
+        byte[] data = Base64.getDecoder().decode(string);
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        BufferedImage image;
+        try {
+            image = ImageIO.read(bis);
+        } catch (IOException ex){
+            return null;
+        }
+        return image;
     }
 
     public String mazeToString(MazeCell[][] mazeData) {
