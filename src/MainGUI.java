@@ -3,9 +3,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
+import java.util.*;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -192,6 +191,8 @@ public class MainGUI extends JFrame implements Runnable {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        // Call to gridImagesToString below
+        //gridImagesToString(gridPanel.GetImageMap());
     }
 
     public void openMaze(){
@@ -250,6 +251,36 @@ public class MainGUI extends JFrame implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    public String gridImagesToString(HashMap<List<Integer>, GridImage> gridImages) {
+        StringBuilder imageDataString = new StringBuilder();
+        int cellx;
+        int celly;
+        int imageCellWidth;
+        int imageCellHeight;
+        ImageIcon image;
+        int index = -1;
+        for (List<Integer> list : gridImages.keySet()) {
+            cellx = list.get(0);
+            celly = list.get(1);
+            imageCellWidth = gridImages.get(list).WIDTH;
+            imageCellHeight = gridImages.get(list).HEIGHT;
+            image = gridImages.get(list).image;
+            for (int i = 0; i < paneList.size(); i++) {
+                if (image == paneList.get(i).getOriginalImage()) {
+                    index = i;
+                }
+            }
+            if (index == -1) {
+            }
+            imageDataString.append(cellx).append(",");
+            imageDataString.append(celly).append(",");
+            imageDataString.append(imageCellWidth).append(",");
+            imageDataString.append(imageCellHeight).append(",");
+            imageDataString.append(index).append(";");
+        }
+        return imageDataString.toString();
     }
 
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
