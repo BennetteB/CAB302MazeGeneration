@@ -217,6 +217,8 @@ public class MainGUI extends JFrame implements Runnable {
             ex.printStackTrace();
        }
 
+        // When adding images to panelist make sure to clear panelist of any existing images first
+
         // Call to stringToGridImages below
         // Note: This method must be called only after the panelist (Master images) has been updated
         //stringToGridImages(string);
@@ -432,8 +434,18 @@ public class MainGUI extends JFrame implements Runnable {
                         delete.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                rightSidePanel.removeImage(label);
-                                paneList.remove(pane);
+                                int numGridImages = 0;
+                                for (GridImage gridImage : gridPanel.GetImageMap().values()) {
+                                    if (gridImage.image == icon) {
+                                        numGridImages++;
+                                    }
+                                }
+                                if (numGridImages != 0) {
+                                    JOptionPane.showMessageDialog(mainPanel, "This image is still located on the maze");
+                                } else {
+                                    rightSidePanel.removeImage(label);
+                                    paneList.remove(pane);
+                                }
                             }
                         });
                         settings.addActionListener(new ActionListener() {
