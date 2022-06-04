@@ -394,98 +394,102 @@ public class MainGUI extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
-                JPopupMenu popup = new JPopupMenu();
-                JMenuItem delete = new JMenuItem("Delete");
-                JMenuItem settings = new JMenuItem("Settings");
-                popup.add(delete);
-                popup.add(settings);
+                if (paneList.size() < 10) {
+                    JPopupMenu popup = new JPopupMenu();
+                    JMenuItem delete = new JMenuItem("Delete");
+                    JMenuItem settings = new JMenuItem("Settings");
+                    popup.add(delete);
+                    popup.add(settings);
 
-                JFileChooser fileChooser = new JFileChooser();
-                FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
-                FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
-                FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
-                fileChooser.addChoosableFileFilter(jpg);
-                fileChooser.addChoosableFileFilter(jpeg);
-                fileChooser.addChoosableFileFilter(png);
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                int option = fileChooser.showOpenDialog(mainPanel);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-                    BufferedImage image;
-                    try {
-                        image = ImageIO.read(file);
-                        imageDataFile = new FileInputStream(file);
-                    } catch (IOException ev) {
-                        return;
-                    }
-                    ImageIcon icon = new ImageIcon(image);
-                    ImagePane pane = new ImagePane(icon, 2, 2);
-                    JLabel label = new JLabel(pane.resizeImage(200, 200));
-                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    rightSidePanel.addImage(label);
-                    paneList.add(pane);
-
-                    delete.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            rightSidePanel.removeImage(label);
-                            paneList.remove(pane);
+                    JFileChooser fileChooser = new JFileChooser();
+                    FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+                    FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+                    FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+                    fileChooser.addChoosableFileFilter(jpg);
+                    fileChooser.addChoosableFileFilter(jpeg);
+                    fileChooser.addChoosableFileFilter(png);
+                    fileChooser.setAcceptAllFileFilterUsed(false);
+                    int option = fileChooser.showOpenDialog(mainPanel);
+                    if (option == JFileChooser.APPROVE_OPTION) {
+                        File file = fileChooser.getSelectedFile();
+                        BufferedImage image;
+                        try {
+                            image = ImageIO.read(file);
+                            imageDataFile = new FileInputStream(file);
+                        } catch (IOException ev) {
+                            return;
                         }
-                    });
-                    settings.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
-                            KeyAdapter onlyInt = new KeyAdapter() {
-                                public void keyTyped(KeyEvent e) {
-                                    char c = e.getKeyChar();
-                                    if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
-                                        e.consume();  // if it's not a number, ignore the event
+                        ImageIcon icon = new ImageIcon(image);
+                        ImagePane pane = new ImagePane(icon, 2, 2);
+                        JLabel label = new JLabel(pane.resizeImage(200, 200));
+                        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        rightSidePanel.addImage(label);
+                        paneList.add(pane);
+
+                        delete.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                rightSidePanel.removeImage(label);
+                                paneList.remove(pane);
+                            }
+                        });
+                        settings.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
+                                KeyAdapter onlyInt = new KeyAdapter() {
+                                    public void keyTyped(KeyEvent e) {
+                                        char c = e.getKeyChar();
+                                        if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                                            e.consume();  // if it's not a number, ignore the event
+                                        }
                                     }
+                                };
+
+                                JTextField imageWidthText = new JTextField(Integer.toString(pane.getImageCellWidth()), 5);
+                                imageWidthText.addKeyListener(onlyInt);
+
+                                JTextField imageHeightText = new JTextField(Integer.toString(pane.getImageCellHeight()) , 5);
+                                imageHeightText.addKeyListener(onlyInt);
+
+                                JPanel imageSettings = new JPanel();
+                                imageSettings.setLayout(new GridLayout(2, 1, 0, 10));
+                                imageSettings.add(new JLabel("Maze Cell Height:"));
+                                imageSettings.add(imageHeightText);
+                                imageSettings.add(new JLabel("Maze Cell Width:"));
+                                imageSettings.add(imageWidthText);
+
+                                int result = JOptionPane.showConfirmDialog(null, imageSettings,
+                                        "Image Settings", JOptionPane.OK_CANCEL_OPTION);
+                                if (result == JOptionPane.OK_OPTION) {
+                                    pane.setImageCellHeight(Integer.parseInt(imageHeightText.getText()));
+                                    pane.setImageCellWidth(Integer.parseInt(imageWidthText.getText()));
                                 }
-                            };
-
-                            JTextField imageWidthText = new JTextField(Integer.toString(pane.getImageCellWidth()), 5);
-                            imageWidthText.addKeyListener(onlyInt);
-
-                            JTextField imageHeightText = new JTextField(Integer.toString(pane.getImageCellHeight()) , 5);
-                            imageHeightText.addKeyListener(onlyInt);
-
-                            JPanel imageSettings = new JPanel();
-                            imageSettings.setLayout(new GridLayout(2, 1, 0, 10));
-                            imageSettings.add(new JLabel("Maze Cell Height:"));
-                            imageSettings.add(imageHeightText);
-                            imageSettings.add(new JLabel("Maze Cell Width:"));
-                            imageSettings.add(imageWidthText);
-
-                            int result = JOptionPane.showConfirmDialog(null, imageSettings,
-                                    "Image Settings", JOptionPane.OK_CANCEL_OPTION);
-                            if (result == JOptionPane.OK_OPTION) {
-                                pane.setImageCellHeight(Integer.parseInt(imageHeightText.getText()));
-                                pane.setImageCellWidth(Integer.parseInt(imageWidthText.getText()));
                             }
-                        }
-                    });
+                        });
 
-                    // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
-                    label.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            if (e.getButton() == MouseEvent.BUTTON1) {//Left click
-                                leftSidePanel.getDeleteButton().setSelected(false);
-                                leftSidePanel.getEditButton().setSelected(false);
-                                leftSidePanel.getOptimalSolutionButton().setSelected(false);
-                                if (gridPanel.IsPlaceImageState()) {
-                                    gridPanel.SetEditState(false);
-                                } else {
-                                    gridPanel.SetImagePlaceState(pane);
+                        // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
+                        label.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                if (e.getButton() == MouseEvent.BUTTON1) {//Left click
+                                    leftSidePanel.getDeleteButton().setSelected(false);
+                                    leftSidePanel.getEditButton().setSelected(false);
+                                    leftSidePanel.getOptimalSolutionButton().setSelected(false);
+                                    if (gridPanel.IsPlaceImageState()) {
+                                        gridPanel.SetEditState(false);
+                                    } else {
+                                        gridPanel.SetImagePlaceState(pane);
+                                    }
+                                } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
+                                    popup.show(label, e.getX(), e.getY());
+
                                 }
-                            } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
-                                popup.show(label, e.getX(), e.getY());
-
                             }
-                        }
-                    });
+                        });
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "You cannot add more than 10 images");
                 }
             }
 
