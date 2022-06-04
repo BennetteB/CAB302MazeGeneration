@@ -30,6 +30,7 @@ public class MainGUI extends JFrame implements Runnable {
 
     private JPanel mainPanel;
     private RightSideBarPanel rightSidePanel;
+    private JScrollPane rightSidePanelScroll;
     private LeftSideBarPanel leftSidePanel;
     private GridPanel gridPanel;
     private JScrollPane GridPanel;
@@ -74,8 +75,9 @@ public class MainGUI extends JFrame implements Runnable {
          * Return an interactive sidebar to the right side of the main panel
          */
         rightSidePanel = new RightSideBarPanel();
-        rightSidePanel.setPreferredSize(new Dimension(200, 300));
-        mainPanel.add(rightSidePanel, BorderLayout.EAST);
+        rightSidePanelScroll = new JScrollPane(rightSidePanel);
+        rightSidePanelScroll.setPreferredSize(new Dimension(200, 300));
+        mainPanel.add(rightSidePanelScroll, BorderLayout.EAST);
         rightSidePanel.addActionListener(new Listener());
 
 
@@ -188,9 +190,6 @@ public class MainGUI extends JFrame implements Runnable {
         }
         // Call to gridImagesToString below
         //gridImagesToString(gridPanel.GetImageMap());
-        // Call to stringToGridImages below
-        // Note: This method must be called only after the panelist (Master images) has been updated
-        //stringToGridImages(string);
     }
 
     public void openMaze(DefaultListModel mazeList){
@@ -211,6 +210,13 @@ public class MainGUI extends JFrame implements Runnable {
 
 
             /** display retrieved data as a list into a dialog box **/
+
+            // When adding images to panelist make sure to clear panelist of any existing images first
+
+            // Call to stringToGridImages below
+            // Note: This method must be called only after the panelist (Master images) has been updated
+            // stringToGridImages(string);
+
             // Code below converts a database string to MazeCell[][] and then prints that out on the grid
 //        // You will need to swap mazeheight and mazewidth below with their corresponding values from the database
 //            MazeCell[][] maze = stringToMaze(string, mazeheight, mazewidth);
@@ -429,8 +435,18 @@ public class MainGUI extends JFrame implements Runnable {
                         delete.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                rightSidePanel.removeImage(label);
-                                paneList.remove(pane);
+                                int numGridImages = 0;
+                                for (GridImage gridImage : gridPanel.GetImageMap().values()) {
+                                    if (gridImage.image == icon) {
+                                        numGridImages++;
+                                    }
+                                }
+                                if (numGridImages != 0) {
+                                    JOptionPane.showMessageDialog(mainPanel, "This image is still located on the maze");
+                                } else {
+                                    rightSidePanel.removeImage(label);
+                                    paneList.remove(pane);
+                                }
                             }
                         });
                         settings.addActionListener(new ActionListener() {
@@ -462,8 +478,14 @@ public class MainGUI extends JFrame implements Runnable {
                                 int result = JOptionPane.showConfirmDialog(null, imageSettings,
                                         "Image Settings", JOptionPane.OK_CANCEL_OPTION);
                                 if (result == JOptionPane.OK_OPTION) {
-                                    pane.setImageCellHeight(Integer.parseInt(imageHeightText.getText()));
-                                    pane.setImageCellWidth(Integer.parseInt(imageWidthText.getText()));
+                                    int imageHeight = Integer.parseInt(imageHeightText.getText());
+                                    int imageWidth = Integer.parseInt(imageWidthText.getText());
+                                    if (imageHeight < 1 || imageWidth < 1) {
+                                        JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
+                                    } else {
+                                        pane.setImageCellHeight(imageHeight);
+                                        pane.setImageCellWidth(imageWidth);
+                                    }
                                 }
                             }
                         });
@@ -515,7 +537,7 @@ public class MainGUI extends JFrame implements Runnable {
                 KeyAdapter onlyInt = new KeyAdapter() {
                     public void keyTyped(KeyEvent e) {
                         char c = e.getKeyChar();
-                        if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
                             e.consume();  // if it's not a number, ignore the event
                         }
                     }
@@ -548,28 +570,34 @@ public class MainGUI extends JFrame implements Runnable {
                 int result = JOptionPane.showConfirmDialog(null, newMazeOptions,
                         "Create new maze", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
-                    mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
-                    mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
-                    mazeName = mazeNameText.getText();
-                    author = mazeAuthorText.getText();
-                    randomiseMaze = randomMazeOption.isSelected();
+                    int mazeHeight = Integer.parseInt(mazeHeightText.getText());
+                    int mazeWidth = Integer.parseInt(mazeWidthText.getText());
+                    if (mazeHeight < 2 || mazeHeight > 100 || mazeWidth < 2 || mazeWidth > 100) {
+                        JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
+                    } else {
+                        mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
+                        mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
+                        mazeName = mazeNameText.getText();
+                        author = mazeAuthorText.getText();
+                        randomiseMaze = randomMazeOption.isSelected();
 
-                    mainPanel.remove(GridPanel);
-                    gridPanel = new GridPanel();
-                    gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
-                    GridPanel = new JScrollPane(gridPanel);
-                    mainPanel.add(GridPanel, BorderLayout.CENTER);
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
+                        mainPanel.remove(GridPanel);
+                        gridPanel = new GridPanel();
+                        gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+                        GridPanel = new JScrollPane(gridPanel);
+                        mainPanel.add(GridPanel, BorderLayout.CENTER);
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
 
-                    if (randomiseMaze) {
-                        MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
-                        gridPanel.CreateMaze(newMaze);
+                        if (randomiseMaze) {
+                            MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
+                            gridPanel.CreateMaze(newMaze);
+                        }
+                        leftSidePanel.getEditButton().setSelected(false);
+                        leftSidePanel.getDeleteButton().setSelected(false);
+                        gridPanel.SetEditState(false);
+                        newMaze = true;
                     }
-                    leftSidePanel.getEditButton().setSelected(false);
-                    leftSidePanel.getDeleteButton().setSelected(false);
-                    gridPanel.SetEditState(false);
-                    newMaze = true;
                 }
             }
 
