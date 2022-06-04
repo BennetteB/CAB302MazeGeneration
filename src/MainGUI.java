@@ -157,8 +157,18 @@ public class MainGUI extends JFrame implements Runnable {
                 + "image_data LONGBLOB,"
                 + "maze_cell_height INT,"
                 + "maze_cell_width INT" + ");";
+
+        String CREATE_IMAGE_TABLE =
+                "CREATE TABLE IF NOT EXISTS maze_images("
+                + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
+                + "image_data LONGBLOB,"
+                + "image_width INT,"
+                + "image_height INT,"
+                + "maze_id INTEGER,"
+                + "FOREIGN KEY (maze_id) REFERENCES maze_program(id) ON DELETE CASCADE" + ");";
         try {
             connection.createStatement().execute(CREATE_TABLE);
+            connection.createStatement().execute(CREATE_IMAGE_TABLE);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -174,18 +184,32 @@ public class MainGUI extends JFrame implements Runnable {
                         "maze_program(author, " +
                         "maze_name, maze_data, image_data," +
                         "maze_cell_width, maze_cell_height, " +
-                        "date_time) VALUES(?,?,?,?,?,?,?)");
+                        "date_time) VALUES(?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
                 saveMazeData.setString(1, author);
                 saveMazeData.setString(2, mazeName);
                 saveMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
                 saveMazeData.setString(4, gridImagesToString(gridPanel.GetImageMap()));
-                System.out.println("image string" + gridImagesToString(gridPanel.GetImageMap()));
                 saveMazeData.setInt(5, mazeCellWidth);
                 saveMazeData.setInt(6, mazeCellHeight);
                 saveMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
-                saveMazeData.execute();
+                saveMazeData.executeUpdate();
+                ResultSet mazeKey = saveMazeData.getGeneratedKeys();
+                if (mazeKey.next()) {
+                   int mazeId = mazeKey.getInt(1);
+                   //insert all images into the database
+                    for (int i = 0; i < paneList.size(); i++) {
+                        PreparedStatement saveMazeImages = connection.prepareStatement("INSERT INTO maze_images(maze_id, image_data, " +
+                                "image_width, image_height) VALUES (?,?,?,?)");
+                        saveMazeImages.setInt(1, mazeId);
+                        saveMazeImages.setString(2, imageToString(paneList.get(i).getOriginalImage()));
+                        saveMazeImages.setInt(3, paneList.get(i).getImageCellWidth());
+                        saveMazeImages.setInt(4, paneList.get(i).getImageCellHeight());
+                        saveMazeImages.execute();
+                    }
+                }
+
             } else {
-//                PreparedStatement updateMazeData = connection.prepareStatement();
+//                // update current database instead
             }
 
         } catch (SQLException ex) {
@@ -209,27 +233,6 @@ public class MainGUI extends JFrame implements Runnable {
               String mazeName = rs.getString("maze_name");
               mazeList.addElement(mazeName);
             }
-
-            // When adding images to panelist make sure to clear panelist of any existing images first
-
-            // Call to stringToGridImages below
-            // Note: This method must be called only after the panelist (Master images) has been updated
-            // stringToGridImages(string);
-
-            // Code below converts a database string to MazeCell[][] and then prints that out on the grid
-//        // You will need to swap mazeheight and mazewidth below with their corresponding values from the database
-//            MazeCell[][] maze = stringToMaze(string, mazeheight, mazewidth);
-//            mainPanel.remove(GridPanel);
-//            gridPanel = new GridPanel();
-//            gridPanel.CreateGrid(mazewidth, mazeheight);
-//            GridPanel = new JScrollPane(gridPanel);
-//            mainPanel.add(GridPanel, BorderLayout.CENTER);
-//            mainPanel.revalidate();
-//            mainPanel.repaint();
-//            gridPanel.CreateMaze(maze);
-//            gridPanel.SetEditState(false);
-//
-
         } catch (SQLException ex) {
             ex.printStackTrace();
        }
@@ -242,8 +245,6 @@ public class MainGUI extends JFrame implements Runnable {
     public void openSelectedMaze(HashMap< Integer, Integer> mazeIdList, int selectedId) {
         int selectedMazeId = mazeIdList.get(selectedId);
         ResultSet mazeResult = null;
-        System.out.println(mazeIdList);
-        System.out.println(selectedId);
         try {
             PreparedStatement openMaze = connection.prepareStatement("SELECT * FROM maze_program WHERE `id` = ?");
             openMaze.setInt(1, selectedMazeId);
@@ -255,6 +256,8 @@ public class MainGUI extends JFrame implements Runnable {
                 Blob imageData = mazeResult.getBlob("image_data");
                 int mazeCellHeight = mazeResult.getInt("maze_cell_height");
                 int mazeCellWidth = mazeResult.getInt("maze_cell_width");
+
+                // display maze into gridpanel
                 MazeCell[][] maze = stringToMaze(new String(mazeData.getBytes(1, (int) mazeData.length())), mazeCellHeight, mazeCellWidth);
                 mainPanel.remove(GridPanel);
                 gridPanel = new GridPanel();
@@ -266,9 +269,27 @@ public class MainGUI extends JFrame implements Runnable {
                 gridPanel.CreateMaze(maze);
                 gridPanel.SetEditState(false);
 
-//                stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
-                // commented above for now ^
-                newMaze = false;
+                //get images from database
+                ResultSet imageResult;
+                PreparedStatement getMazeImages = connection.prepareStatement("SELECT * FROM maze_images " +
+                        "WHERE `maze_id` = ?");
+                getMazeImages.setInt(1, selectedMazeId);
+                imageResult = getMazeImages.executeQuery();
+                paneList.clear();
+                while(imageResult.next()) {
+                    Blob imageBlob = imageResult.getBlob("image_data");
+                    ImageIcon paneImageResult = new ImageIcon(stringToImage(new String(imageBlob.getBytes(1, (int) imageBlob.length()))));
+                    int imageWidth  = imageResult.getInt("image_width");
+                    int imageHeight = imageResult.getInt("image_height");
+                    ImagePane paneImage = new ImagePane(paneImageResult, imageWidth, imageHeight);
+                    paneList.add(paneImage);
+                    JLabel label = new JLabel(paneImage.resizeImage(200, 200));
+                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    rightSidePanel.addImage(label);
+                }
+
+              HashMap<List<Integer>, GridImage> gridImagesResult = stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
+              newMaze = false;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -685,24 +706,21 @@ public class MainGUI extends JFrame implements Runnable {
                 openDialog.add(openMazePanel, BorderLayout.CENTER);
                 buttonPanel.setSize(400,50);
                 openDialog.add(buttonPanel,BorderLayout.SOUTH);
-                openDialog.setSize(new Dimension(500, 250));
-                openDialog.setVisible(true);
-
-                delete.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        if (delete.getModel().isPressed()){
-
-                        }
-
-                    }
-                });
 
                 okButton.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (okButton.getModel().isPressed()){
                             openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
+                        }
+                    }
+                });
+
+                delete.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (delete.getModel().isPressed()){
+
                         }
 
                     }
@@ -717,6 +735,10 @@ public class MainGUI extends JFrame implements Runnable {
 
                     }
                 });
+
+                openDialog.setSize(new Dimension(500, 250));
+                openDialog.setModal(true);
+                openDialog.setVisible(true);
 //
 //                        openMazePanel.setLayout(new GridLayout(2, 1, 0, 10));
 //                int result = JOptionPane.showConfirmDialog(null, openMazePanel,
