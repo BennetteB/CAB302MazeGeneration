@@ -193,6 +193,9 @@ public class MainGUI extends JFrame implements Runnable {
         }
         // Call to gridImagesToString below
         //gridImagesToString(gridPanel.GetImageMap());
+        // Call to stringToGridImages below
+        // Note: This method must be called only after the panelist (Master images) has been updated
+        //stringToGridImages(string);
     }
 
     public void openMaze(){
@@ -281,6 +284,27 @@ public class MainGUI extends JFrame implements Runnable {
             imageDataString.append(index).append(";");
         }
         return imageDataString.toString();
+    }
+
+    public HashMap<List<Integer>, GridImage> stringToGridImages(String string) {
+        HashMap<java.util.List<Integer>,GridImage> gridImages = new HashMap<>();
+        int cellx;
+        int celly;
+        int imageCellWidth;
+        int imageCellHeight;
+        ImageIcon image;
+        String[] imageData = string.split(";", 0);
+        for (String imageDataNum : imageData) {
+            String[] data = imageDataNum.split(",", 0);
+            cellx = Integer.parseInt(data[0]);
+            celly = Integer.parseInt(data[1]);
+            imageCellWidth = Integer.parseInt(data[2]);
+            imageCellHeight = Integer.parseInt(data[3]);
+            image = paneList.get(Integer.parseInt(data[4])).getOriginalImage();
+            GridImage gridImage = new GridImage(0, 0,cellx ,celly ,imageCellWidth, imageCellHeight, image);
+            gridImages.put(Arrays.asList(cellx, celly), gridImage);
+        }
+        return gridImages;
     }
 
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
