@@ -219,6 +219,15 @@ public class MainGUI extends JFrame implements Runnable {
         //gridImagesToString(gridPanel.GetImageMap());
     }
 
+    protected void SaveGridImage() {
+        BufferedImage bi = ScreenImage.createImage(gridPanel);
+        try {
+            ScreenImage.writeImage(bi, "panel.png");
+        } catch (Exception e) {
+
+        }
+    }
+
     /** retrieves data from the database,
      * displays retrieved data as a list into a dialog box
      * returns a hashmap with maze and result row id **/
