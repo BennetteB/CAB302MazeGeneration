@@ -110,6 +110,14 @@ public class GridPanel extends JPanel {
         }
     }
 
+    protected void CreateMaze(MazeCell[][] mazeData, GridImage[] imgs) {
+        CreateMaze(mazeData);
+        for (GridImage img :imgs) {
+            imagePane = new ImagePane(img.image,img.WIDTH, img.HEIGHT);
+            PlaceImage((Cell)GridComponentArray[img.i][img.j]);
+        }
+    }
+
     private void changeWall(int i, int j, boolean isSelected) {
         GridComponentArray[i][j].getModel().setSelected(isSelected);
     }
@@ -355,87 +363,91 @@ public class GridPanel extends JPanel {
                     }
                     if(DisabledComps) {}
                     else {
-                        for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
-                            for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
-                                if(GridComponentArray[cell.i + k][j].isWall) {
-                                    deselectWall((WallButton) GridComponentArray[cell.i + k][j]);
-                                }
-                                    remove(GridComponentArray[cell.i + k][j]);
-                                    GridComponentArray[cell.i + k][j].isDisabled = true;
-                                    if(j == cell.j) {
-                                        if(GridComponentArray[cell.i + k][cell.j - 1].isWall) {
-                                            selectWall((WallButton) GridComponentArray[cell.i + k][cell.j - 1]);
-                                        }
-                                        if(k == 0) {
-                                            if(GridComponentArray[cell.i - 1][j - 1].isWall) {
-                                                selectWall((WallButton) GridComponentArray[cell.i - 1][j - 1]);
-                                            }
-                                        }
-                                        if(k == (imagePane.getImageCellHeight() * 2) - 2) {
-                                            int ktemp = (imagePane.getImageCellHeight() * 2) - 1;
-                                            if(GridComponentArray[cell.i + ktemp][j - 1].isWall) {
-                                                selectWall((WallButton) GridComponentArray[cell.i + ktemp][j - 1]);
-                                            }
-                                        }
-                                    }
-                                    if(j == ((imagePane.getImageCellWidth() * 2) - 1) + cell.j - 1) {
-                                        int jtemp = ((imagePane.getImageCellWidth() * 2) - 1) + cell.j;
-                                        if(GridComponentArray[cell.i + k][jtemp].isWall) {
-                                            selectWall((WallButton) GridComponentArray[cell.i + k][jtemp]);
-                                        }
-                                    }
-                                    if(k == 0) {
-                                        if(GridComponentArray[cell.i - 1][j].isWall) {
-                                            selectWall((WallButton) GridComponentArray[cell.i - 1][j]);
-                                        }
-                                    }
-                                    if(k == (imagePane.getImageCellHeight() * 2) - 2) {
-                                        int ktemp = (imagePane.getImageCellHeight() * 2) - 1;
-                                        if(GridComponentArray[cell.i + ktemp][j].isWall) {
-                                            selectWall((WallButton) GridComponentArray[cell.i + ktemp][j]);
-                                        }
-                                    }
-                                //}
-                            }
-                        }
-                        cst.gridx = cell.x;
-                        cst.gridy = cell.y;
-                        cst.gridwidth = (imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT);
-                        cst.gridheight = (imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT);
-                        GridImage imgButton = new GridImage(cell.x,cell.y,cell.i, cell.j, imagePane.getImageCellWidth(), imagePane.getImageCellHeight(),imagePane.getOriginalImage());
-                        imgButton.setBorderPainted(false);
-                        imgButton.setBackground(GRIDCOLOR);
-                        imgButton.setUI(new MetalToggleButtonUI() {
-                            @Override
-                            protected Color getSelectColor() {
-                                return GRIDCOLOR;
-                            }
-                        });
-                        imgButton.addChangeListener(new ChangeListener() {
-                            @Override
-                            public void stateChanged(ChangeEvent e) {
-                                imagePanelStateChange(imgButton);
-                            }
-                        });
-                        JLabel label = new JLabel(imagePane.getResizedImage());
-                        label.setPreferredSize(new Dimension(1000,1000));
-                        imgButton.add(label);
-                        imgButton.setBackground(GRIDCOLOR);
-                        imgButton.setPreferredSize(new Dimension(
-                                ((imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT)) * sizeMultiplier,
-                                ((imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT)) * sizeMultiplier
-                        ));
-                        GridImages.put(Arrays.asList(cell.i,cell.j),imgButton);
-                        add(GridImages.get(Arrays.asList(cell.i,cell.j)), cst);
-                        revalidate();
-                        repaint();
-                        SetEditState(false);
-                        //SetRemoveImage();
+                        PlaceImage(cell);
                     }
                 }
 
             }
         }
+    }
+
+    private void PlaceImage(Cell cell) {
+        for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
+            for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
+                if(GridComponentArray[cell.i + k][j].isWall) {
+                    deselectWall((WallButton) GridComponentArray[cell.i + k][j]);
+                }
+                    remove(GridComponentArray[cell.i + k][j]);
+                    GridComponentArray[cell.i + k][j].isDisabled = true;
+                    if(j == cell.j) {
+                        if(GridComponentArray[cell.i + k][cell.j - 1].isWall) {
+                            selectWall((WallButton) GridComponentArray[cell.i + k][cell.j - 1]);
+                        }
+                        if(k == 0) {
+                            if(GridComponentArray[cell.i - 1][j - 1].isWall) {
+                                selectWall((WallButton) GridComponentArray[cell.i - 1][j - 1]);
+                            }
+                        }
+                        if(k == (imagePane.getImageCellHeight() * 2) - 2) {
+                            int ktemp = (imagePane.getImageCellHeight() * 2) - 1;
+                            if(GridComponentArray[cell.i + ktemp][j - 1].isWall) {
+                                selectWall((WallButton) GridComponentArray[cell.i + ktemp][j - 1]);
+                            }
+                        }
+                    }
+                    if(j == ((imagePane.getImageCellWidth() * 2) - 1) + cell.j - 1) {
+                        int jtemp = ((imagePane.getImageCellWidth() * 2) - 1) + cell.j;
+                        if(GridComponentArray[cell.i + k][jtemp].isWall) {
+                            selectWall((WallButton) GridComponentArray[cell.i + k][jtemp]);
+                        }
+                    }
+                    if(k == 0) {
+                        if(GridComponentArray[cell.i - 1][j].isWall) {
+                            selectWall((WallButton) GridComponentArray[cell.i - 1][j]);
+                        }
+                    }
+                    if(k == (imagePane.getImageCellHeight() * 2) - 2) {
+                        int ktemp = (imagePane.getImageCellHeight() * 2) - 1;
+                        if(GridComponentArray[cell.i + ktemp][j].isWall) {
+                            selectWall((WallButton) GridComponentArray[cell.i + ktemp][j]);
+                        }
+                    }
+                //}
+            }
+        }
+        cst.gridx = cell.x;
+        cst.gridy = cell.y;
+        cst.gridwidth = (imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT);
+        cst.gridheight = (imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT);
+        GridImage imgButton = new GridImage(cell.x, cell.y, cell.i, cell.j, imagePane.getImageCellWidth(), imagePane.getImageCellHeight(),imagePane.getOriginalImage());
+        imgButton.setBorderPainted(false);
+        imgButton.setBackground(GRIDCOLOR);
+        imgButton.setUI(new MetalToggleButtonUI() {
+            @Override
+            protected Color getSelectColor() {
+                return GRIDCOLOR;
+            }
+        });
+        imgButton.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                imagePanelStateChange(imgButton);
+            }
+        });
+        JLabel label = new JLabel(imagePane.getResizedImage());
+        label.setPreferredSize(new Dimension(1000,1000));
+        imgButton.add(label);
+        imgButton.setBackground(GRIDCOLOR);
+        imgButton.setPreferredSize(new Dimension(
+                ((imagePane.getImageCellWidth() * CELLWIDTH) + ((imagePane.getImageCellWidth() - 1) * WALLSHORT)) * sizeMultiplier,
+                ((imagePane.getImageCellHeight() * CELLWIDTH) + ((imagePane.getImageCellHeight() - 1) * WALLSHORT)) * sizeMultiplier
+        ));
+        GridImages.put(Arrays.asList(cell.i, cell.j),imgButton);
+        add(GridImages.get(Arrays.asList(cell.i, cell.j)), cst);
+        revalidate();
+        repaint();
+        SetEditState(false);
+        //SetRemoveImage();
     }
 
     private void addGridComponentToPanel(int i, int j) {
