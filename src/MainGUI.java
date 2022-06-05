@@ -267,7 +267,6 @@ public class MainGUI extends JFrame implements Runnable {
                 int mazeCellWidth = mazeResult.getInt("maze_cell_width");
 
                 // display maze into gridpanel
-                MazeCell[][] maze = stringToMaze(new String(mazeData.getBytes(1, (int) mazeData.length())), mazeCellHeight, mazeCellWidth);
                 mainPanel.remove(GridPanel);
                 gridPanel = new GridPanel();
                 gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
@@ -275,8 +274,7 @@ public class MainGUI extends JFrame implements Runnable {
                 mainPanel.add(GridPanel, BorderLayout.CENTER);
                 mainPanel.revalidate();
                 mainPanel.repaint();
-                gridPanel.CreateMaze(maze);
-                gridPanel.SetEditState(false);
+                MazeCell[][] maze = stringToMaze(new String(mazeData.getBytes(1, (int) mazeData.length())), mazeCellHeight, mazeCellWidth);
 
                 //get images from database
                 ResultSet imageResult;
@@ -295,14 +293,17 @@ public class MainGUI extends JFrame implements Runnable {
                     int imageHeight = imageResult.getInt("image_height");
                     ImagePane paneImage = new ImagePane(paneImageResult, imageWidth, imageHeight);
                     addImage(paneImage);
-//                    paneList.add(paneImage);
-//                    JLabel label = new JLabel(paneImage.resizeImage(200, 200));
-//                    paneImage.setLabel(label);
-//                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
                 }
+                String gridImageData = new String(imageData.getBytes(1, (int) imageData.length()));
+                if (!gridImageData.equals("")) {
+                    GridImage[] gridImagesResult = stringToGridImages(gridImageData);
+                    gridPanel.CreateMaze(maze, gridImagesResult);
+                } else {
+                    gridPanel.CreateMaze(maze);
 
-//              HashMap<List<Integer>, GridImage> gridImagesResult = stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
-              newMaze = false;
+                }
+                gridPanel.SetEditState(false);
+                newMaze = false;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -366,14 +367,15 @@ public class MainGUI extends JFrame implements Runnable {
         return imageDataString.toString();
     }
 
-    public HashMap<List<Integer>, GridImage> stringToGridImages(String string) {
-        HashMap<java.util.List<Integer>,GridImage> gridImages = new HashMap<>();
+    public GridImage[] stringToGridImages(String string) {
         int cellx;
         int celly;
         int imageCellWidth;
         int imageCellHeight;
         ImageIcon image;
         String[] imageData = string.split(";", 0);
+        GridImage[] gridImages = new GridImage[imageData.length];
+        int i = 0;
         for (String imageDataNum : imageData) {
             String[] data = imageDataNum.split(",", 0);
             cellx = Integer.parseInt(data[0]);
@@ -382,7 +384,8 @@ public class MainGUI extends JFrame implements Runnable {
             imageCellHeight = Integer.parseInt(data[3]);
             image = paneList.get(Integer.parseInt(data[4])).getOriginalImage();
             GridImage gridImage = new GridImage(0, 0,cellx ,celly ,imageCellWidth, imageCellHeight, image);
-            gridImages.put(Arrays.asList(cellx, celly), gridImage);
+            gridImages[i] = gridImage;
+            i++;
         }
         return gridImages;
     }
