@@ -284,6 +284,9 @@ public class MainGUI extends JFrame implements Runnable {
                         "WHERE `maze_id` = ?");
                 getMazeImages.setInt(1, selectedMazeId);
                 imageResult = getMazeImages.executeQuery();
+                for (int i = 0; i < paneList.size(); i++) {
+                    rightSidePanel.removeImage(paneList.get(i).getLabel());
+                }
                 paneList.clear();
                 while(imageResult.next()) {
                     Blob imageBlob = imageResult.getBlob("image_data");
@@ -291,13 +294,14 @@ public class MainGUI extends JFrame implements Runnable {
                     int imageWidth  = imageResult.getInt("image_width");
                     int imageHeight = imageResult.getInt("image_height");
                     ImagePane paneImage = new ImagePane(paneImageResult, imageWidth, imageHeight);
-                    paneList.add(paneImage);
-                    JLabel label = new JLabel(paneImage.resizeImage(200, 200));
-                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    rightSidePanel.addImage(label);
+                    addImage(paneImage);
+//                    paneList.add(paneImage);
+//                    JLabel label = new JLabel(paneImage.resizeImage(200, 200));
+//                    paneImage.setLabel(label);
+//                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
                 }
 
-              HashMap<List<Integer>, GridImage> gridImagesResult = stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
+//              HashMap<List<Integer>, GridImage> gridImagesResult = stringToGridImages(new String(imageData.getBytes(1, (int) imageData.length())));
               newMaze = false;
             }
         } catch (Exception ex) {
@@ -442,6 +446,97 @@ public class MainGUI extends JFrame implements Runnable {
         return mazeString.toString();
     }
 
+    public void addImage(ImagePane pane) {
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem delete = new JMenuItem("Delete");
+        JMenuItem settings = new JMenuItem("Settings");
+        popup.add(delete);
+        popup.add(settings);
+
+        JLabel label = new JLabel(pane.resizeImage(200, 200));
+        pane.setLabel(label);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightSidePanel.addImage(label);
+        paneList.add(pane);
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int numGridImages = 0;
+                for (GridImage gridImage : gridPanel.GetImageMap().values()) {
+                    if (gridImage.image == pane.getOriginalImage()) {
+                        numGridImages++;
+                    }
+                }
+                if (numGridImages != 0) {
+                    JOptionPane.showMessageDialog(mainPanel, "This image is still located on the maze");
+                } else {
+                    rightSidePanel.removeImage(label);
+                    paneList.remove(pane);
+                }
+            }
+        });
+        settings.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
+                KeyAdapter onlyInt = new KeyAdapter() {
+                    public void keyTyped(KeyEvent e) {
+                        char c = e.getKeyChar();
+                        if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                            e.consume();  // if it's not a number, ignore the event
+                        }
+                    }
+                };
+
+                JTextField imageWidthText = new JTextField(Integer.toString(pane.getImageCellWidth()), 5);
+                imageWidthText.addKeyListener(onlyInt);
+
+                JTextField imageHeightText = new JTextField(Integer.toString(pane.getImageCellHeight()) , 5);
+                imageHeightText.addKeyListener(onlyInt);
+
+                JPanel imageSettings = new JPanel();
+                imageSettings.setLayout(new GridLayout(2, 1, 0, 10));
+                imageSettings.add(new JLabel("Maze Cell Height:"));
+                imageSettings.add(imageHeightText);
+                imageSettings.add(new JLabel("Maze Cell Width:"));
+                imageSettings.add(imageWidthText);
+
+                int result = JOptionPane.showConfirmDialog(null, imageSettings,
+                        "Image Settings", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    int imageHeight = Integer.parseInt(imageHeightText.getText());
+                    int imageWidth = Integer.parseInt(imageWidthText.getText());
+                    if (imageHeight < 1 || imageWidth < 1) {
+                        JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
+                    } else {
+                        pane.setImageCellHeight(imageHeight);
+                        pane.setImageCellWidth(imageWidth);
+                    }
+                }
+            }
+        });
+
+        // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {//Left click
+                    leftSidePanel.getDeleteButton().setSelected(false);
+                    leftSidePanel.getEditButton().setSelected(false);
+                    leftSidePanel.getOptimalSolutionButton().setSelected(false);
+                    if (gridPanel.IsPlaceImageState()) {
+                        gridPanel.SetEditState(false);
+                    } else {
+                        gridPanel.SetImagePlaceState(pane);
+                    }
+                } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
+                    popup.show(label, e.getX(), e.getY());
+
+                }
+            }
+        });
+    }
+
     public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
         Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
         MazeCell[][] mazeCells = maze.getMaze();
@@ -471,12 +566,6 @@ public class MainGUI extends JFrame implements Runnable {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
                 if (paneList.size() < 10) {
-                    JPopupMenu popup = new JPopupMenu();
-                    JMenuItem delete = new JMenuItem("Delete");
-                    JMenuItem settings = new JMenuItem("Settings");
-                    popup.add(delete);
-                    popup.add(settings);
-
                     JFileChooser fileChooser = new JFileChooser();
                     FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
                     FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
@@ -497,88 +586,7 @@ public class MainGUI extends JFrame implements Runnable {
                         }
                         ImageIcon icon = new ImageIcon(image);
                         ImagePane pane = new ImagePane(icon, 2, 2);
-                        JLabel label = new JLabel(pane.resizeImage(200, 200));
-                        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        rightSidePanel.addImage(label);
-                        paneList.add(pane);
-
-                        delete.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                int numGridImages = 0;
-                                for (GridImage gridImage : gridPanel.GetImageMap().values()) {
-                                    if (gridImage.image == icon) {
-                                        numGridImages++;
-                                    }
-                                }
-                                if (numGridImages != 0) {
-                                    JOptionPane.showMessageDialog(mainPanel, "This image is still located on the maze");
-                                } else {
-                                    rightSidePanel.removeImage(label);
-                                    paneList.remove(pane);
-                                }
-                            }
-                        });
-                        settings.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
-                                KeyAdapter onlyInt = new KeyAdapter() {
-                                    public void keyTyped(KeyEvent e) {
-                                        char c = e.getKeyChar();
-                                        if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
-                                            e.consume();  // if it's not a number, ignore the event
-                                        }
-                                    }
-                                };
-
-                                JTextField imageWidthText = new JTextField(Integer.toString(pane.getImageCellWidth()), 5);
-                                imageWidthText.addKeyListener(onlyInt);
-
-                                JTextField imageHeightText = new JTextField(Integer.toString(pane.getImageCellHeight()) , 5);
-                                imageHeightText.addKeyListener(onlyInt);
-
-                                JPanel imageSettings = new JPanel();
-                                imageSettings.setLayout(new GridLayout(2, 1, 0, 10));
-                                imageSettings.add(new JLabel("Maze Cell Height:"));
-                                imageSettings.add(imageHeightText);
-                                imageSettings.add(new JLabel("Maze Cell Width:"));
-                                imageSettings.add(imageWidthText);
-
-                                int result = JOptionPane.showConfirmDialog(null, imageSettings,
-                                        "Image Settings", JOptionPane.OK_CANCEL_OPTION);
-                                if (result == JOptionPane.OK_OPTION) {
-                                    int imageHeight = Integer.parseInt(imageHeightText.getText());
-                                    int imageWidth = Integer.parseInt(imageWidthText.getText());
-                                    if (imageHeight < 1 || imageWidth < 1) {
-                                        JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
-                                    } else {
-                                        pane.setImageCellHeight(imageHeight);
-                                        pane.setImageCellWidth(imageWidth);
-                                    }
-                                }
-                            }
-                        });
-
-                        // Sourced from https://stackhowto.com/how-to-get-mouse-position-on-click-relative-to-jframe/
-                        label.addMouseListener(new MouseAdapter() {
-                            @Override
-                            public void mouseClicked(MouseEvent e) {
-                                if (e.getButton() == MouseEvent.BUTTON1) {//Left click
-                                    leftSidePanel.getDeleteButton().setSelected(false);
-                                    leftSidePanel.getEditButton().setSelected(false);
-                                    leftSidePanel.getOptimalSolutionButton().setSelected(false);
-                                    if (gridPanel.IsPlaceImageState()) {
-                                        gridPanel.SetEditState(false);
-                                    } else {
-                                        gridPanel.SetImagePlaceState(pane);
-                                    }
-                                } else if (e.getButton() == MouseEvent.BUTTON3) {   // Right click
-                                    popup.show(label, e.getX(), e.getY());
-
-                                }
-                            }
-                        });
+                        addImage(pane);
                     }
                 } else {
                     JOptionPane.showMessageDialog(mainPanel, "You cannot add more than 10 images");

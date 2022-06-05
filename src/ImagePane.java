@@ -5,6 +5,7 @@ public class ImagePane {
     private final ImageIcon originalImage;
     private int imageCellWidth;
     private int imageCellHeight;
+    private JLabel label;
 
     protected ImagePane(ImageIcon image, int imageCellWidth, int imageCellHeight) {
         this.originalImage = image;
@@ -47,5 +48,13 @@ public class ImagePane {
         int maxImageWidth = (imageCellWidth * 50) + ((imageCellWidth-2) * 10);
         int maxImageHeight = (imageCellHeight * 50) + ((imageCellHeight-2) * 10);
         return resizeImage(maxImageWidth, maxImageHeight);
+    }
+
+    public void setLabel(JLabel label) {
+        this.label = label;
+    }
+
+    public JLabel getLabel() {
+        return this.label;
     }
 }
