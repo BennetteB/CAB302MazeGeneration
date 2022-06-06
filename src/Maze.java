@@ -4,13 +4,13 @@
  */
 public class Maze {
     /** The cell height of the maze **/
-    private int height;
+    private final int height;
 
     /** The cell width of the maze **/
-    private int width;
+    private final int width;
 
     /** An array of MazeCells that represent the maze **/
-    private MazeCell[][] maze;
+    private final MazeCell[][] maze;
 
     /**
      * Initializes the maze
