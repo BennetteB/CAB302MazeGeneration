@@ -159,7 +159,9 @@ public class MainGUI extends JFrame implements Runnable {
                 + "maze_data LONGBLOB,"
                 + "image_data LONGBLOB,"
                 + "maze_cell_height INT,"
-                + "maze_cell_width INT" + ");";
+                + "maze_cell_width INT,"
+                + "maze_image LONGBLOB,"
+                + "maze_optimal_solution LONGBLOB," + ");";
 
         String CREATE_IMAGE_TABLE =
                 "CREATE TABLE IF NOT EXISTS maze_images("
@@ -189,7 +191,7 @@ public class MainGUI extends JFrame implements Runnable {
                         "maze_program(author, " +
                         "maze_name, maze_data, image_data," +
                         "maze_cell_width, maze_cell_height, " +
-                        "date_time) VALUES(?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+                        "date_time, maze_image, maze_optimal_solution) VALUES(?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
                 saveMazeData.setString(1, author);
                 saveMazeData.setString(2, mazeName);
                 saveMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
@@ -217,7 +219,6 @@ public class MainGUI extends JFrame implements Runnable {
                 updateMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
                 updateMazeData.setInt(8, currentMazeId);
                 updateMazeData.execute();
-
                 PreparedStatement clearImages = connection.prepareStatement("DELETE " +
                         "FROM maze_images WHERE `maze_id` = ?");
                 clearImages.setInt(1, currentMazeId);
@@ -225,7 +226,6 @@ public class MainGUI extends JFrame implements Runnable {
                 saveImagesToDatabase(currentMazeId);
                 statusMessage = "maze successfully updated";
             }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
             statusMessage = "error in saving maze: Error " + ex.getErrorCode();
@@ -759,6 +759,9 @@ public class MainGUI extends JFrame implements Runnable {
                 JButton delete = new JButton("Delete");
                 JButton okButton = new JButton("Ok");
                 JButton cancelButton = new JButton("Cancel");
+                String[] choices = {"Choice 1","Choice 2","Choice 3"};
+                JComboBox<String> sortSelection = new JComboBox<String>(choices);
+                sortSelection.setVisible(true);
                 mazeDetailsLabel = new JLabel();
                 mazeDetailsLabel.setMinimumSize(new Dimension(400, 15));
                 mazeDetailsLabel.setPreferredSize(new Dimension(400, 15));
@@ -770,6 +773,7 @@ public class MainGUI extends JFrame implements Runnable {
                 openMazePanel.setLayout(new BoxLayout(openMazePanel, BoxLayout.PAGE_AXIS));
                 openMazePanel.add(openList);
                 openMazePanel.add(mazeDetailsLabel);
+                openMazePanel.add(sortSelection);
                 buttonPanel.add(okButton);
                 buttonPanel.add(cancelButton);
                 buttonPanel.add(delete);
