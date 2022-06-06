@@ -806,11 +806,15 @@ public class MainGUI extends JFrame implements Runnable {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (delete.getModel().isPressed()){
-                            int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
-                            if (deleteSelectedMaze(selectedMazeId)) {
-                                dataList.clear();
-                                mazeDetailsList = openMazeList(dataList);
-                            };
+                            if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
+                                int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
+                                if (deleteSelectedMaze(selectedMazeId)) {
+                                    dataList.clear();
+                                    mazeDetailsList = openMazeList(dataList);
+                                };
+                            } else {
+                                mazeDetailsLabel.setText("please select a maze first");
+                            }
                         }
 
                     }
