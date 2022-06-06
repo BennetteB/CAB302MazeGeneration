@@ -245,6 +245,26 @@ public class Algorithm {
         return mazeData;
     }
 
+    protected float showOptimalCells(MazeCell[][] mazeData) {
+        float totalCells = mazeData[0].length * mazeData.length;
+        float optimalCells = 0;
+        MazeCell[] indexes = findOpenCells(mazeData);
+        MazeCell startIndex = indexes[0];
+        MazeCell current = indexes[1];
+        while (current != startIndex) {
+            optimalCells++;
+            current = current.getParent();
+        }
+        optimalCells++;
+
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setParent(null);
+            }
+        }
+        return (optimalCells / totalCells) * 100;
+    }
+
     /**
      * The method checks for all the dead cells within the maze represented by mazeData and returns a percentage of them
      * @param mazeData a two-dimensional MazeCell that represents the maze
