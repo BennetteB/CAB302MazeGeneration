@@ -721,6 +721,8 @@ public class MainGUI extends JFrame implements Runnable {
                     } else {
                         mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
                         mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
+                        //System.out.println("height " + Math.round((Math.ceil((double)mazeCellHeight / 2)) * (2.0/3.0)));
+                        //System.out.println("width " + Math.round((Math.ceil((double)mazeCellWidth / 2)) * (2.0/3.0)));
                         mazeName = mazeNameText.getText();
                         author = mazeAuthorText.getText();
                         randomiseMaze = randomMazeOption.isSelected();

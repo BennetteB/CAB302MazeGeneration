@@ -14,7 +14,6 @@ public class Algorithm {
         // Creates a blank maze with all the walls set to true
         Maze maze = new Maze(height, width, true);
         MazeCell[][] mazeData = maze.getMaze();
-
         // Picks a random index to start at when generating the maze
         int[] index = new int[2];
         index[0] = new Random().nextInt(height);
@@ -97,6 +96,8 @@ public class Algorithm {
                 }
             }
         }
+        mazeData[0][0].toggleWallLeft();
+        mazeData[height-1][width-1].toggleWallRight();
         // toggles all the maze cell so that they are marked as not visited
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
