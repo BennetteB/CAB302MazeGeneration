@@ -182,7 +182,6 @@ public class ScreenImage
         }
 
         String type = fileName.substring(offset + 1);
-
         if (types.contains(type))
         {
             ImageIO.write(image, type, new File( fileName ));
