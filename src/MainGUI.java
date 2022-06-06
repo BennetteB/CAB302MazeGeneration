@@ -269,7 +269,7 @@ public class MainGUI extends JFrame implements Runnable {
     protected void SaveGridImage() {
         BufferedImage bi = ScreenImage.createImage(gridPanel);
         try {
-            ScreenImage.writeImage(bi, "panel.png");
+            //ScreenImage.writeImage(bi, "panel.png");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -661,8 +661,16 @@ public class MainGUI extends JFrame implements Runnable {
 
             if (source == leftSidePanel.getMazeStatsButton()) {
                 float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
+                float optimalCellsPercentage;
+                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+                if (maze != null) {
+                    optimalCellsPercentage = new Algorithm().showOptimalCells(maze);
+                } else {
+                    optimalCellsPercentage = 0;
+                }
+
                 JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
-                        deadCellsPercentage + "%");
+                        deadCellsPercentage + "%\n" + "Percentage of optimal cells: " + optimalCellsPercentage + "%");
             }
 
             if (source == leftSidePanel.getSolvableButton()) {
@@ -721,6 +729,8 @@ public class MainGUI extends JFrame implements Runnable {
                     } else {
                         mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
                         mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
+                        //System.out.println("height " + Math.round((Math.ceil((double)mazeCellHeight / 2)) * (2.0/3.0)));
+                        //System.out.println("width " + Math.round((Math.ceil((double)mazeCellWidth / 2)) * (2.0/3.0)));
                         mazeName = mazeNameText.getText();
                         author = mazeAuthorText.getText();
                         randomiseMaze = randomMazeOption.isSelected();
@@ -855,7 +865,44 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
+                JFileChooser fileChooser = new JFileChooser();
+                FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+                FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+                FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+                fileChooser.addChoosableFileFilter(jpg);
+                fileChooser.addChoosableFileFilter(jpeg);
+                fileChooser.addChoosableFileFilter(png);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                int option = fileChooser.showOpenDialog(mainPanel);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    String fileString = file.toString();
 
+                    int offset = fileString.lastIndexOf( "." );
+
+                    if (offset == -1)
+                    {
+                        //String message = "file suffix was not specified";
+                        //throw new IOException( message );
+                    }
+                    BufferedImage bi = ScreenImage.createImage(gridPanel);
+                    String type = fileString.substring(offset + 1);
+                    if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
+                            || type.equalsIgnoreCase("jpeg")) {
+                        try {
+                            ImageIO.write(bi, type, new File( fileString ));
+                        } catch (IOException ex) {
+
+                        }
+                    } else {
+                        fileString = fileString + ".png";
+                        try {
+                            ImageIO.write(bi, "png", new File( fileString ));
+                        } catch (IOException ex) {
+
+                        }
+                    }
+                }
             }
         }
 
