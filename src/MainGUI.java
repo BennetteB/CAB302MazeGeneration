@@ -860,7 +860,7 @@ public class MainGUI extends JFrame implements Runnable {
             && !dataOpen.getSelectedValue().equals("")) {
                 String mazeAuthor = (String) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(1);
                 String mazeDate = (String) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(2);
-                mazeDetailsLabel.setText("Date & time created: " + mazeDate + "          Author: " + mazeAuthor);
+                mazeDetailsLabel.setText("Last edited: " + mazeDate + "          Author: " + mazeAuthor);
             }
         }
 
