@@ -30,7 +30,10 @@ public class MainGUI extends JFrame implements Runnable {
     private String mazeName = "New Maze";
     private String author = "Unknown";
     private boolean newMaze = false;
+    private int currentMazeId;
     private JList dataOpen;
+    private HashMap<Integer, List<Object>> mazeDetailsList;
+    private JLabel mazeDetailsLabel;
 
     private JPanel mainPanel;
     private RightSideBarPanel rightSidePanel;
@@ -175,9 +178,11 @@ public class MainGUI extends JFrame implements Runnable {
     }
 
     /**
-     * Saves existing/ new maze into the database with custom parameters
+     * Saves existing/
+     * new maze into the database with custom parameters
      */
     public void saveMaze() {
+        JLabel statusMessage = new JLabel();
         try{
             if (newMaze) {
                 PreparedStatement saveMazeData = connection.prepareStatement("INSERT INTO " +
@@ -195,28 +200,70 @@ public class MainGUI extends JFrame implements Runnable {
                 saveMazeData.executeUpdate();
                 ResultSet mazeKey = saveMazeData.getGeneratedKeys();
                 if (mazeKey.next()) {
-                   int mazeId = mazeKey.getInt(1);
-                   //insert all images into the database
-                    for (int i = 0; i < paneList.size(); i++) {
-                        PreparedStatement saveMazeImages = connection.prepareStatement("INSERT INTO maze_images(maze_id, image_data, " +
-                                "image_width, image_height) VALUES (?,?,?,?)");
-                        saveMazeImages.setInt(1, mazeId);
-                        saveMazeImages.setString(2, imageToString(paneList.get(i).getOriginalImage()));
-                        saveMazeImages.setInt(3, paneList.get(i).getImageCellWidth());
-                        saveMazeImages.setInt(4, paneList.get(i).getImageCellHeight());
-                        saveMazeImages.execute();
-                    }
+                   saveImagesToDatabase( mazeKey.getInt(1));
                 }
-
+                statusMessage.setText("maze successfully saved");
             } else {
-//                // update current database instead
+               // update current database instead
+                PreparedStatement updateMazeData = connection.prepareStatement("UPDATE " +
+                        "maze_program SET author = ?, maze_name = ?, maze_data = ?, image_data = ?, " +
+                        "maze_cell_width = ?, maze_cell_height = ?, date_time = ? WHERE id = ?");
+                updateMazeData.setString(1, author);
+                updateMazeData.setString(2, mazeName);
+                updateMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
+                updateMazeData.setString(4, gridImagesToString(gridPanel.GetImageMap()));
+                updateMazeData.setInt(5, mazeCellWidth);
+                updateMazeData.setInt(6, mazeCellHeight);
+                updateMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
+                updateMazeData.setInt(8, currentMazeId);
+                updateMazeData.execute();
+
+                PreparedStatement clearImages = connection.prepareStatement("DELETE " +
+                        "FROM maze_images WHERE `maze_id` = ?");
+                clearImages.setInt(1, currentMazeId);
+                clearImages.execute();
+                saveImagesToDatabase(currentMazeId);
+                statusMessage.setText("maze successfully updated");
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+            statusMessage.setText("error in saving maze: Error " + ex.getErrorCode());
         }
-        // Call to gridImagesToString below
-        //gridImagesToString(gridPanel.GetImageMap());
+
+        JDialog statusDialog = new JDialog();
+        JButton okButton = new JButton("ok");
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                statusDialog.setVisible(false);
+            }
+        });
+
+        JPanel statusPanel = new JPanel();
+        statusPanel.add(statusMessage);
+        statusPanel.add(okButton);
+        statusDialog.add(statusPanel);
+        statusDialog.setSize(200, 100);
+        statusDialog.setVisible(true);
+        newMaze = false;
+    }
+
+    protected void saveImagesToDatabase(int mazeId) {
+        try {
+            //insert all images into the database
+            for (int i = 0; i < paneList.size(); i++) {
+                PreparedStatement saveMazeImages = connection.prepareStatement("INSERT INTO maze_images(maze_id, image_data, " +
+                        "image_width, image_height) VALUES (?,?,?,?)");
+                saveMazeImages.setInt(1, mazeId);
+                saveMazeImages.setString(2, imageToString(paneList.get(i).getOriginalImage()));
+                saveMazeImages.setInt(3, paneList.get(i).getImageCellWidth());
+                saveMazeImages.setInt(4, paneList.get(i).getImageCellHeight());
+                saveMazeImages.execute();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected void SaveGridImage() {
@@ -224,21 +271,25 @@ public class MainGUI extends JFrame implements Runnable {
         try {
             ScreenImage.writeImage(bi, "panel.png");
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
     /** retrieves data from the database,
      * displays retrieved data as a list into a dialog box
      * returns a hashmap with maze and result row id **/
-    public HashMap<Integer, Integer> openMazeList(DefaultListModel mazeList){
+    public HashMap<Integer, List<Object>> openMazeList(DefaultListModel mazeList){
         ResultSet rs = null;
-        HashMap<Integer, Integer> mazeResultList = new HashMap<Integer, Integer>();
+        HashMap<Integer, List<Object>> mazeResultList = new HashMap<Integer, List<Object>>();
         try {
             PreparedStatement openMazeData = connection.prepareStatement("SELECT * FROM maze_program");
             rs = openMazeData.executeQuery();
             while (rs.next()) {
-              mazeResultList.put(rs.getRow(), rs.getInt("id"));
+              List mazeDetails = new ArrayList<>(4);
+              mazeDetails.add(rs.getInt("id"));
+              mazeDetails.add(rs.getString("author"));
+              mazeDetails.add(rs.getString("date_time"));
+              mazeResultList.put(rs.getRow(), mazeDetails);
               String mazeName = rs.getString("maze_name");
               mazeList.addElement(mazeName);
             }
@@ -251,8 +302,7 @@ public class MainGUI extends JFrame implements Runnable {
     /** retrieves entire selected maze data from the database,
      * changes current maze data to selected maze data
      * displays maze and any image(s) into the GUI **/
-    public void openSelectedMaze(HashMap< Integer, Integer> mazeIdList, int selectedId) {
-        int selectedMazeId = mazeIdList.get(selectedId);
+    protected void openSelectedMaze(int selectedMazeId) {
         ResultSet mazeResult = null;
         try {
             PreparedStatement openMaze = connection.prepareStatement("SELECT * FROM maze_program WHERE `id` = ?");
@@ -300,14 +350,27 @@ public class MainGUI extends JFrame implements Runnable {
                     gridPanel.CreateMaze(maze, gridImagesResult);
                 } else {
                     gridPanel.CreateMaze(maze);
-
                 }
                 gridPanel.SetEditState(false);
                 newMaze = false;
+                currentMazeId = selectedMazeId;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    protected boolean deleteSelectedMaze(int selectedMazeId) {
+        try {
+            PreparedStatement deleteMaze = connection.prepareStatement("DELETE" +
+                    " FROM maze_program WHERE `id` = ?");
+            deleteMaze.setInt(1, selectedMazeId);
+            deleteMaze.execute();
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     /**
@@ -709,19 +772,21 @@ public class MainGUI extends JFrame implements Runnable {
                 JButton delete = new JButton("Delete");
                 JButton okButton = new JButton("Ok");
                 JButton cancelButton = new JButton("Cancel");
-
+                mazeDetailsLabel = new JLabel();
+                mazeDetailsLabel.setMinimumSize(new Dimension(400, 15));
+                mazeDetailsLabel.setPreferredSize(new Dimension(400, 15));
                 DefaultListModel dataList = new DefaultListModel();
-                HashMap<Integer, Integer> mazeIdList = openMazeList(dataList);
+                mazeDetailsList = openMazeList(dataList);
                 dataOpen = new JList(dataList);
                 addDataListListener(new Listener(), dataOpen);
                 JScrollPane openList = new JScrollPane(dataOpen);
-                openMazePanel.setLayout(new BorderLayout());
-                openMazePanel.add(openList,BorderLayout.CENTER);
+                openMazePanel.setLayout(new BoxLayout(openMazePanel, BoxLayout.PAGE_AXIS));
+                openMazePanel.add(openList);
+                openMazePanel.add(mazeDetailsLabel);
                 buttonPanel.add(okButton);
                 buttonPanel.add(cancelButton);
                 buttonPanel.add(delete);
                 openMazePanel.setSize(400, 200);
-
                 openDialog.setLayout(new BorderLayout());
                 openDialog.add(openMazePanel, BorderLayout.CENTER);
                 buttonPanel.setSize(400,50);
@@ -731,7 +796,9 @@ public class MainGUI extends JFrame implements Runnable {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (okButton.getModel().isPressed()){
-                            openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
+                            int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
+                            openSelectedMaze(selectedMazeId);
+                            openDialog.setVisible(false);
                         }
                     }
                 });
@@ -740,7 +807,11 @@ public class MainGUI extends JFrame implements Runnable {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (delete.getModel().isPressed()){
-
+                            int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
+                            if (deleteSelectedMaze(selectedMazeId)) {
+                                dataList.clear();
+                                mazeDetailsList = openMazeList(dataList);
+                            };
                         }
 
                     }
@@ -750,22 +821,14 @@ public class MainGUI extends JFrame implements Runnable {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (cancelButton.getModel().isPressed()){
-
+                            openDialog.setVisible(false);
                         }
-
                     }
                 });
 
                 openDialog.setSize(new Dimension(500, 250));
                 openDialog.setModal(true);
                 openDialog.setVisible(true);
-//
-//                        openMazePanel.setLayout(new GridLayout(2, 1, 0, 10));
-//                int result = JOptionPane.showConfirmDialog(null, openMazePanel,
-//                        "Open Maze", JOptionPane.OK_CANCEL_OPTION);
-//                if (result == JOptionPane.OK_OPTION) {
-//                        openSelectedMaze(mazeIdList, (dataOpen.getSelectedIndex() + 1));
-//                    }
             }
 
             if (source == save) {
@@ -795,7 +858,9 @@ public class MainGUI extends JFrame implements Runnable {
         public void valueChanged(ListSelectionEvent e) {
             if (dataOpen.getSelectedValue() != null
             && !dataOpen.getSelectedValue().equals("")) {
-//                currentSelectedIndex = dataOpen.getSelectedIndex();
+                String mazeAuthor = (String) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(1);
+                String mazeDate = (String) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(2);
+                mazeDetailsLabel.setText("Date & time created: " + mazeDate + "          Author: " + mazeAuthor);
             }
         }
 
