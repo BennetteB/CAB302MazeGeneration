@@ -182,7 +182,7 @@ public class MainGUI extends JFrame implements Runnable {
      * new maze into the database with custom parameters
      */
     public void saveMaze() {
-        JLabel statusMessage = new JLabel();
+        String statusMessage;
         try{
             if (newMaze) {
                 PreparedStatement saveMazeData = connection.prepareStatement("INSERT INTO " +
@@ -202,7 +202,7 @@ public class MainGUI extends JFrame implements Runnable {
                 if (mazeKey.next()) {
                    saveImagesToDatabase( mazeKey.getInt(1));
                 }
-                statusMessage.setText("maze successfully saved");
+                statusMessage = "maze successfully saved";
             } else {
                // update current database instead
                 PreparedStatement updateMazeData = connection.prepareStatement("UPDATE " +
@@ -223,12 +223,12 @@ public class MainGUI extends JFrame implements Runnable {
                 clearImages.setInt(1, currentMazeId);
                 clearImages.execute();
                 saveImagesToDatabase(currentMazeId);
-                statusMessage.setText("maze successfully updated");
+                statusMessage = "maze successfully updated";
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            statusMessage.setText("error in saving maze: Error " + ex.getErrorCode());
+            statusMessage = "error in saving maze: Error " + ex.getErrorCode();
         }
 
         JDialog statusDialog = new JDialog();
@@ -239,13 +239,7 @@ public class MainGUI extends JFrame implements Runnable {
                 statusDialog.setVisible(false);
             }
         });
-
-        JPanel statusPanel = new JPanel();
-        statusPanel.add(statusMessage);
-        statusPanel.add(okButton);
-        statusDialog.add(statusPanel);
-        statusDialog.setSize(200, 100);
-        statusDialog.setVisible(true);
+        JOptionPane.showMessageDialog(mainPanel, statusMessage);
         newMaze = false;
     }
 
