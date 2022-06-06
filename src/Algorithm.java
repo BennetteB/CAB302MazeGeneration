@@ -14,7 +14,6 @@ public class Algorithm {
         // Creates a blank maze with all the walls set to true
         Maze maze = new Maze(height, width, true);
         MazeCell[][] mazeData = maze.getMaze();
-
         // Picks a random index to start at when generating the maze
         int[] index = new int[2];
         index[0] = new Random().nextInt(height);
@@ -97,6 +96,8 @@ public class Algorithm {
                 }
             }
         }
+        mazeData[0][0].toggleWallLeft();
+        mazeData[height-1][width-1].toggleWallRight();
         // toggles all the maze cell so that they are marked as not visited
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -242,6 +243,26 @@ public class Algorithm {
             }
         }
         return mazeData;
+    }
+
+    protected float showOptimalCells(MazeCell[][] mazeData) {
+        float totalCells = mazeData[0].length * mazeData.length;
+        float optimalCells = 0;
+        MazeCell[] indexes = findOpenCells(mazeData);
+        MazeCell startIndex = indexes[0];
+        MazeCell current = indexes[1];
+        while (current != startIndex) {
+            optimalCells++;
+            current = current.getParent();
+        }
+        optimalCells++;
+
+        for (int i = 0; i < mazeData.length; i++) {
+            for (int j = 0; j < mazeData[0].length; j++) {
+                mazeData[i][j].setParent(null);
+            }
+        }
+        return (optimalCells / totalCells) * 100;
     }
 
     /**
