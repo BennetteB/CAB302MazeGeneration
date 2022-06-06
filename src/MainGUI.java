@@ -269,7 +269,7 @@ public class MainGUI extends JFrame implements Runnable {
     protected void SaveGridImage() {
         BufferedImage bi = ScreenImage.createImage(gridPanel);
         try {
-            ScreenImage.writeImage(bi, "panel.png");
+            //ScreenImage.writeImage(bi, "panel.png");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -851,7 +851,44 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
+                JFileChooser fileChooser = new JFileChooser();
+                FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+                FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+                FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+                fileChooser.addChoosableFileFilter(jpg);
+                fileChooser.addChoosableFileFilter(jpeg);
+                fileChooser.addChoosableFileFilter(png);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                int option = fileChooser.showOpenDialog(mainPanel);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    String fileString = file.toString();
 
+                    int offset = fileString.lastIndexOf( "." );
+
+                    if (offset == -1)
+                    {
+                        //String message = "file suffix was not specified";
+                        //throw new IOException( message );
+                    }
+                    BufferedImage bi = ScreenImage.createImage(gridPanel);
+                    String type = fileString.substring(offset + 1);
+                    if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
+                            || type.equalsIgnoreCase("jpeg")) {
+                        try {
+                            ImageIO.write(bi, type, new File( fileString ));
+                        } catch (IOException ex) {
+
+                        }
+                    } else {
+                        fileString = fileString + ".png";
+                        try {
+                            ImageIO.write(bi, "png", new File( fileString ));
+                        } catch (IOException ex) {
+
+                        }
+                    }
+                }
             }
         }
 
