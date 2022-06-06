@@ -43,7 +43,7 @@ public class MainGUI extends JFrame implements Runnable {
     private FileInputStream imageDataFile = null;
 
     public MainGUI(){
-        super("Main GUI");
+        super("Maze Creator");
         initGUI();
         initDatabase();
     }
