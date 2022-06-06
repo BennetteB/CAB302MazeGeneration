@@ -230,15 +230,6 @@ public class MainGUI extends JFrame implements Runnable {
             ex.printStackTrace();
             statusMessage = "error in saving maze: Error " + ex.getErrorCode();
         }
-
-        JDialog statusDialog = new JDialog();
-        JButton okButton = new JButton("ok");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                statusDialog.setVisible(false);
-            }
-        });
         JOptionPane.showMessageDialog(mainPanel, statusMessage);
         newMaze = false;
     }
