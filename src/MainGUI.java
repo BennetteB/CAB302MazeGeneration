@@ -155,13 +155,14 @@ public class MainGUI extends JFrame implements Runnable {
                 + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
                 + "maze_name VARCHAR(50) NOT NULL,"
                 + "author VARCHAR(50),"
-                + "date_time DATETIME,"
+                + "created_date DATETIME,"
+                + "last_edited DATETIME,"
                 + "maze_data LONGBLOB,"
                 + "image_data LONGBLOB,"
                 + "maze_cell_height INT,"
                 + "maze_cell_width INT,"
                 + "maze_image LONGBLOB,"
-                + "maze_optimal_solution LONGBLOB," + ");";
+                + "maze_optimal_solution LONGBLOB" + ");";
 
         String CREATE_IMAGE_TABLE =
                 "CREATE TABLE IF NOT EXISTS maze_images("
@@ -191,7 +192,7 @@ public class MainGUI extends JFrame implements Runnable {
                         "maze_program(author, " +
                         "maze_name, maze_data, image_data," +
                         "maze_cell_width, maze_cell_height, " +
-                        "date_time, maze_image, maze_optimal_solution) VALUES(?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+                        "created_date, last_edited, maze_image, maze_optimal_solution) VALUES(?,?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
                 saveMazeData.setString(1, author);
                 saveMazeData.setString(2, mazeName);
                 saveMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
@@ -199,6 +200,9 @@ public class MainGUI extends JFrame implements Runnable {
                 saveMazeData.setInt(5, mazeCellWidth);
                 saveMazeData.setInt(6, mazeCellHeight);
                 saveMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
+                saveMazeData.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
+                saveMazeData.setString(9, "image of maze");
+                saveMazeData.setString(10, "image of optimal solution");
                 saveMazeData.executeUpdate();
                 ResultSet mazeKey = saveMazeData.getGeneratedKeys();
                 if (mazeKey.next()) {
@@ -209,7 +213,7 @@ public class MainGUI extends JFrame implements Runnable {
                // update current database instead
                 PreparedStatement updateMazeData = connection.prepareStatement("UPDATE " +
                         "maze_program SET author = ?, maze_name = ?, maze_data = ?, image_data = ?, " +
-                        "maze_cell_width = ?, maze_cell_height = ?, date_time = ? WHERE id = ?");
+                        "maze_cell_width = ?, maze_cell_height = ?, last_edited = ?, maze_image = ?, maze_optimal_solution = ? WHERE id = ?");
                 updateMazeData.setString(1, author);
                 updateMazeData.setString(2, mazeName);
                 updateMazeData.setString(3, mazeToString(gridPanel.getGridMazeCellArray()));
@@ -217,7 +221,9 @@ public class MainGUI extends JFrame implements Runnable {
                 updateMazeData.setInt(5, mazeCellWidth);
                 updateMazeData.setInt(6, mazeCellHeight);
                 updateMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
-                updateMazeData.setInt(8, currentMazeId);
+                updateMazeData.setString(8, "new maze image");
+                updateMazeData.setString(9, "new optimal solution image");
+                updateMazeData.setInt(10, currentMazeId);
                 updateMazeData.execute();
                 PreparedStatement clearImages = connection.prepareStatement("DELETE " +
                         "FROM maze_images WHERE `maze_id` = ?");
@@ -236,7 +242,6 @@ public class MainGUI extends JFrame implements Runnable {
 
     protected void saveImagesToDatabase(int mazeId) {
         try {
-            //insert all images into the database
             for (int i = 0; i < paneList.size(); i++) {
                 PreparedStatement saveMazeImages = connection.prepareStatement("INSERT INTO maze_images(maze_id, image_data, " +
                         "image_width, image_height) VALUES (?,?,?,?)");
@@ -254,17 +259,26 @@ public class MainGUI extends JFrame implements Runnable {
     /** retrieves data from the database,
      * displays retrieved data as a list into a dialog box
      * returns a hashmap with maze and result row id **/
-    public HashMap<Integer, List<Object>> openMazeList(DefaultListModel mazeList){
+    public HashMap<Integer, List<Object>> openMazeList(DefaultListModel mazeList, String order, String secondOrder){
         ResultSet rs = null;
+        if (order.equals("last edited")) {
+           order = "last_edited";
+        } else if (order.equals("creation date")) {
+           order = "created_date";
+        } else if (order.equals("maze name")) {
+           order = "maze_name";
+        }
         HashMap<Integer, List<Object>> mazeResultList = new HashMap<Integer, List<Object>>();
         try {
-            PreparedStatement openMazeData = connection.prepareStatement("SELECT * FROM maze_program");
+           PreparedStatement openMazeData = connection.prepareStatement("SELECT * FROM maze_program " +
+                        "ORDER BY " + order.toUpperCase(Locale.ROOT) +
+                        (secondOrder.equals("ascending")? " ASC" : " DESC"));
             rs = openMazeData.executeQuery();
             while (rs.next()) {
               List mazeDetails = new ArrayList<>(4);
               mazeDetails.add(rs.getInt("id"));
               mazeDetails.add(rs.getString("author"));
-              mazeDetails.add(rs.getString("date_time"));
+              mazeDetails.add(rs.getString("last_edited"));
               mazeResultList.put(rs.getRow(), mazeDetails);
               String mazeName = rs.getString("maze_name");
               mazeList.addElement(mazeName);
@@ -714,7 +728,7 @@ public class MainGUI extends JFrame implements Runnable {
 
                         mainPanel.remove(GridPanel);
                         gridPanel = new GridPanel();
-                        gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
+                        gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
                         GridPanel = new JScrollPane(gridPanel);
                         mainPanel.add(GridPanel, BorderLayout.CENTER);
                         mainPanel.revalidate();
@@ -759,34 +773,67 @@ public class MainGUI extends JFrame implements Runnable {
                 JButton delete = new JButton("Delete");
                 JButton okButton = new JButton("Ok");
                 JButton cancelButton = new JButton("Cancel");
-                String[] choices = {"Choice 1","Choice 2","Choice 3"};
-                JComboBox<String> sortSelection = new JComboBox<String>(choices);
-                sortSelection.setVisible(true);
+                JPanel sortedPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                JPanel mazeDetailsPanel = new JPanel();
                 mazeDetailsLabel = new JLabel();
-                mazeDetailsLabel.setMinimumSize(new Dimension(400, 15));
-                mazeDetailsLabel.setPreferredSize(new Dimension(400, 15));
+                mazeDetailsLabel.setMinimumSize(new Dimension(400, 17));
+                mazeDetailsLabel.setPreferredSize(new Dimension(400, 17));
+                mazeDetailsPanel.add(mazeDetailsLabel);
                 DefaultListModel dataList = new DefaultListModel();
-                mazeDetailsList = openMazeList(dataList);
+                String choices[] = {"last edited", "creation date", "author", "maze name"};
+                String secondChoices[] = {"ascending", "descending"};
+                JComboBox sortSelection = new JComboBox(choices);
+                JComboBox secondSortSelection = new JComboBox(secondChoices);
+                mazeDetailsList = openMazeList(dataList, (String) sortSelection.getSelectedItem(), (String) secondSortSelection.getSelectedItem());
                 dataOpen = new JList(dataList);
                 addDataListListener(new Listener(), dataOpen);
                 JScrollPane openList = new JScrollPane(dataOpen);
+                JLabel sortLabel = new JLabel("sort by: ");
+
+                sortSelection.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (e.getActionCommand().equals("comboBoxChanged")) {
+                            String item = (String) sortSelection.getSelectedItem();
+                            dataList.clear();
+                            mazeDetailsList = openMazeList(dataList, item, (String) secondSortSelection.getSelectedItem());
+                        }
+                        ;
+                    }
+                });
+
+                secondSortSelection.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (e.getActionCommand().equals("comboBoxChanged")) {
+                            String item = (String) secondSortSelection.getSelectedItem();
+                            dataList.clear();
+                            mazeDetailsList = openMazeList(dataList, (String) sortSelection.getSelectedItem(), item);
+                        }
+                    }
+                });
+
+                sortedPanel.add(sortLabel);
+                sortedPanel.add(sortSelection);
+                sortedPanel.add(secondSortSelection);
+                sortSelection.setVisible(true);
                 openMazePanel.setLayout(new BoxLayout(openMazePanel, BoxLayout.PAGE_AXIS));
+                openMazePanel.add(sortedPanel);
                 openMazePanel.add(openList);
-                openMazePanel.add(mazeDetailsLabel);
-                openMazePanel.add(sortSelection);
+                openMazePanel.add(mazeDetailsPanel);
                 buttonPanel.add(okButton);
                 buttonPanel.add(cancelButton);
                 buttonPanel.add(delete);
                 openMazePanel.setSize(400, 200);
                 openDialog.setLayout(new BorderLayout());
                 openDialog.add(openMazePanel, BorderLayout.CENTER);
-                buttonPanel.setSize(400,50);
-                openDialog.add(buttonPanel,BorderLayout.SOUTH);
+                buttonPanel.setSize(400, 50);
+                openDialog.add(buttonPanel, BorderLayout.SOUTH);
 
                 okButton.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {
-                        if (okButton.getModel().isPressed()){
+                        if (okButton.getModel().isPressed()) {
                             if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
                                 int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
                                 openSelectedMaze(selectedMazeId);
@@ -801,13 +848,14 @@ public class MainGUI extends JFrame implements Runnable {
                 delete.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {
-                        if (delete.getModel().isPressed()){
+                        if (delete.getModel().isPressed()) {
                             if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
                                 int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
                                 if (deleteSelectedMaze(selectedMazeId)) {
                                     dataList.clear();
-                                    mazeDetailsList = openMazeList(dataList);
-                                };
+                                    mazeDetailsList = openMazeList(dataList, (String) sortSelection.getSelectedItem(), (String) secondSortSelection.getSelectedItem());
+                                }
+                                ;
                             } else {
                                 mazeDetailsLabel.setText("please select a maze first");
                             }
@@ -819,14 +867,14 @@ public class MainGUI extends JFrame implements Runnable {
                 cancelButton.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {
-                        if (cancelButton.getModel().isPressed()){
+                        if (cancelButton.getModel().isPressed()) {
                             openDialog.setVisible(false);
                         }
                     }
                 });
 
                 openDialog.setSize(new Dimension(500, 250));
-                openDialog.setModal(true);
+                openDialog.setLocationRelativeTo(null);
                 openDialog.setVisible(true);
             }
 
@@ -850,44 +898,82 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
-                JFileChooser fileChooser = new JFileChooser();
-                FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
-                FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
-                FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
-                fileChooser.addChoosableFileFilter(jpg);
-                fileChooser.addChoosableFileFilter(jpeg);
-                fileChooser.addChoosableFileFilter(png);
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                int option = fileChooser.showOpenDialog(mainPanel);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-                    String fileString = file.toString();
+                JDialog exportDialog = new JDialog();
+                exportDialog.setTitle("Export Maze as image");
+                JRadioButton exportMazeOption = new JRadioButton("Export maze");
+                JRadioButton exportSolutionOption = new JRadioButton("Export maze optimal solution");
+                exportMazeOption.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+                exportSolutionOption.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+                ButtonGroup exportOptions = new ButtonGroup();
+                JPanel exportButtonPanel = new JPanel();
+                JButton exportOk = new JButton("Ok");
+                JButton exportCancel = new JButton("Cancel");
+                exportOk.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (exportOk.getModel().isPressed()) {
+                            exportDialog.setVisible(false);
+                            JFileChooser fileChooser = new JFileChooser();
+                            FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+                            FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+                            FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+                            fileChooser.addChoosableFileFilter(jpg);
+                            fileChooser.addChoosableFileFilter(jpeg);
+                            fileChooser.addChoosableFileFilter(png);
+                            fileChooser.setAcceptAllFileFilterUsed(false);
+                            int option = fileChooser.showOpenDialog(mainPanel);
+                            if (option == JFileChooser.APPROVE_OPTION) {
+                                File file = fileChooser.getSelectedFile();
+                                String fileString = file.toString();
 
-                    int offset = fileString.lastIndexOf( "." );
+                                int offset = fileString.lastIndexOf(".");
 
-                    if (offset == -1)
-                    {
-                        //String message = "file suffix was not specified";
-                        //throw new IOException( message );
-                    }
-                    BufferedImage bi = ScreenImage.createImage(gridPanel);
-                    String type = fileString.substring(offset + 1);
-                    if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
-                            || type.equalsIgnoreCase("jpeg")) {
-                        try {
-                            ImageIO.write(bi, type, new File( fileString ));
-                        } catch (IOException ex) {
+                                if (offset == -1) {
+                                    //String message = "file suffix was not specified";
+                                    //throw new IOException( message );
+                                }
+                                BufferedImage bi = ScreenImage.createImage(gridPanel);
+                                String type = fileString.substring(offset + 1);
+                                if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
+                                        || type.equalsIgnoreCase("jpeg")) {
+                                    try {
+                                        ImageIO.write(bi, type, new File(fileString));
+                                    } catch (IOException ex) {
 
+                                    }
+                                } else {
+                                    fileString = fileString + ".png";
+                                    try {
+                                        ImageIO.write(bi, "png", new File(fileString));
+                                    } catch (IOException ex) {
+
+                                    }
+                                }
+                            }
                         }
-                    } else {
-                        fileString = fileString + ".png";
-                        try {
-                            ImageIO.write(bi, "png", new File( fileString ));
-                        } catch (IOException ex) {
+                    }
+                });
 
+                exportCancel.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (exportCancel.getModel().isPressed()) {
+                            exportDialog.setVisible(false);
                         }
                     }
-                }
+                });
+                exportButtonPanel.add(exportOk);
+                exportButtonPanel.add(exportCancel);
+                exportOptions.add(exportMazeOption);
+                exportOptions.add(exportSolutionOption);
+                exportDialog.setLayout(new GridLayout(3, 1));
+                exportDialog.add(exportMazeOption);
+                exportDialog.add(exportSolutionOption);
+                exportDialog.add(exportButtonPanel);
+                exportDialog.setSize(250, 150);
+                exportDialog.setModal(true);
+                exportDialog.setLocationRelativeTo(null);
+                exportDialog.setVisible(true);
             }
         }
 
