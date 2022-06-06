@@ -796,9 +796,13 @@ public class MainGUI extends JFrame implements Runnable {
                     @Override
                     public void stateChanged(ChangeEvent e) {
                         if (okButton.getModel().isPressed()){
-                            int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
-                            openSelectedMaze(selectedMazeId);
-                            openDialog.setVisible(false);
+                            if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
+                                int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
+                                openSelectedMaze(selectedMazeId);
+                                openDialog.setVisible(false);
+                            } else {
+                                mazeDetailsLabel.setText("please select a maze first");
+                            }
                         }
                     }
                 });
