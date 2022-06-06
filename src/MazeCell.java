@@ -32,8 +32,6 @@ public class MazeCell {
 
     private boolean solutionCell = false;
 
-    private boolean disabled = false;
-
     /**
      * Creates a MazeCell
      * @param up the MazeCell above this cell
@@ -175,7 +173,4 @@ public class MazeCell {
     public void setSolutionCell(boolean solution) {
         solutionCell = solution;
     }
-
-    protected boolean getDisabled() {return disabled;}
-    protected void setDisabled(boolean bool) {disabled = bool;};
 }
