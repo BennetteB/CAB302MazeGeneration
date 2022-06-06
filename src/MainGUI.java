@@ -661,8 +661,16 @@ public class MainGUI extends JFrame implements Runnable {
 
             if (source == leftSidePanel.getMazeStatsButton()) {
                 float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
+                float optimalCellsPercentage;
+                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+                if (maze != null) {
+                    optimalCellsPercentage = new Algorithm().showOptimalCells(maze);
+                } else {
+                    optimalCellsPercentage = 0;
+                }
+
                 JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
-                        deadCellsPercentage + "%");
+                        deadCellsPercentage + "%\n" + "Percentage of optimal cells: " + optimalCellsPercentage + "%");
             }
 
             if (source == leftSidePanel.getSolvableButton()) {
