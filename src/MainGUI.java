@@ -612,6 +612,7 @@ public class MainGUI extends JFrame implements Runnable {
         return mazeCells;
     }
 
+
     private class Listener implements ListSelectionListener, ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
