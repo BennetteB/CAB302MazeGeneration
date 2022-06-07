@@ -862,13 +862,13 @@ public class MainGUI extends JFrame implements Runnable {
                                         } else bi[1] = null;
                                     }
                                     exportMazeDialog(bi);
-                                    exportButton.getModel().setEnabled(true);
                                 } catch (SQLException ex) {
                                     ex.printStackTrace();
                                 }
                             } else {
                                 mazeDetailsLabel.setText("please select a maze first");
                             }
+                            exportButton.getModel().setEnabled(true);
                         }
                     }
                 });
