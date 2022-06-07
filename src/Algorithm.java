@@ -1,13 +1,13 @@
 import java.util.*;
 import java.util.List;
 
+/** Class containing algorithms used in managing a maze */
 public class Algorithm {
 
-
     /**
-     * The method randomly generates a maze using DFS
-     * @param width the width that the maze will generate with
-     * @param height the height that the maze will generate with
+     * Generates a maze using the Depth First Search algorithm
+     * @param width the width that the maze will be generated with
+     * @param height the height that the maze will be generated with
      * @return returns a two-dimensional MazeCell that represents a maze
      */
     protected MazeCell[][] generateMaze(int width, int height) {
@@ -108,7 +108,8 @@ public class Algorithm {
     }
 
     /**
-     * The method checks if a maze represented by mazeData is solvable
+     * Checks the solvability of a maze. A maze is defined as solvable if it has two open ends that link up to each
+     * other
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return Returns true if the given maze is solvable and false otherwise
      */
@@ -169,9 +170,11 @@ public class Algorithm {
     }
 
     /**
-     * The method checks all the outside cells for two outside openings
+     * Checks all the outside cells on a maze for openings. Returns two MazeCells if only two of the outside cells are
+     * open to the outside.
      * @param mazeData a two-dimensional MazeCell that represents the maze
-     * @return a MazeCell array containing the two openings if they were found, and null if they were not found
+     * @return a MazeCell array containing two openings if they were found, and null if there are more than or less than
+     * two openings
      */
     protected MazeCell[] findOpenCells(MazeCell[][] mazeData) {
         MazeCell[] openEnds = new MazeCell[2];
@@ -218,9 +221,10 @@ public class Algorithm {
     }
 
     /**
-     * The method checks for the optimal solution for the maze represented by mazeData
+     * Checks a maze for its optimal solution and returns it. Assumes that a maze is solvable when checking for its
+     * optimal solution.
      * @param mazeData a two-dimensional MazeCell that represents the maze
-     * @return returns a two-dimensional int that represents a maze
+     * @return a two-dimensional MazeCell that has been modified to show the optimal solution
      */
     protected MazeCell[][] optimalSolution(MazeCell[][] mazeData) {
         for (int i = 0; i < mazeData.length; i++) {
@@ -245,6 +249,12 @@ public class Algorithm {
         return mazeData;
     }
 
+    /**
+     * Checks a maze for its optimal solution and returns the percentage of cells used to find the optimal solution.
+     * Assumes that a maze is solvable when checking for its optimal solution
+     * @param mazeData a two-dimensional MazeCell that represents the maze
+     * @return the percentage of cells in a maze used to find the optimal solution
+     */
     protected float showOptimalCells(MazeCell[][] mazeData) {
         float totalCells = mazeData[0].length * mazeData.length;
         float optimalCells = 0;
@@ -266,7 +276,8 @@ public class Algorithm {
     }
 
     /**
-     * The method checks for all the dead cells within the maze represented by mazeData and returns a percentage of them
+     * Checks a maze for all its dead cells and returns the percentage of cells in the maze that are dead cells. A dead
+     * cell is defined as a cell with 3 walls.
      * @param mazeData a two-dimensional MazeCell that represents the maze
      * @return returns a percentage representing the dead cells in a maze
      */
