@@ -26,7 +26,6 @@ public class RightSideBarPanel extends JPanel {
 
     /**
      * Get newImage
-     *
      * @return Returns the button newImage
      */
     protected JButton getNewImage() {
@@ -35,7 +34,6 @@ public class RightSideBarPanel extends JPanel {
 
     /**
      * Adds an action listener from the class implementing the RightSideBarPanel to the newImage button
-     *
      * @param listener The listener the newImage button is being added to
      */
     protected void addActionListener(ActionListener listener) {
@@ -43,17 +41,18 @@ public class RightSideBarPanel extends JPanel {
     }
 
     /**
-     * Adds an image to the imageList array using the specified path. Resizes the image so that it remains within
-     * bounds. Adds the image to the RightSideBar and updates it
-     *
-     * @param label The path must be from the main directory. Temporary parameter for the path that an image will be
-     *             found at. May be removed when the file picker dialog is implemented
+     * Adds a label containing an image to the right side panel
+     * @param label a label containing an image
      */
     protected void addImage(JLabel label) {
         add(label);
         updateUI();
     }
 
+    /**
+     * Removed a label containing an image from the right side panel
+     * @param label a label containing an image
+     */
     protected void removeImage(JLabel label) {
         remove(label);
         updateUI();
