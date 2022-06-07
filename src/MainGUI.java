@@ -201,6 +201,23 @@ public class MainGUI extends JFrame implements Runnable {
                 saveMazeData.setInt(6, mazeCellHeight);
                 saveMazeData.setTimestamp(7, new java.sql.Timestamp(new java.util.Date().getTime()));
                 saveMazeData.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
+
+//                //The below 8 lines retrieves a bufferedimage bi that contains the optimal solution maze
+//                if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray()) != null) {
+//                    boolean optimalSelected = leftSidePanel.getOptimalSolutionButton().isSelected();
+//                    leftSidePanel.getOptimalSolutionButton().setSelected(true);
+//                    BufferedImage bi = ScreenImage.createImage(gridPanel);
+//                    leftSidePanel.getOptimalSolutionButton().setSelected(optimalSelected);
+//                } else {
+//                    // assign null to optimal solution image
+//                }
+
+//                // The below 4 lines retrieves a bufferedimage bi that contains the normal maze
+//                boolean optimalSelected = leftSidePanel.getOptimalSolutionButton().isSelected();
+//                leftSidePanel.getOptimalSolutionButton().setSelected(false);
+//                BufferedImage bi = ScreenImage.createImage(gridPanel);
+//                leftSidePanel.getOptimalSolutionButton().setSelected(optimalSelected);
+
                 saveMazeData.setString(9, "image of maze");
                 saveMazeData.setString(10, "image of optimal solution");
                 saveMazeData.executeUpdate();
@@ -593,6 +610,45 @@ public class MainGUI extends JFrame implements Runnable {
         });
     }
 
+    public boolean exportMaze(boolean optimalState) {
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+        FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+        FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+        fileChooser.addChoosableFileFilter(jpg);
+        fileChooser.addChoosableFileFilter(jpeg);
+        fileChooser.addChoosableFileFilter(png);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        int option = fileChooser.showOpenDialog(mainPanel);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            String fileString = file.toString();
+            int offset = fileString.lastIndexOf(".");
+            boolean optimalSelected = leftSidePanel.getOptimalSolutionButton().isSelected();
+            leftSidePanel.getOptimalSolutionButton().setSelected(optimalState);
+            BufferedImage bi = ScreenImage.createImage(gridPanel);
+            leftSidePanel.getOptimalSolutionButton().setSelected(optimalSelected);
+            String type = fileString.substring(offset + 1);
+            if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
+                    || type.equalsIgnoreCase("jpeg")) {
+                try {
+                    ImageIO.write(bi, type, new File(fileString));
+                } catch (IOException ex) {
+                    return false;
+                }
+            } else {
+                fileString = fileString + ".png";
+                try {
+                    ImageIO.write(bi, "png", new File(fileString));
+                } catch (IOException ex) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
         Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
         MazeCell[][] mazeCells = maze.getMaze();
@@ -855,7 +911,6 @@ public class MainGUI extends JFrame implements Runnable {
                                     dataList.clear();
                                     mazeDetailsList = openMazeList(dataList, (String) sortSelection.getSelectedItem(), (String) secondSortSelection.getSelectedItem());
                                 }
-                                ;
                             } else {
                                 mazeDetailsLabel.setText("please select a maze first");
                             }
@@ -913,42 +968,10 @@ public class MainGUI extends JFrame implements Runnable {
                     public void stateChanged(ChangeEvent e) {
                         if (exportOk.getModel().isPressed()) {
                             exportDialog.setVisible(false);
-                            JFileChooser fileChooser = new JFileChooser();
-                            FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
-                            FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
-                            FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
-                            fileChooser.addChoosableFileFilter(jpg);
-                            fileChooser.addChoosableFileFilter(jpeg);
-                            fileChooser.addChoosableFileFilter(png);
-                            fileChooser.setAcceptAllFileFilterUsed(false);
-                            int option = fileChooser.showOpenDialog(mainPanel);
-                            if (option == JFileChooser.APPROVE_OPTION) {
-                                File file = fileChooser.getSelectedFile();
-                                String fileString = file.toString();
-
-                                int offset = fileString.lastIndexOf(".");
-
-                                if (offset == -1) {
-                                    //String message = "file suffix was not specified";
-                                    //throw new IOException( message );
-                                }
-                                BufferedImage bi = ScreenImage.createImage(gridPanel);
-                                String type = fileString.substring(offset + 1);
-                                if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
-                                        || type.equalsIgnoreCase("jpeg")) {
-                                    try {
-                                        ImageIO.write(bi, type, new File(fileString));
-                                    } catch (IOException ex) {
-
-                                    }
-                                } else {
-                                    fileString = fileString + ".png";
-                                    try {
-                                        ImageIO.write(bi, "png", new File(fileString));
-                                    } catch (IOException ex) {
-
-                                    }
-                                }
+                            if (exportMazeOption.isSelected()) {
+                                exportMaze(false);
+                            } else if (exportSolutionOption.isSelected()) {
+                                exportMaze(true);
                             }
                         }
                     }
