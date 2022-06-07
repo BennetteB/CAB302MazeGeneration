@@ -30,6 +30,7 @@ public class MazeCell {
     /** The parent cell of this cell*/
     private MazeCell parent;
 
+    /** The solution state of this cell*/
     private boolean solutionCell = false;
 
     /**
@@ -168,8 +169,16 @@ public class MazeCell {
         this.parent = cell;
     }
 
+    /**
+     * Get the solution state of this cell
+     * @return the solution state of this cell
+     */
     public boolean getSolutionCell() {return solutionCell;}
 
+    /**
+     * Set the solution state of this cell
+     * @param solution the solution state of this cell
+     */
     public void setSolutionCell(boolean solution) {
         solutionCell = solution;
     }
