@@ -1,15 +1,8 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicToggleButtonUI;
-import javax.swing.plaf.metal.MetalButtonUI;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,19 +43,19 @@ public class GridPanel extends JPanel {
         cst.fill = GridBagConstraints.NONE;
     }
 
-    protected boolean IsEditState() {
-        return State == GridState.EDIT;
-    }
-    protected boolean IsNoEditState() {
-        return State == GridState.NOEDIT;
-    }
+
+    /**
+     * Return if State is IMAGEPLACE
+     * @return Boolean representing if State is IMAGEPLACE
+     */
     protected boolean IsPlaceImageState() {
         return State == GridState.IMAGEPLACE;
     }
-    protected boolean IsRemoveImageState() {
-        return State == GridState.REMOVEIMAGE;
-    }
 
+    /**
+     * Sets State to EDIT if true or NOEDIT if false
+     * @param bool set to Edit if true or NOEDIT if false
+     */
     protected void SetEditState(boolean bool) {
         if(bool) {
             State = GridState.EDIT;
@@ -75,25 +68,38 @@ public class GridPanel extends JPanel {
         }
 
     }
+
+    /**
+     * Sets current ImagePane and State to IMAGEPLACE
+     * @param pane ImagePace to be placed
+     */
     protected void SetImagePlaceState(ImagePane pane) {
         imagePane = pane;
         State = GridState.IMAGEPLACE;
         allowGridWallSelection(false);
         allowGridCellSelection(true);
     }
+
+    /**
+     * Sets State to REMOVEIMAGE
+     */
     protected void SetRemoveImageState() {
         State = GridState.REMOVEIMAGE;
         allowGridWallSelection(false);
         allowGridCellSelection(false);
     }
 
+    /**
+     * Returns the GridImages placed on the grid
+     * @return HashMap with key of grid location and value of GridImage
+     */
     protected HashMap<List<Integer>, GridImage> GetImageMap() {
         return GridImages;
     }
 
     /**
      * Applies MazeData to Grid
-     * @param mazeData
+     * @param mazeData MazeData to be applied to Grid
      */
     protected void CreateMaze(MazeCell[][] mazeData) {
         for (int i = 0; i < mazeData.length; i++) {
@@ -110,6 +116,11 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Applied mazeData to Grid and places GridImages on Grid
+     * @param mazeData MazeData to be applied to Grid
+     * @param imgs Array of GridImages
+     */
     protected void CreateMaze(MazeCell[][] mazeData, GridImage[] imgs) {
         CreateMaze(mazeData);
         for (GridImage img :imgs) {
@@ -118,22 +129,16 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Changes Selection of wall
+     * @param i row of wall
+     * @param j column of wall
+     * @param isSelected if wall is to be selected or not
+     */
     private void changeWall(int i, int j, boolean isSelected) {
         GridComponentArray[i][j].getModel().setSelected(isSelected);
     }
 
-    private void emptyMaze() {
-        for (int i = 0; i < GridComponentArray.length; i++) {
-            for (int j = 0; j < GridComponentArray[0].length; j++){
-                if(i % 2 == 0 && j % 2 != 0) {
-                    GridComponentArray[i][j].getModel().setSelected(false);
-                }
-                else if(i % 2 != 0 && j % 2 == 0) {
-                    GridComponentArray[i][j].getModel().setSelected(false);
-                }
-            }
-        }
-    }
 
     /**
      * Creates an Empty Grid.
@@ -182,6 +187,10 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Shows solution line on grid
+     * @param data MazeData which indicated which cells are part of solution
+     */
     protected void ShowSolutionLine(MazeCell[][] data) {
         ShowSolutionLine(true);
         for (int i = 0; i < data.length; i++) {
@@ -197,11 +206,11 @@ public class GridPanel extends JPanel {
         repaint();
     }
 
-    public void DisableShowSolutionLine() {
-        ShowSolutionLine(false);
-    }
 
-
+    /**
+     * Allows selection of walls in grid
+     * @param enable boolean true to enable false to disable
+     */
     private void allowGridWallSelection(boolean enable) {
         int x = 0;
         int y = 0;
@@ -239,6 +248,11 @@ public class GridPanel extends JPanel {
             x = 0;
         }
     }
+
+    /**
+     * Allows selection of cells in grid
+     * @param enable boolean true to enable false to disable
+     */
     private void allowGridCellSelection(boolean enable) {
         int x = 0;
         int y = 0;
@@ -312,6 +326,10 @@ public class GridPanel extends JPanel {
         add(GridComponentArray[i][j],cst);
     }
 
+    /**
+     * Call when state of supplied cell is changed
+     * @param cell Cell whose state has changed
+     */
     private void cellStateChange(Cell cell) {
         repaint();
         if(State == GridState.IMAGEPLACE) {
@@ -371,6 +389,10 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Replaces cells with ImagePane image on grid
+     * @param cell the top-right cell where Image panel starts
+     */
     private void PlaceImage(Cell cell) {
         for (int j = cell.j; j < (((imagePane.getImageCellWidth() * 2) - 1) + cell.j); j++) {
             for (int k = 0; k < (imagePane.getImageCellHeight() * 2) - 1; k++) {
@@ -447,9 +469,13 @@ public class GridPanel extends JPanel {
         revalidate();
         repaint();
         SetEditState(false);
-        //SetRemoveImage();
     }
 
+    /**
+     * Add grid component back to grid panel
+     * @param i row of cell
+     * @param j column of cell
+     */
     private void addGridComponentToPanel(int i, int j) {
         GridComponent temp = GridComponentArray[i][j];
         cst.gridx = temp.x;
@@ -474,6 +500,11 @@ public class GridPanel extends JPanel {
         }
         add(GridComponentArray[i][j], cst);
     }
+
+    /**
+     * Called when state of supplied GridImage is changed
+     * @param imgPane GridImage whose state has changed
+     */
     private void imagePanelStateChange(GridImage imgPane) {
         if(State == GridState.REMOVEIMAGE) {
             if(imgPane.getModel().isSelected()) {
@@ -589,6 +620,10 @@ public class GridPanel extends JPanel {
         add(GridComponentArray[i][j],cst);
     }
 
+    /**
+     * Unselects wall
+     * @param btn wall to be unselected
+     */
     private void deselectWall(WallButton btn) {
         btn.setSelected(false);
         if (btn.orientation == Orientation.HORIZONTAL) {
@@ -610,6 +645,10 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Selects wall
+     * @param btn wall to be selected
+     */
     private void selectWall(WallButton btn) {
         btn.setSelected(true);
         if (btn.orientation == Orientation.HORIZONTAL) {
@@ -624,6 +663,9 @@ public class GridPanel extends JPanel {
         }
     }
 
+    /**
+     * Resets GridComponents colors to their original color, exception if showSolutionLine is on
+     */
     protected void ResetGridColors() {
         int x = 0;
         int y = 0;
@@ -671,6 +713,14 @@ public class GridPanel extends JPanel {
         }
         repaint();
     }
+
+    /**
+     * Turns corresponding MazeCell wall on given GridComponentArray locations of WallButton
+     * @param i row of wallbutton
+     * @param j column of wallbutton
+     * @param orien orientation of button
+     * @param isOn is wall on or off
+     */
     private void MazeCellWallOn(int i, int j, Orientation orien, boolean isOn) {
         int x = 0;
         int y = 0;
@@ -729,9 +779,9 @@ public class GridPanel extends JPanel {
 
     /**
      * Checks if Intersect at provided coordinates has a selected wall next to it
-     * @param i
-     * @param j
-     * @return
+     * @param i row of intersect
+     * @param j column of intersect
+     * @return return boolean if wall is adjacent to Selected wall or not
      */
     private boolean isAdjacentToWall(int i, int j) {
         if(i == 0) {
@@ -775,6 +825,10 @@ public class GridPanel extends JPanel {
                 GridComponentArray[i+1][j].getModel().isSelected();
     }
 
+    /**
+     * Returns the GridMazeCellArray
+     * @return MazeCell[][] GridMazeCellArray
+     */
     public MazeCell[][] getGridMazeCellArray() {
         return GridMazeCellArray;
     }
