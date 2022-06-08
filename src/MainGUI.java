@@ -609,32 +609,17 @@ public class MainGUI extends JFrame implements Runnable {
         });
     }
 
-    public boolean exportMaze(BufferedImage bi) {
+    public boolean exportMaze(BufferedImage[] bi, String[] fileName) {
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
-        FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
-        FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
-        fileChooser.addChoosableFileFilter(jpg);
-        fileChooser.addChoosableFileFilter(jpeg);
-        fileChooser.addChoosableFileFilter(png);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        int option = fileChooser.showOpenDialog(mainPanel);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int option = fileChooser.showSaveDialog(mainPanel);
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             String fileString = file.toString();
-            int offset = fileString.lastIndexOf(".");
-            String type = fileString.substring(offset + 1);
-            if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("png")
-                    || type.equalsIgnoreCase("jpeg")) {
+            for (int i = 0; i < bi.length; i++) {
+                fileString = fileString + "\\" + fileName[i] + ".png";
                 try {
-                    ImageIO.write(bi, type, new File(fileString));
-                } catch (IOException ex) {
-                    return false;
-                }
-            } else {
-                fileString = fileString + ".png";
-                try {
-                    ImageIO.write(bi, "png", new File(fileString));
+                    ImageIO.write(bi[i], "png", new File(fileString));
                 } catch (IOException ex) {
                     return false;
                 }
@@ -853,6 +838,8 @@ public class MainGUI extends JFrame implements Runnable {
                                     getMazeImage.setInt(1, selectedMazeId);
                                     ResultSet rs = getMazeImage.executeQuery();
                                     BufferedImage[] bi = new BufferedImage[2];
+                                    // new addition on the line below to intitialise
+                                    String name = null;
                                     while (rs.next()) {
                                         Blob mazeImage = rs.getBlob("maze_image");
                                         Blob mazeOptimalImage = rs.getBlob("maze_optimal_solution");
@@ -861,7 +848,8 @@ public class MainGUI extends JFrame implements Runnable {
                                             bi[1] = stringToImage(new String(mazeOptimalImage.getBytes(1, (int) mazeOptimalImage.length())));
                                         } else bi[1] = null;
                                     }
-                                    exportMazeDialog(bi);
+                                    // ensure the name is added correctly
+                                    //exportMazeDialog(bi, name);
                                 } catch (SQLException ex) {
                                     ex.printStackTrace();
                                 }
@@ -987,11 +975,12 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == export) {
-                exportMazeDialog(new BufferedImage[2]);
+                String[] name = {mazeName};
+                exportMazeDialog(new BufferedImage[1][], name);
             }
         }
 
-        protected void exportMazeDialog(BufferedImage[] bi) {
+        protected void exportMazeDialog(BufferedImage[][] bi, String name[]) {
             JDialog exportDialog = new JDialog();
             exportDialog.setTitle("Export Maze as image");
             JPanel exportPanel = new JPanel();
@@ -1006,25 +995,34 @@ public class MainGUI extends JFrame implements Runnable {
             exportSolutionOption.setBorder(BorderFactory.createEmptyBorder(10, 20, 0, 0));
             ButtonGroup exportOptions = new ButtonGroup();
             exportRadioButtons.add(exportMazeOption);
-            BufferedImage imageExports[] = bi;
+            boolean optimalSolutionOption = true;
 
-            if (imageExports[0] == null) {
+            if (bi[0] == null) {
+                bi[0] = new BufferedImage[2];
                 boolean optimalSelected = leftSidePanel.getOptimalSolutionButton().isSelected();
                 leftSidePanel.getOptimalSolutionButton().setSelected(false);
-                imageExports[0] = ScreenImage.createImage(gridPanel);
+                bi[0][0] = ScreenImage.createImage(gridPanel);
                 leftSidePanel.getOptimalSolutionButton().setSelected(true);
                 if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray()) != null) {
-                    imageExports[1] = ScreenImage.createImage(gridPanel);
+                    bi[0][1] = ScreenImage.createImage(gridPanel);
                 } else {
-                    imageExports[1] = null;
+                    bi[0][1] = null;
+                    optimalSolutionOption = false;
                     System.out.println("not solvable");
                 }
                 leftSidePanel.getOptimalSolutionButton().setSelected(optimalSelected);
+            } else {
+                for (BufferedImage[] bufferedImages : bi) {
+                    if (bufferedImages == null) {
+                        optimalSolutionOption = false;
+                        break;
+                    }
+                }
             }
 
-            if (imageExports[1] != null) exportRadioButtons.add(exportSolutionOption);
+            if (optimalSolutionOption) exportRadioButtons.add(exportSolutionOption);
             exportContent.add(exportRadioButtons, BorderLayout.WEST);
-            JLabel exportImage = new JLabel(new ImagePane(new ImageIcon(imageExports[0]), 4, 4).getResizedImage());
+            JLabel exportImage = new JLabel(new ImagePane(new ImageIcon(bi[0][0]), 4, 4).getResizedImage());
             exportImage.setPreferredSize(new Dimension(177, 122));
             exportImage.setMaximumSize(new Dimension(177, 122));
             exportContent.setBorder(new EmptyBorder(15, 0, 20, 0));
@@ -1033,13 +1031,21 @@ public class MainGUI extends JFrame implements Runnable {
             JButton exportOk = new JButton("Ok");
             JButton exportCancel = new JButton("Cancel");
 
+            BufferedImage[] imageExports = new BufferedImage[bi.length];
             exportSolutionOption.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                   if (exportSolutionOption.isSelected()) {
-                        exportImage.setIcon(new ImagePane(new ImageIcon(imageExports[1]), 4, 4).getResizedImage());
+                    if (exportSolutionOption.isSelected()) {
+                        exportImage.setIcon(new ImagePane(new ImageIcon(bi[0][1]), 4, 4).getResizedImage());
+                        for (int i = 0; i < bi.length; i++) {
+                            imageExports[i] = bi[i][1];
+                        }
+
                     } else if (exportMazeOption.isSelected()) {
-                        exportImage.setIcon(new ImagePane(new ImageIcon(imageExports[0]), 4, 4).getResizedImage());
+                        exportImage.setIcon(new ImagePane(new ImageIcon(bi[0][0]), 4, 4).getResizedImage());
+                        for (int i = 0; i < bi.length; i++) {
+                            imageExports[i] = bi[i][0];
+                        }
                     }
                 }
             });
@@ -1050,9 +1056,9 @@ public class MainGUI extends JFrame implements Runnable {
                     if (exportOk.getModel().isPressed()) {
                         exportDialog.setVisible(false);
                         if (exportMazeOption.isSelected()) {
-                            exportMaze(imageExports[0]);
+                            exportMaze(imageExports, name);
                         } else if (exportSolutionOption.isSelected()) {
-                            exportMaze(imageExports[1]);
+                            exportMaze(imageExports, name);
                         }
                     }
                 }
@@ -1072,7 +1078,7 @@ public class MainGUI extends JFrame implements Runnable {
             exportButtonPanel.setMaximumSize(new Dimension(400, 40));
             exportButtonPanel.setPreferredSize(new Dimension(400, 40));
             exportOptions.add(exportMazeOption);
-            if (imageExports[1] != null) exportOptions.add(exportSolutionOption);
+            if (optimalSolutionOption) exportOptions.add(exportSolutionOption);
             BoxLayout layout = new BoxLayout(exportPanel, BoxLayout.Y_AXIS);
             exportPanel.setLayout(layout);
             exportPanel.add(exportContent);
