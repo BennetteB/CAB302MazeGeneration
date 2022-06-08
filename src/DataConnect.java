@@ -1,42 +1,38 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 public class DataConnect {
-    // init database constants
-    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DATABASE_URL = "jdbc:mysql://127.0.0.1:3306/mazeprogram";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "password";
-    private static final String MAX_POOL = "250";
-
     // init connection object
     private static Connection instance = null;
-    // init properties object
-    private Properties properties;
-
+    private Properties props = new Properties();
     // connect database
     private DataConnect() {
-        if (instance == null) {
-            try {
-                Class.forName(DATABASE_DRIVER);
-                instance = DriverManager.getConnection(DATABASE_URL, getProperties());
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream("./db.props");
+            props.load(in);
+            in.close();
+            // init database constants
+            String url = props.getProperty("jdbc.url");
+            String username = props.getProperty("jdbc.username");
+            String password = props.getProperty("jdbc.password");
+            String schema = props.getProperty("jdbc.schema");
 
-    // create properties
-    private Properties getProperties() {
-        if (properties == null) {
-            properties = new Properties();
-            properties.setProperty("user", USERNAME);
-            properties.setProperty("password", PASSWORD);
-            properties.setProperty("MaxPooledStatements", MAX_POOL);
+            // get a connection
+            instance = DriverManager.getConnection(url + "/" + schema, username,
+                    password);
+        } catch (SQLException sqle) {
+            System.err.println(sqle);
+        } catch (FileNotFoundException fnfe) {
+            System.err.println(fnfe);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        return properties;
     }
 
     // disconnect database
