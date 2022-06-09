@@ -17,6 +17,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+/**
+ * Class used to manage the maze program.
+ */
 public class MainGUI extends JFrame {
 
     private JMenuItem createMaze;
@@ -81,7 +84,6 @@ public class MainGUI extends JFrame {
         rightSidePanelScroll.setPreferredSize(new Dimension(200, 300));
         mainPanel.add(rightSidePanelScroll, BorderLayout.EAST);
         rightSidePanel.addActionListener(new Listener());
-
 
         //gridPanel
         //Calls the gridPanel class:
@@ -244,6 +246,10 @@ public class MainGUI extends JFrame {
         newMaze = false;
     }
 
+    /**
+     *
+     * @return
+     */
     protected String[] getImagesOfMaze() {
         String[] imageOfMaze = new String[2];
         if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray()) != null) {
@@ -261,6 +267,10 @@ public class MainGUI extends JFrame {
         return imageOfMaze;
     }
 
+    /**
+     *
+     * @param mazeId
+     */
     protected void saveImagesToDatabase(int mazeId) {
         try {
             for (ImagePane imagePane : paneList) {
@@ -277,9 +287,13 @@ public class MainGUI extends JFrame {
         }
     }
 
-    /** retrieves data from the database,
-     * displays retrieved data as a list into a dialog box
-     * returns a hashmap with maze and result row id **/
+    /**
+     * retrieves data from the database, displays retrieved data as a list into a dialog box
+     * @param mazeList
+     * @param order
+     * @param secondOrder
+     * @return returns a hashmap with maze and result row id
+     */
     public HashMap<Integer, List<Object>> openMazeList(DefaultListModel<String> mazeList, String order, String secondOrder){
         ResultSet rs = null;
         switch (order) {
@@ -307,9 +321,11 @@ public class MainGUI extends JFrame {
         return mazeResultList;
     }
 
-    /** retrieves entire selected maze data from the database,
-     * changes current maze data to selected maze data
-     * displays maze and any image(s) into the GUI **/
+    /**
+     * retrieves entire selected maze data from the database,changes current maze data to selected maze data displays
+     * maze and any image(s) into the GUI
+     * @param selectedMazeId
+     */
     protected void openSelectedMaze(int selectedMazeId) {
         ResultSet mazeResult = null;
         try {
@@ -369,6 +385,11 @@ public class MainGUI extends JFrame {
         }
     }
 
+    /**
+     *
+     * @param selectedMazeId
+     * @return
+     */
     protected boolean deleteSelectedMaze(int[] selectedMazeId) {
         try {
             String DELETE_MAZES = "DELETE FROM maze_program WHERE `id` IN (";
@@ -389,6 +410,12 @@ public class MainGUI extends JFrame {
         return false;
     }
 
+    /**
+     *
+     * @param bi
+     * @param fileName
+     * @return
+     */
     public boolean exportMaze(BufferedImage[] bi, List<String> fileName) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -408,6 +435,11 @@ public class MainGUI extends JFrame {
         return false;
     }
 
+    /**
+     *
+     * @param listener
+     * @param dataList
+     */
     protected void addDataListListener(ListSelectionListener listener, JList<String> dataList) {
         dataList.addListSelectionListener(listener);
     }
@@ -417,6 +449,11 @@ public class MainGUI extends JFrame {
         new MainGUI();
     }
 
+    /**
+     *
+     * @param gridImages
+     * @return
+     */
     public String gridImagesToString(HashMap<List<Integer>, GridImage> gridImages) {
         StringBuilder imageDataString = new StringBuilder();
         int cellx;
@@ -445,6 +482,11 @@ public class MainGUI extends JFrame {
         return imageDataString.toString();
     }
 
+    /**
+     *
+     * @param string
+     * @return
+     */
     public GridImage[] stringToGridImages(String string) {
         int cellx;
         int celly;
@@ -468,6 +510,12 @@ public class MainGUI extends JFrame {
         return gridImages;
     }
 
+    /**
+     *
+     * @param icon
+     * @param image
+     * @return
+     */
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
     // Sourced from http://electrocarta.blogspot.com/2017/05/how-to-convert-imageicon-to-base64.html
     public String imageToString(ImageIcon icon, BufferedImage image) {
@@ -485,6 +533,11 @@ public class MainGUI extends JFrame {
         return Base64.getEncoder().encodeToString(data);
     }
 
+    /**
+     *
+     * @param string
+     * @return
+     */
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
     public BufferedImage stringToImage(String string) {
         byte[] data = Base64.getDecoder().decode(string);
@@ -498,6 +551,11 @@ public class MainGUI extends JFrame {
         return image;
     }
 
+    /**
+     *
+     * @param mazeData
+     * @return
+     */
     public String mazeToString(MazeCell[][] mazeData) {
         StringBuilder mazeString = new StringBuilder();
         for (MazeCell[] mazeDatum : mazeData) {
@@ -527,6 +585,13 @@ public class MainGUI extends JFrame {
         return mazeString.toString();
     }
 
+    /**
+     *
+     * @param mazeString
+     * @param mazeCellHeight
+     * @param mazeCellWidth
+     * @return
+     */
     public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
         Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
         MazeCell[][] mazeCells = maze.getMaze();
@@ -551,6 +616,10 @@ public class MainGUI extends JFrame {
         return mazeCells;
     }
 
+    /**
+     *
+     * @return
+     */
     private boolean newImageButton() {
         if (paneList.size() < 10) {
             JFileChooser fileChooser = new JFileChooser();
@@ -581,6 +650,10 @@ public class MainGUI extends JFrame {
         return false;
     }
 
+    /**
+     *
+     * @param pane
+     */
     public void addImage(ImagePane pane) {
         JPopupMenu popup = new JPopupMenu();
         JMenuItem delete = new JMenuItem("Delete");
@@ -665,6 +738,9 @@ public class MainGUI extends JFrame {
         });
     }
 
+    /**
+     *
+     */
     private void settingsButton() {
         JTextField mazeNameText = new JTextField(mazeName, 20);
         JTextField mazeAuthorText = new JTextField(author, 20);
@@ -683,6 +759,9 @@ public class MainGUI extends JFrame {
         }
     }
 
+    /**
+     *
+     */
     private void mazeStatsButton() {
         float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
         float optimalCellsPercentage;
@@ -697,6 +776,9 @@ public class MainGUI extends JFrame {
                 deadCellsPercentage + "%\n" + "Percentage of optimal cells: " + optimalCellsPercentage + "%");
     }
 
+    /**
+     *
+     */
     private void createMazeButton() {
         // Possibly make a new method for most of this part
         boolean randomiseMaze;
@@ -769,6 +851,11 @@ public class MainGUI extends JFrame {
         }
     }
 
+    /**
+     *
+     * @param bi
+     * @param name
+     */
     protected void exportMazeDialog(BufferedImage[][] bi, List<String> name) {
         JDialog exportDialog = new JDialog();
         exportDialog.setTitle("Export Maze as image");
@@ -894,6 +981,9 @@ public class MainGUI extends JFrame {
     }
 
 
+    /**
+     *
+     */
     private class Listener implements ListSelectionListener, ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
