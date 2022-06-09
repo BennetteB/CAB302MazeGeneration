@@ -38,11 +38,11 @@ public class LeftSideBarPanel extends JPanel {
         leftsidePanel = new JPanel();
         leftsidePanel.setBackground(Color.WHITE);
 
-        mazeStatsButton = new JButton();
-        editButton = new JToggleButton();
-        deleteButton = new JToggleButton();
-        solvableButton = new JButton();
-        optimalSolutionButton = new JToggleButton();
+        mazeStatsButton = new JButton("<html>" + "Maze Stats" + "</html>");
+        editButton = new JToggleButton("<html>" + "Edit" + "</html>");
+        deleteButton = new JToggleButton("<html>" + "Delete Image" + "</html>");
+        solvableButton = new JButton("<html>" + "Solvable" + "</html>");
+        optimalSolutionButton = new JToggleButton("<html>" + "Optimal Solution" + "</html>");
 
         mazeStatsButton.setBackground(Color.WHITE);
         solvableButton.setBackground(Color.WHITE);
@@ -55,12 +55,6 @@ public class LeftSideBarPanel extends JPanel {
         editButton.setMaximumSize(new Dimension(100,100));
         deleteButton.setMaximumSize(new Dimension(100,100));
         optimalSolutionButton.setMaximumSize(new Dimension(100,100));
-
-        solvableButton.setText("Solvable");
-        mazeStatsButton.setText("Maze Stats");
-        editButton.setText("Edit");
-        deleteButton.setText("Delete Image");
-        optimalSolutionButton.setText("Optimal Solution");
 
         leftsidePanel.setLayout(new BoxLayout(leftsidePanel, BoxLayout.Y_AXIS));
         leftsidePanel.add(editButton);
