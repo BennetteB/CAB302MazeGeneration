@@ -629,19 +629,19 @@ public class MainGUI extends JFrame implements Runnable {
         Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
         MazeCell[][] mazeCells = maze.getMaze();
         int x = 0;
-        for (int i = 0; i < mazeCells.length; i++) {
+        for (MazeCell[] mazeCell : mazeCells) {
             for (int j = 0; j < mazeCells[0].length; j++) {
                 if (mazeString.charAt(x) == '1') {
-                    mazeCells[i][j].toggleWallUp();
+                    mazeCell[j].toggleWallUp();
                 }
-                if (mazeString.charAt(x+1) == '1') {
-                    mazeCells[i][j].toggleWallRight();
+                if (mazeString.charAt(x + 1) == '1') {
+                    mazeCell[j].toggleWallRight();
                 }
-                if (mazeString.charAt(x+2) == '1') {
-                    mazeCells[i][j].toggleWallDown();
+                if (mazeString.charAt(x + 2) == '1') {
+                    mazeCell[j].toggleWallDown();
                 }
-                if (mazeString.charAt(x+3) == '1') {
-                    mazeCells[i][j].toggleWallLeft();
+                if (mazeString.charAt(x + 3) == '1') {
+                    mazeCell[j].toggleWallLeft();
                 }
                 x += 4;
             }
@@ -654,46 +654,11 @@ public class MainGUI extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
             if (source == rightSidePanel.getNewImage() || source == impImage) {
-                if (paneList.size() < 10) {
-                    JFileChooser fileChooser = new JFileChooser();
-                    FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
-                    FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
-                    FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
-                    fileChooser.addChoosableFileFilter(jpg);
-                    fileChooser.addChoosableFileFilter(jpeg);
-                    fileChooser.addChoosableFileFilter(png);
-                    fileChooser.setAcceptAllFileFilterUsed(false);
-                    int option = fileChooser.showOpenDialog(mainPanel);
-                    if (option == JFileChooser.APPROVE_OPTION) {
-                        File file = fileChooser.getSelectedFile();
-                        BufferedImage image;
-                        try {
-                            image = ImageIO.read(file);
-                            imageDataFile = new FileInputStream(file);
-                        } catch (IOException ev) {
-                            return;
-                        }
-                        ImageIcon icon = new ImageIcon(image);
-                        ImagePane pane = new ImagePane(icon, 2, 2);
-                        addImage(pane);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "You cannot add more than 10 images");
-                }
+                if (newImageButton()) return;
             }
 
             if (source == leftSidePanel.getMazeStatsButton()) {
-                float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
-                float optimalCellsPercentage;
-                MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
-                if (maze != null) {
-                    optimalCellsPercentage = new Algorithm().showOptimalCells(maze);
-                } else {
-                    optimalCellsPercentage = 0;
-                }
-
-                JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
-                        deadCellsPercentage + "%\n" + "Percentage of optimal cells: " + optimalCellsPercentage + "%");
+                mazeStatsButton();
             }
 
             if (source == leftSidePanel.getSolvableButton()) {
@@ -705,93 +670,11 @@ public class MainGUI extends JFrame implements Runnable {
             }
 
             if (source == createMaze) {
-                // Possibly make a new method for most of this part
-                boolean randomiseMaze;
-
-                // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
-                KeyAdapter onlyInt = new KeyAdapter() {
-                    public void keyTyped(KeyEvent e) {
-                        char c = e.getKeyChar();
-                        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
-                            e.consume();  // if it's not a number, ignore the event
-                        }
-                    }
-                };
-
-                JTextField mazeHeightText = new JTextField("10", 5);
-                mazeHeightText.addKeyListener(onlyInt);
-
-                JTextField mazeWidthText = new JTextField("10", 5);
-                mazeWidthText.addKeyListener(onlyInt);
-
-                JTextField mazeNameText = new JTextField("New Maze", 20);
-                JTextField mazeAuthorText = new JTextField("Unknown", 20);
-
-                JCheckBox randomMazeOption = new JCheckBox();
-
-                JPanel newMazeOptions = new JPanel();
-                newMazeOptions.setLayout(new GridLayout(5, 1, 0, 10));
-                newMazeOptions.add(new JLabel("Maze Cell Height:"));
-                newMazeOptions.add(mazeHeightText);
-                newMazeOptions.add(new JLabel("Maze Cell Width:"));
-                newMazeOptions.add(mazeWidthText);
-                newMazeOptions.add(new JLabel("Maze Name"));
-                newMazeOptions.add(mazeNameText);
-                newMazeOptions.add(new JLabel("Author"));
-                newMazeOptions.add(mazeAuthorText);
-                newMazeOptions.add(new JLabel("Randomise Maze"));
-                newMazeOptions.add(randomMazeOption);
-
-                int result = JOptionPane.showConfirmDialog(null, newMazeOptions,
-                        "Create new maze", JOptionPane.OK_CANCEL_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                    int mazeHeight = Integer.parseInt(mazeHeightText.getText());
-                    int mazeWidth = Integer.parseInt(mazeWidthText.getText());
-                    if (mazeHeight < 2 || mazeHeight > 100 || mazeWidth < 2 || mazeWidth > 100) {
-                        JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
-                    } else {
-                        mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
-                        mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
-                        mazeName = mazeNameText.getText();
-                        author = mazeAuthorText.getText();
-                        randomiseMaze = randomMazeOption.isSelected();
-
-                        mainPanel.remove(GridPanel);
-                        gridPanel = new GridPanel();
-                        gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
-                        GridPanel = new JScrollPane(gridPanel);
-                        mainPanel.add(GridPanel, BorderLayout.CENTER);
-                        mainPanel.revalidate();
-                        mainPanel.repaint();
-
-                        if (randomiseMaze) {
-                            MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
-                            gridPanel.CreateMaze(newMaze);
-                        }
-                        leftSidePanel.getEditButton().setSelected(false);
-                        leftSidePanel.getDeleteButton().setSelected(false);
-                        gridPanel.SetEditState(false);
-                        newMaze = true;
-                    }
-                }
+                createMazeButton();
             }
 
             if (source == setting) {
-                JTextField mazeNameText = new JTextField(mazeName, 20);
-                JTextField mazeAuthorText = new JTextField(author, 20);
-                JPanel mazeSettings = new JPanel();
-                mazeSettings.setLayout(new GridLayout(2, 1, 0, 10));
-                mazeSettings.add(new JLabel("Maze Name"));
-                mazeSettings.add(mazeNameText);
-                mazeSettings.add(new JLabel("Author"));
-                mazeSettings.add(mazeAuthorText);
-
-                int result = JOptionPane.showConfirmDialog(null, mazeSettings,
-                        "Maze Settings", JOptionPane.OK_CANCEL_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                    mazeName = mazeNameText.getText();
-                    author = mazeAuthorText.getText();
-                }
+                settingsButton();
             }
 
             if (source == open) {
@@ -1155,6 +1038,140 @@ public class MainGUI extends JFrame implements Runnable {
                     gridPanel.ShowSolutionLine(false);
                     gridPanel.ResetGridColors();
                 }
+            }
+        }
+    }
+
+    private boolean newImageButton() {
+        if (paneList.size() < 10) {
+            JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter jpg = new FileNameExtensionFilter("JPG Images", "jpg");
+            FileNameExtensionFilter jpeg = new FileNameExtensionFilter("JPEG Images", "jpeg");
+            FileNameExtensionFilter png = new FileNameExtensionFilter("PNG Images", "png");
+            fileChooser.addChoosableFileFilter(jpg);
+            fileChooser.addChoosableFileFilter(jpeg);
+            fileChooser.addChoosableFileFilter(png);
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            int option = fileChooser.showOpenDialog(mainPanel);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                BufferedImage image;
+                try {
+                    image = ImageIO.read(file);
+                    imageDataFile = new FileInputStream(file);
+                } catch (IOException ev) {
+                    return true;
+                }
+                ImageIcon icon = new ImageIcon(image);
+                ImagePane pane = new ImagePane(icon, 2, 2);
+                addImage(pane);
+            }
+        } else {
+            JOptionPane.showMessageDialog(mainPanel, "You cannot add more than 10 images");
+        }
+        return false;
+    }
+
+    private void settingsButton() {
+        JTextField mazeNameText = new JTextField(mazeName, 20);
+        JTextField mazeAuthorText = new JTextField(author, 20);
+        JPanel mazeSettings = new JPanel();
+        mazeSettings.setLayout(new GridLayout(2, 1, 0, 10));
+        mazeSettings.add(new JLabel("Maze Name"));
+        mazeSettings.add(mazeNameText);
+        mazeSettings.add(new JLabel("Author"));
+        mazeSettings.add(mazeAuthorText);
+
+        int result = JOptionPane.showConfirmDialog(null, mazeSettings,
+                "Maze Settings", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            mazeName = mazeNameText.getText();
+            author = mazeAuthorText.getText();
+        }
+    }
+
+    private void mazeStatsButton() {
+        float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
+        float optimalCellsPercentage;
+        MazeCell[][] maze = new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray());
+        if (maze != null) {
+            optimalCellsPercentage = new Algorithm().showOptimalCells(maze);
+        } else {
+            optimalCellsPercentage = 0;
+        }
+
+        JOptionPane.showMessageDialog(mainPanel, "Percentage of dead cells: " +
+                deadCellsPercentage + "%\n" + "Percentage of optimal cells: " + optimalCellsPercentage + "%");
+    }
+
+    private void createMazeButton() {
+        // Possibly make a new method for most of this part
+        boolean randomiseMaze;
+
+        // Sourced from https://stackhowto.com/how-to-make-jtextfield-accept-only-numbers/
+        KeyAdapter onlyInt = new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                    e.consume();  // if it's not a number, ignore the event
+                }
+            }
+        };
+
+        JTextField mazeHeightText = new JTextField("10", 5);
+        mazeHeightText.addKeyListener(onlyInt);
+
+        JTextField mazeWidthText = new JTextField("10", 5);
+        mazeWidthText.addKeyListener(onlyInt);
+
+        JTextField mazeNameText = new JTextField("New Maze", 20);
+        JTextField mazeAuthorText = new JTextField("Unknown", 20);
+
+        JCheckBox randomMazeOption = new JCheckBox();
+
+        JPanel newMazeOptions = new JPanel();
+        newMazeOptions.setLayout(new GridLayout(5, 1, 0, 10));
+        newMazeOptions.add(new JLabel("Maze Cell Height:"));
+        newMazeOptions.add(mazeHeightText);
+        newMazeOptions.add(new JLabel("Maze Cell Width:"));
+        newMazeOptions.add(mazeWidthText);
+        newMazeOptions.add(new JLabel("Maze Name"));
+        newMazeOptions.add(mazeNameText);
+        newMazeOptions.add(new JLabel("Author"));
+        newMazeOptions.add(mazeAuthorText);
+        newMazeOptions.add(new JLabel("Randomise Maze"));
+        newMazeOptions.add(randomMazeOption);
+
+        int result = JOptionPane.showConfirmDialog(null, newMazeOptions,
+                "Create new maze", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            int mazeHeight = Integer.parseInt(mazeHeightText.getText());
+            int mazeWidth = Integer.parseInt(mazeWidthText.getText());
+            if (mazeHeight < 2 || mazeHeight > 100 || mazeWidth < 2 || mazeWidth > 100) {
+                JOptionPane.showMessageDialog(mainPanel, "Input was invalid please try again");
+            } else {
+                mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
+                mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
+                mazeName = mazeNameText.getText();
+                author = mazeAuthorText.getText();
+                randomiseMaze = randomMazeOption.isSelected();
+
+                mainPanel.remove(GridPanel);
+                gridPanel = new GridPanel();
+                gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
+                GridPanel = new JScrollPane(gridPanel);
+                mainPanel.add(GridPanel, BorderLayout.CENTER);
+                mainPanel.revalidate();
+                mainPanel.repaint();
+
+                if (randomiseMaze) {
+                    MazeCell[][] newMaze = new Algorithm().generateMaze(mazeCellWidth, mazeCellHeight);
+                    gridPanel.CreateMaze(newMaze);
+                }
+                leftSidePanel.getEditButton().setSelected(false);
+                leftSidePanel.getDeleteButton().setSelected(false);
+                gridPanel.SetEditState(false);
+                newMaze = true;
             }
         }
     }
