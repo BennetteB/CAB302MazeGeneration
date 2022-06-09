@@ -129,9 +129,9 @@ public class Algorithm {
             MazeCell current = queue.remove();
 
             if (current.equals(endIndex)) {
-                for (int i = 0; i < mazeData.length; i++) {
+                for (MazeCell[] mazeDatum : mazeData) {
                     for (int j = 0; j < mazeData[0].length; j++) {
-                        mazeData[i][j].setVisited(false);
+                        mazeDatum[j].setVisited(false);
                     }
                 }
                 return mazeData;
@@ -161,9 +161,9 @@ public class Algorithm {
                 current.getCellLeft().setParent(current);
             }
         }
-        for (int i = 0; i < mazeData.length; i++) {
+        for (MazeCell[] mazeDatum : mazeData) {
             for (int j = 0; j < mazeData[0].length; j++) {
-                mazeData[i][j].setVisited(false);
+                mazeDatum[j].setVisited(false);
             }
         }
         return null;
@@ -197,20 +197,20 @@ public class Algorithm {
                 openEnds[openCellCount-1] = mazeData[mazeHeight-1][i];
             }
         }
-        for (int i = 0; i < mazeHeight; i++) {  //right and left cells searched
-            if (!mazeData[i][0].getWallLeft()) {
+        for (MazeCell[] mazeDatum : mazeData) {  //right and left cells searched
+            if (!mazeDatum[0].getWallLeft()) {
                 openCellCount++;
                 if (openCellCount > 2) {
                     return null;
                 }
-                openEnds[openCellCount-1] = mazeData[i][0];
+                openEnds[openCellCount - 1] = mazeDatum[0];
             }
-            if (!mazeData[i][mazeWidth-1].getWallRight()) {
+            if (!mazeDatum[mazeWidth - 1].getWallRight()) {
                 openCellCount++;
                 if (openCellCount > 2) {
                     return null;
                 }
-                openEnds[openCellCount-1] = mazeData[i][mazeWidth-1];
+                openEnds[openCellCount - 1] = mazeDatum[mazeWidth - 1];
             }
         }
         if (openCellCount == 2) {
@@ -227,9 +227,9 @@ public class Algorithm {
      * @return a two-dimensional MazeCell that has been modified to show the optimal solution
      */
     protected MazeCell[][] optimalSolution(MazeCell[][] mazeData) {
-        for (int i = 0; i < mazeData.length; i++) {
+        for (MazeCell[] mazeDatum : mazeData) {
             for (int j = 0; j < mazeData[0].length; j++) {
-                mazeData[i][j].setSolutionCell(false);
+                mazeDatum[j].setSolutionCell(false);
             }
         }
         MazeCell[] indexes = findOpenCells(mazeData);
@@ -241,9 +241,9 @@ public class Algorithm {
         }
         startIndex.setSolutionCell(true);
 
-        for (int i = 0; i < mazeData.length; i++) {
+        for (MazeCell[] mazeDatum : mazeData) {
             for (int j = 0; j < mazeData[0].length; j++) {
-                mazeData[i][j].setParent(null);
+                mazeDatum[j].setParent(null);
             }
         }
         return mazeData;
@@ -267,9 +267,9 @@ public class Algorithm {
         }
         optimalCells++;
 
-        for (int i = 0; i < mazeData.length; i++) {
+        for (MazeCell[] mazeDatum : mazeData) {
             for (int j = 0; j < mazeData[0].length; j++) {
-                mazeData[i][j].setParent(null);
+                mazeDatum[j].setParent(null);
             }
         }
         return (optimalCells / totalCells) * 100;
