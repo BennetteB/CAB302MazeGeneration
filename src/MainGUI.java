@@ -138,8 +138,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     * Adds an action listener to the newImage button
-     * @param listener The listener the newImage button is being added to
+     * Adds an action listener to the buttons in the menu bar
+     * @param listener ActionListener
      */
     protected void addActionListener(ActionListener listener) {
         createMaze.addActionListener(listener);
@@ -153,7 +153,8 @@ public class MainGUI extends JFrame {
     /**
      *  Initialises database,
      *  creates database table for the maze program,
-     *  adds current user to the database table */
+     *  adds current user to the database table
+     */
     public void initDatabase() {
         connection = DataConnect.getInstance();
         String CREATE_TABLE =
@@ -450,9 +451,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param gridImages
-     * @return
+     * Converts all the data from the images located within the grid panel into a single string
+     * @param gridImages The data for all the images located within the grid panel
+     * @return a string containing all the data from the images located in the grid panel
      */
     public String gridImagesToString(HashMap<List<Integer>, GridImage> gridImages) {
         StringBuilder imageDataString = new StringBuilder();
@@ -483,9 +484,10 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param string
-     * @return
+     * Converts a single string containing data about images for a grid panel into a GridImage list which the grid panel
+     * can use to populate the grid.
+     * @param string A string containing data about images inside a grid panel.
+     * @return a GridImage list of data the grid panel can use
      */
     public GridImage[] stringToGridImages(String string) {
         int cellx;
@@ -511,10 +513,10 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param icon
-     * @param image
-     * @return
+     * Converts an image from the right side panel into a string format
+     * @param icon The imageIcon that contains the data for the image
+     * @param image The image to be converted into a string
+     * @return A string representing an image
      */
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
     // Sourced from http://electrocarta.blogspot.com/2017/05/how-to-convert-imageicon-to-base64.html
@@ -534,9 +536,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param string
-     * @return
+     * Converts a string into an image
+     * @param string A string representing an image
+     * @return an image
      */
     // Sourced from https://www.tutorialspoint.com/How-to-convert-Byte-Array-to-Image-in-java
     public BufferedImage stringToImage(String string) {
@@ -552,9 +554,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param mazeData
-     * @return
+     * Converts the wall data from a two-dimensional MazeCell into a string format
+     * @param mazeData A two dimensional MazeCell representing a maze
+     * @return A string representing the wall states for each cell in a maze
      */
     public String mazeToString(MazeCell[][] mazeData) {
         StringBuilder mazeString = new StringBuilder();
@@ -586,11 +588,11 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param mazeString
-     * @param mazeCellHeight
-     * @param mazeCellWidth
-     * @return
+     * Converts a string representing the states of each cell of a maze into a two-dimensional MazeCell array.
+     * @param mazeString A string representing the states of each cell in a maze
+     * @param mazeCellHeight The cell height of a maze
+     * @param mazeCellWidth The cell width of a maze
+     * @return A two-dimensional MazeCell array representing a maze
      */
     public MazeCell[][] stringToMaze(String mazeString, int mazeCellHeight, int mazeCellWidth) {
         Maze maze = new Maze(mazeCellHeight, mazeCellWidth, false);
@@ -617,8 +619,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @return
+     * Opens a file chooser dialog and adds the image to the rightSideBarPanel
+     * @return True if there is an exception and false otherwise
      */
     private boolean newImageButton() {
         if (paneList.size() < 10) {
@@ -651,8 +653,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param pane
+     * Adds an image to the rightSideBarPanel and sets up a delete and settings option in a JMenuItem when the image
+     * is right-clicked
+     * @param pane The ImagePane object containing the image and its data
      */
     public void addImage(ImagePane pane) {
         JPopupMenu popup = new JPopupMenu();
@@ -739,7 +742,7 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
+     * Opens up a dialog box for changing maze settings
      */
     private void settingsButton() {
         JTextField mazeNameText = new JTextField(mazeName, 20);
@@ -760,7 +763,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
+     * Runs the showOptimalCells and showDeadCells algorithms in the Algorithm class and displays the results as a
+     * percentage in a dialog box
      */
     private void mazeStatsButton() {
         float deadCellsPercentage = new Algorithm().showDeadCells(gridPanel.getGridMazeCellArray());
@@ -777,7 +781,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
+     * Opens a dialog box containing maze options for the user to modify and then generates a new maze using those
+     * options
      */
     private void createMazeButton() {
         // Possibly make a new method for most of this part
@@ -982,7 +987,7 @@ public class MainGUI extends JFrame {
 
 
     /**
-     *
+     * An ActionListener for all the buttons and toggle buttons in the maze program
      */
     private class Listener implements ListSelectionListener, ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
