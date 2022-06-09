@@ -7,14 +7,12 @@ import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -33,7 +31,7 @@ public class MainGUI extends JFrame implements Runnable {
     private String author = "Unknown";
     private boolean newMaze = false;
     private int currentMazeId;
-    private JList dataOpen;
+    private JList<String> dataOpen;
     private HashMap<Integer, List<Object>> mazeDetailsList;
     private JLabel mazeDetailsLabel;
 
@@ -53,7 +51,6 @@ public class MainGUI extends JFrame implements Runnable {
         initDatabase();
     }
 
-
     /**
      * Initializes the Main GUI
      */
@@ -66,11 +63,9 @@ public class MainGUI extends JFrame implements Runnable {
         mainPanel = new JPanel(new BorderLayout());
 
         //leftSidePanel
-        /**
-         * Calls the leftSideBarPanel class:
-         * Sets up the dimension for the leftSidePanel
-         * Returns an interactive sidebar to the left of the main panel
-         */
+        //Calls the leftSideBarPanel class:
+        //Sets up the dimension for the leftSidePanel
+        //Returns an interactive sidebar to the left of the main panel
         leftSidePanel = new LeftSideBarPanel();
         leftSidePanel.setPreferredSize(new Dimension(100, 300));
         mainPanel.add(leftSidePanel, BorderLayout.WEST);
@@ -78,11 +73,9 @@ public class MainGUI extends JFrame implements Runnable {
         leftSidePanel.addItemListener(new Listener());
 
         //rightSidePanel
-        /**
-         * Calls the rightSideBarPanel class:
-         * Sets up the dimension for the rightSidePanel
-         * Return an interactive sidebar to the right side of the main panel
-         */
+        //Calls the rightSideBarPanel class:
+        //Sets up the dimension for the rightSidePanel
+        //Return an interactive sidebar to the right side of the main panel
         rightSidePanel = new RightSideBarPanel();
         rightSidePanelScroll = new JScrollPane(rightSidePanel);
         rightSidePanelScroll.setPreferredSize(new Dimension(200, 300));
@@ -91,11 +84,9 @@ public class MainGUI extends JFrame implements Runnable {
 
 
         //gridPanel
-        /**
-         * Calls the gridPanel class:
-         * Sets up the dimensions for the gridPanel
-         * Returns a grid into the center of the main panel
-         */
+        //Calls the gridPanel class:
+        //Sets up the dimensions for the gridPanel
+        //Returns a grid into the center of the main panel
         gridPanel = new GridPanel();
         gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
         GridPanel = new JScrollPane(gridPanel);
@@ -127,9 +118,7 @@ public class MainGUI extends JFrame implements Runnable {
 
         addActionListener(new Listener());
         //region Implementation of the Menu bar
-        /**
-         * Sets up the menu bar
-         */
+        //Sets up the menu bar
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
@@ -262,13 +251,13 @@ public class MainGUI extends JFrame implements Runnable {
 
     protected void saveImagesToDatabase(int mazeId) {
         try {
-            for (int i = 0; i < paneList.size(); i++) {
+            for (ImagePane imagePane : paneList) {
                 PreparedStatement saveMazeImages = connection.prepareStatement("INSERT INTO maze_images(maze_id, image_data, " +
                         "image_width, image_height) VALUES (?,?,?,?)");
                 saveMazeImages.setInt(1, mazeId);
-                saveMazeImages.setString(2, imageToString(paneList.get(i).getOriginalImage(), null));
-                saveMazeImages.setInt(3, paneList.get(i).getImageCellWidth());
-                saveMazeImages.setInt(4, paneList.get(i).getImageCellHeight());
+                saveMazeImages.setString(2, imageToString(imagePane.getOriginalImage(), null));
+                saveMazeImages.setInt(3, imagePane.getImageCellWidth());
+                saveMazeImages.setInt(4, imagePane.getImageCellHeight());
                 saveMazeImages.execute();
             }
         } catch (SQLException ex) {
@@ -279,14 +268,12 @@ public class MainGUI extends JFrame implements Runnable {
     /** retrieves data from the database,
      * displays retrieved data as a list into a dialog box
      * returns a hashmap with maze and result row id **/
-    public HashMap<Integer, List<Object>> openMazeList(DefaultListModel mazeList, String order, String secondOrder){
+    public HashMap<Integer, List<Object>> openMazeList(DefaultListModel<String> mazeList, String order, String secondOrder){
         ResultSet rs = null;
-        if (order.equals("last edited")) {
-           order = "last_edited";
-        } else if (order.equals("creation date")) {
-           order = "created_date";
-        } else if (order.equals("maze name")) {
-           order = "maze_name";
+        switch (order) {
+            case "last edited" -> order = "last_edited";
+            case "creation date" -> order = "created_date";
+            case "maze name" -> order = "maze_name";
         }
         HashMap<Integer, List<Object>> mazeResultList = new HashMap<Integer, List<Object>>();
         try {
@@ -765,8 +752,6 @@ public class MainGUI extends JFrame implements Runnable {
                     } else {
                         mazeCellHeight = Integer.parseInt(mazeHeightText.getText());
                         mazeCellWidth = Integer.parseInt(mazeWidthText.getText());
-                        //System.out.println("height " + Math.round((Math.ceil((double)mazeCellHeight / 2)) * (2.0/3.0)));
-                        //System.out.println("width " + Math.round((Math.ceil((double)mazeCellWidth / 2)) * (2.0/3.0)));
                         mazeName = mazeNameText.getText();
                         author = mazeAuthorText.getText();
                         randomiseMaze = randomMazeOption.isSelected();
