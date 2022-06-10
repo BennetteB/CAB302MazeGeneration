@@ -1,5 +1,8 @@
 import javax.swing.*;
 
+/**
+ * Class representing Wall
+ */
 public class WallButton extends GridComponent {
     protected int width;
     protected int height;

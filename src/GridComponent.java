@@ -1,5 +1,8 @@
 import javax.swing.*;
 
+/**
+ * Class to be inherited by Intersect, Cell, WallButton
+ */
 public class GridComponent extends JToggleButton {
     protected boolean isDisabled = false;
     protected boolean isCell = false;
