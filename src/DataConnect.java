@@ -1,3 +1,5 @@
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,7 +13,7 @@ public class DataConnect {
     private static Connection instance = null;
     private Properties props = new Properties();
     // connect database
-    private DataConnect() {
+    private DataConnect(MainGUI frame) {
         FileInputStream in = null;
         try {
             in = new FileInputStream("./db.props");
@@ -26,6 +28,12 @@ public class DataConnect {
             // get a connection
             instance = DriverManager.getConnection(url + "/" + schema, username,
                     password);
+
+            frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    disconnect();
+                }
+            });
         } catch (SQLException sqle) {
             System.err.println(sqle);
         } catch (FileNotFoundException fnfe) {
@@ -47,9 +55,9 @@ public class DataConnect {
         }
     }
 
-    public static Connection getInstance() {
+    public static Connection getInstance(MainGUI frame) {
         if (instance == null) {
-            new DataConnect();
+            new DataConnect(frame);
         }
         return instance;
     }

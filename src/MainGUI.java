@@ -16,6 +16,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.xml.crypto.Data;
 
 /**
  * Class used to manage the maze program.
@@ -46,12 +47,12 @@ public class MainGUI extends JFrame {
     private JScrollPane GridPanel;
     private ArrayList<ImagePane> paneList = new ArrayList<>();
     private Connection connection;
-    private FileInputStream imageDataFile = null;
+    FileInputStream imageDataFile;
 
     public MainGUI(){
         super("Maze Creator");
         initGUI();
-        initDatabase();
+        initDatabase(this);
     }
 
     /**
@@ -144,8 +145,8 @@ public class MainGUI extends JFrame {
      *  creates database table for the maze program,
      *  adds current user to the database table
      */
-    public void initDatabase() {
-        connection = DataConnect.getInstance();
+    public void initDatabase(MainGUI frame) {
+        connection = DataConnect.getInstance(frame);
         String CREATE_TABLE =
                 "CREATE TABLE IF NOT EXISTS maze_program ("
                 + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
@@ -221,8 +222,7 @@ public class MainGUI extends JFrame {
                 updateMazeData.setString(9, getImagesOfMaze()[1]);
                 updateMazeData.setInt(10, currentMazeId);
                 updateMazeData.execute();
-                PreparedStatement clearImages = connection.prepareStatement("DELETE " +
-                        "FROM maze_images WHERE `maze_id` = ?");
+                PreparedStatement clearImages = connection.prepareStatement("DELETE FROM maze_images WHERE `maze_id` = ?");
                 clearImages.setInt(1, currentMazeId);
                 clearImages.execute();
                 saveImagesToDatabase(currentMazeId);
@@ -237,8 +237,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @return
+     * Retrieves currently displayed maze image and its optimal solution
+     * @return images as a string
      */
     protected String[] getImagesOfMaze() {
         String[] imageOfMaze = new String[2];
@@ -258,8 +258,8 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param mazeId
+     * Saves each image in the panelist into the database
+     * @param mazeId id of the selected maze
      */
     protected void saveImagesToDatabase(int mazeId) {
         try {
@@ -279,13 +279,13 @@ public class MainGUI extends JFrame {
 
     /**
      * retrieves data from the database, displays retrieved data as a list into a dialog box
-     * @param mazeList
-     * @param order
-     * @param secondOrder
+     * @param mazeList list of mazes selected
+     * @param order order type
+     * @param secondOrder second order type
      * @return returns a hashmap with maze and result row id
      */
     public HashMap<Integer, List<Object>> openMazeList(DefaultListModel<String> mazeList, String order, String secondOrder){
-        ResultSet rs = null;
+        ResultSet rs;
         switch (order) {
             case "last edited" -> order = "last_edited";
             case "creation date" -> order = "created_date";
@@ -297,7 +297,7 @@ public class MainGUI extends JFrame {
                         "ORDER BY " + order + (secondOrder.equals("ascending")? " ASC" : " DESC"));
             rs = openMazeData.executeQuery();
             while (rs.next()) {
-              List mazeDetails = new ArrayList<>(4);
+              List<Object> mazeDetails = new ArrayList<>(4);
               mazeDetails.add(rs.getInt("id"));
               mazeDetails.add(rs.getString("author"));
               mazeDetails.add(rs.getString("last_edited"));
@@ -314,10 +314,10 @@ public class MainGUI extends JFrame {
     /**
      * retrieves entire selected maze data from the database,changes current maze data to selected maze data displays
      * maze and any image(s) into the GUI
-     * @param selectedMazeId
+     * @param selectedMazeId the selected maze's id
      */
     protected void openSelectedMaze(int selectedMazeId) {
-        ResultSet mazeResult = null;
+        ResultSet mazeResult;
         try {
             String OPEN_MAZE = "SELECT * FROM maze_program WHERE `id` = ?";
             PreparedStatement openMaze = connection.prepareStatement(OPEN_MAZE);
@@ -376,9 +376,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param selectedMazeId
-     * @return
+     * Deletes selected mazes from the database
+     * @param selectedMazeId the selected maze's id
+     * @return boolean value of whether deletion is successfull or not
      */
     protected boolean deleteSelectedMaze(int[] selectedMazeId) {
         try {
@@ -401,10 +401,10 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param bi
-     * @param fileName
-     * @return
+     * Exports selected mazes as an image file
+     * @param bi array of bufferedimages to be exported
+     * @param fileName array of image names to be exported
+     * @return boolean value of whether export has been successfull or not
      */
     public boolean exportMaze(BufferedImage[] bi, List<String> fileName) {
         JFileChooser fileChooser = new JFileChooser();
@@ -426,9 +426,9 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param listener
-     * @param dataList
+     * Adds a listener to each item of the list of mazes
+     * @param listener listener action to each list item
+     * @param dataList maze list of which listener should be added to
      */
     protected void addDataListListener(ListSelectionListener listener, JList<String> dataList) {
         dataList.addListSelectionListener(listener);
@@ -848,9 +848,12 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     *
-     * @param bi
-     * @param name
+     * Opens up a dialog box displaying a list of all mazes
+     * stored in the database,
+     * multiple actions (buttons) - export, delete, open
+     * based on selected maze from the list
+     * @param bi list of bufferedimages of selected mazes
+     * @param name list of names of selected mazes
      */
     protected void exportMazeDialog(BufferedImage[][] bi, List<String> name) {
         JDialog exportDialog = new JDialog();
@@ -897,11 +900,13 @@ public class MainGUI extends JFrame {
         JButton exportOk = new JButton("Ok");
         BufferedImage[][] imageExports = bi;
         BufferedImage[] imageExport = new BufferedImage[imageExports[0].length];
+
         if (imageExports[0].length < 2 ) {
             JLabel exportImage = new JLabel(new ImagePane(new ImageIcon(bi[0][0]), 4, 4).getResizedImage());
             exportImage.setPreferredSize(new Dimension(177, 122));
             exportImage.setMaximumSize(new Dimension(177, 122));
             exportContent.add(exportImage, BorderLayout.CENTER);
+
             exportSolutionOption.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
@@ -912,6 +917,7 @@ public class MainGUI extends JFrame {
                     }
                 }
             });
+
             for (ChangeListener listener : exportSolutionOption.getChangeListeners()) {
                 exportMazeOption.addChangeListener(listener);
             }
@@ -1025,8 +1031,8 @@ public class MainGUI extends JFrame {
                 mazeDetailsLabel.setPreferredSize(new Dimension(350, 17));
                 mazeDetailsPanel.add(mazeDetailsLabel);
                 DefaultListModel dataList = new DefaultListModel();
-                String choices[] = {"last edited", "creation date", "author", "maze name"};
-                String secondChoices[] = {"ascending", "descending"};
+                String[] choices = {"last edited", "creation date", "author", "maze name"};
+                String[] secondChoices = {"ascending", "descending"};
                 JComboBox sortSelection = new JComboBox(choices);
                 JComboBox secondSortSelection = new JComboBox(secondChoices);
                 mazeDetailsList = openMazeList(dataList, (String) sortSelection.getSelectedItem(), (String) secondSortSelection.getSelectedItem());
@@ -1038,12 +1044,11 @@ public class MainGUI extends JFrame {
                         if (exportButton.getModel().isPressed()) {
                             exportButton.getModel().setEnabled(false);
                             if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
-//                                int selectedMazeId = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndex() + 1)).get(0);
                                 try {
                                     String GET_MAZE_IMAGE = "SELECT maze_name, maze_image, " +
                                             "maze_optimal_solution FROM maze_program WHERE `id` IN (";
-                                    int selectedIndices[] = dataOpen.getSelectedIndices();
-                                    int selectedMazeIds[] = new int[selectedIndices.length];
+                                    int[] selectedIndices = dataOpen.getSelectedIndices();
+                                    int[] selectedMazeIds = new int[selectedIndices.length];
                                     for (int i = 0; i < selectedIndices.length; i++) {
                                        selectedMazeIds[i] = (Integer) mazeDetailsList.get((selectedIndices[i] + 1)).get(0);
                                        GET_MAZE_IMAGE += selectedMazeIds[i];
@@ -1087,7 +1092,6 @@ public class MainGUI extends JFrame {
                             dataList.clear();
                             mazeDetailsList = openMazeList(dataList, item, (String) secondSortSelection.getSelectedItem());
                         }
-                        ;
                     }
                 });
 
@@ -1144,7 +1148,7 @@ public class MainGUI extends JFrame {
                     public void stateChanged(ChangeEvent e) {
                         if (delete.getModel().isPressed()) {
                             if (dataOpen.getSelectedValue() != null && !dataOpen.getSelectedValue().equals("")) {
-                                int selectedMazeId[] = new int[dataOpen.getSelectedIndices().length];
+                                int[] selectedMazeId = new int[dataOpen.getSelectedIndices().length];
                                 for (int i= 0; i < dataOpen.getSelectedIndices().length; i++) {
                                     selectedMazeId[i] = (Integer) mazeDetailsList.get((dataOpen.getSelectedIndices()[i] + 1)).get(0);
                                 }
