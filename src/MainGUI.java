@@ -85,17 +85,6 @@ public class MainGUI extends JFrame {
         mainPanel.add(rightSidePanelScroll, BorderLayout.EAST);
         rightSidePanel.addActionListener(new Listener());
 
-        //gridPanel
-        //Calls the gridPanel class:
-        //Sets up the dimensions for the gridPanel
-        //Returns a grid into the center of the main panel
-        gridPanel = new GridPanel();
-        gridPanel.CreateGrid(mazeCellWidth,mazeCellHeight);
-        GridPanel = new JScrollPane(gridPanel);
-        mainPanel.add(GridPanel, BorderLayout.CENTER);
-        gridPanel.SetEditState(false);
-        //endregion
-
         //region File on Menu bar
         // File Menu Bar Implementation
         createMaze = new JMenuItem("Create new maze");
@@ -836,7 +825,9 @@ public class MainGUI extends JFrame {
                 author = mazeAuthorText.getText();
                 randomiseMaze = randomMazeOption.isSelected();
 
-                mainPanel.remove(GridPanel);
+                if (GridPanel != null) {
+                    mainPanel.remove(GridPanel);
+                }
                 gridPanel = new GridPanel();
                 gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
                 GridPanel = new JScrollPane(gridPanel);
