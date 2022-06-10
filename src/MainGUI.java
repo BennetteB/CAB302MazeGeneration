@@ -168,6 +168,10 @@ public class MainGUI extends JFrame {
         return image;
     }
 
+    /**
+     * Retrieves currently displayed maze optimal solution
+     * @return images as a string
+     */
     protected String getCurrentSolutionImage() {
         boolean optimalSelected = leftSidePanel.getOptimalSolutionButton().isSelected();
         leftSidePanel.getOptimalSolutionButton().setSelected(true);
@@ -193,6 +197,9 @@ public class MainGUI extends JFrame {
         return maze;
     }
 
+    /**
+     * Clears the panelist entirely of images
+     */
     protected void clearPaneList() {
         if (paneList.size() > 0) {
             for (ImagePane pane : paneList) {
@@ -226,11 +233,6 @@ public class MainGUI extends JFrame {
         gridPanel.SetEditState(false);
         newMaze = false;
         currentMazeId = selectedMazeId;
-    }
-
-    public static void main(String[] args) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        new MainGUI();
     }
 
     /**
@@ -601,14 +603,26 @@ public class MainGUI extends JFrame {
         }
     }
 
+    /**
+     * gets MazeDetails object
+     * @return mazedetails
+     */
     public MazeDetails getMazeDetails() {
         return detailsOfMaze;
     }
 
+    /**
+     * gets currently displayed maze id
+     * @return maze id
+     */
     public int getCurrentMazeId() {
         return currentMazeId;
     }
 
+    /**
+     * sets whether the maze is new or not
+     * @param isNew boolean value of whether the maze is new or not
+     */
     public void setNewMaze(boolean isNew) {
         newMaze = isNew;
     }
@@ -645,7 +659,6 @@ public class MainGUI extends JFrame {
 
             if (source == open) {
                OpenOptions openOptionsDialog = new OpenOptions(dataSource, frame);
-               frame.add(openOptionsDialog);
             }
 
             if (source == save && GridPanel != null) {
@@ -715,5 +728,10 @@ public class MainGUI extends JFrame {
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        new MainGUI();
     }
 }
