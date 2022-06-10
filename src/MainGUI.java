@@ -332,7 +332,9 @@ public class MainGUI extends JFrame {
                 int mazeCellWidth = mazeResult.getInt("maze_cell_width");
 
                 // display maze into gridpanel
-                mainPanel.remove(GridPanel);
+                if (GridPanel != null) {
+                    mainPanel.remove(GridPanel);
+                }
                 gridPanel = new GridPanel();
                 gridPanel.CreateGrid(mazeCellWidth, mazeCellHeight);
                 GridPanel = new JScrollPane(gridPanel);
