@@ -989,15 +989,15 @@ public class MainGUI extends JFrame {
     private class Listener implements ListSelectionListener, ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
             Component source = (Component) e.getSource();
-            if (source == rightSidePanel.getNewImage() || source == impImage) {
+            if ((source == rightSidePanel.getNewImage() || source == impImage) && GridPanel != null) {
                 if (newImageButton()) return;
             }
 
-            if (source == leftSidePanel.getMazeStatsButton()) {
+            if (source == leftSidePanel.getMazeStatsButton() && GridPanel != null) {
                 mazeStatsButton();
             }
 
-            if (source == leftSidePanel.getSolvableButton()) {
+            if (source == leftSidePanel.getSolvableButton() && GridPanel != null) {
                 if (new Algorithm().mazeSolvability(gridPanel.getGridMazeCellArray()) != null) {
                     JOptionPane.showMessageDialog(mainPanel, "The maze is solvable");
                 } else {
@@ -1009,7 +1009,7 @@ public class MainGUI extends JFrame {
                 createMazeButton();
             }
 
-            if (source == setting) {
+            if (source == setting && GridPanel != null) {
                 settingsButton();
             }
 
@@ -1179,7 +1179,7 @@ public class MainGUI extends JFrame {
                 openDialog.setVisible(true);
             }
 
-            if (source == save) {
+            if (source == save && GridPanel != null) {
                 JTextField mazeNameText = new JTextField(mazeName, 20);
                 JTextField mazeAuthorText = new JTextField(author, 20);
                 JPanel saveMaze = new JPanel();
@@ -1197,7 +1197,7 @@ public class MainGUI extends JFrame {
                 }
             }
 
-            if (source == export) {
+            if (source == export && GridPanel != null) {
                 List<String> name = new ArrayList<>();
                 name.add(mazeName);
                 exportMazeDialog(new BufferedImage[2][1], name);
@@ -1214,7 +1214,10 @@ public class MainGUI extends JFrame {
         }
 
         public void itemStateChanged(ItemEvent e) {
-            Component source = (Component) e.getSource();
+            Component source = null;
+            if (gridPanel != null) {
+                source = (Component) e.getSource();
+            }
             if (source == leftSidePanel.getEditButton()) {
                 if (leftSidePanel.getEditButton().isSelected()) {
                     leftSidePanel.getDeleteButton().setSelected(false);
