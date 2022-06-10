@@ -17,18 +17,17 @@ public class DataConnect {
      * @param frame
      */
     private DataConnect(MainGUI frame) {
-        FileInputStream in = null;
+        FileInputStream in;
         try {
             in = new FileInputStream("./db.props");
             props.load(in);
             in.close();
-            // init database constants
+
             String url = props.getProperty("jdbc.url");
             String username = props.getProperty("jdbc.username");
             String password = props.getProperty("jdbc.password");
             String schema = props.getProperty("jdbc.schema");
 
-            // get a connection
             instance = DriverManager.getConnection(url + "/" + schema, username,
                     password);
 

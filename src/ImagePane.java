@@ -96,4 +96,5 @@ public class ImagePane {
     public JLabel getLabel() {
         return this.label;
     }
+
 }
