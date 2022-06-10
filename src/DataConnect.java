@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class DataConnect {
-    // init connection object
     private static Connection instance = null;
     private Properties props = new Properties();
-    // connect database
+
+    /**
+     * Connect to the database
+     * @param frame
+     */
     private DataConnect(MainGUI frame) {
         FileInputStream in = null;
         try {
@@ -43,7 +46,9 @@ public class DataConnect {
         }
     }
 
-    // disconnect database
+    /**
+     * Disconnect to the database
+     */
     public void disconnect() {
         if (instance != null) {
             try {
@@ -55,6 +60,11 @@ public class DataConnect {
         }
     }
 
+    /**
+     * Connect to the database
+     * @param frame MainGUI frame
+     * @return connection instance
+     */
     public static Connection getInstance(MainGUI frame) {
         if (instance == null) {
             new DataConnect(frame);
