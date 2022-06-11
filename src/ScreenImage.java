@@ -46,7 +46,7 @@ public class ScreenImage {
      *  @param  component Swing component to create image from
      *  @return	image the image for the given region
      */
-    public static BufferedImage createImage(JComponent component) {
+    protected static BufferedImage createImage(JComponent component) {
         Dimension d = component.getSize();
 
         if (d.width == 0 || d.height == 0) {
@@ -66,7 +66,7 @@ public class ScreenImage {
      *  @param  region The region of the component to be captured to an image
      *  @return	image the image for the given region
      */
-    public static BufferedImage createImage(JComponent component, Rectangle region) {
+    protected static BufferedImage createImage(JComponent component, Rectangle region) {
         //  Make sure the component has a size and has been layed out.
         //  (necessary check for components not added to a realized frame)
 

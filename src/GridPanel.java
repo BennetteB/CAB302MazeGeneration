@@ -829,7 +829,7 @@ public class GridPanel extends JPanel {
      * Returns the GridMazeCellArray
      * @return MazeCell[][] GridMazeCellArray
      */
-    public MazeCell[][] getGridMazeCellArray() {
+    protected MazeCell[][] getGridMazeCellArray() {
         return GridMazeCellArray;
     }
 }
