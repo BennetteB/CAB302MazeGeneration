@@ -671,7 +671,7 @@ public class MainGUI extends JFrame {
                 saveMaze.add(new JLabel("Author"));
                 saveMaze.add(mazeAuthorText);
                 int result = JOptionPane.showConfirmDialog(null, saveMaze,
-                        "Maze Settings", JOptionPane.OK_CANCEL_OPTION);
+                        "Save Maze", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
                     mazeName = mazeNameText.getText();
                     author = mazeAuthorText.getText();
