@@ -25,13 +25,13 @@ public class MazeTest {
     void updateMaze() throws MazeException {
         details.author = "bird";
         dataSource.updateMaze(details);
-        assertEquals("bird", dataSource.getSelectedMaze(details.id).author, "updating maze failed");
+        assertEquals("bird", dataSource.getSelectedMaze(details.id).author);
     }
 
     @Test
     void deleteMaze() throws MazeException{
         dataSource.deleteMaze(new int[] {details.id});
-        assertEquals(null, dataSource.getSelectedMaze(details.id).author, "deleting maze failed");
+        assertEquals(null, dataSource.getSelectedMaze(details.id).author);
     }
 
 }
