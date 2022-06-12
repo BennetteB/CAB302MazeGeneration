@@ -24,12 +24,8 @@ public class DataConnect {
             in.close();
 
             String url = props.getProperty("jdbc.url");
-            String username = props.getProperty("jdbc.username");
-            String password = props.getProperty("jdbc.password");
-            String schema = props.getProperty("jdbc.schema");
 
-            instance = DriverManager.getConnection(url + "/" + schema, username,
-                    password);
+            instance = DriverManager.getConnection(url);
 
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {

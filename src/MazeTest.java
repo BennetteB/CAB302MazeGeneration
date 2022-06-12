@@ -22,14 +22,14 @@ public class MazeTest {
     }
 
     @Test
-    void updateMaze() throws MazeException {
+    public void updateMaze() throws MazeException {
         details.author = "bird";
         dataSource.updateMaze(details);
         assertEquals("bird", dataSource.getSelectedMaze(details.id).author);
     }
 
     @Test
-    void deleteMaze() throws MazeException{
+    public void deleteMaze() throws MazeException{
         dataSource.deleteMaze(new int[] {details.id});
         assertEquals(null, dataSource.getSelectedMaze(details.id).author);
     }

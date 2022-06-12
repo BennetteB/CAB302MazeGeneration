@@ -6,7 +6,7 @@ import java.util.List;
 public class MazeDataSource {
 
     public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS maze_program ("
-            + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,"
             + "maze_name VARCHAR(50) NOT NULL,"
             + "author VARCHAR(50),"
             + "created_date DATETIME,"
@@ -19,7 +19,7 @@ public class MazeDataSource {
             + "maze_optimal_solution LONGBLOB" + ");";
 
     public static final String CREATE_IMAGE_TABLE = "CREATE TABLE IF NOT EXISTS maze_images("
-            + "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,"
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,"
             + "image_data LONGBLOB,"
             + "image_width INT,"
             + "image_height INT,"
@@ -229,10 +229,8 @@ public class MazeDataSource {
             while (mazeResult.next()) {
                 maze.name = mazeResult.getString("maze_name");
                 maze.author = mazeResult.getString("author");
-                Blob mazeData = mazeResult.getBlob("maze_data");
-                maze.mazeData = new String(mazeData.getBytes(1, (int) mazeData.length()));
-                Blob imageData = mazeResult.getBlob("image_data");
-                maze.imageData = new String(imageData.getBytes(1, (int) imageData.length()));
+                maze.mazeData = new String(mazeResult.getBytes("maze_data"));
+                maze.imageData = new String(mazeResult.getBytes("image_data"));
                 maze.height = mazeResult.getInt("maze_cell_height");
                 maze.width = mazeResult.getInt("maze_cell_width");
             }
@@ -254,8 +252,7 @@ public class MazeDataSource {
             getMazeImages.setInt(1, selectedMazeId);
             imageResult = getMazeImages.executeQuery();
             while(imageResult.next()) {
-                Blob imageBlob = imageResult.getBlob("image_data");
-                ImageIcon paneImageResult = new ImageIcon(convert.stringToImage(new String(imageBlob.getBytes(1, (int) imageBlob.length()))));
+                ImageIcon paneImageResult = new ImageIcon(convert.stringToImage(new String(imageResult.getBytes("image_data"))));
                 maze.imageWidth  = imageResult.getInt("image_width");
                 maze.imageHeight = imageResult.getInt("image_height");
                 maze.allImages.add(new ImagePane(paneImageResult, maze.imageWidth, maze.imageHeight));
@@ -285,11 +282,10 @@ public class MazeDataSource {
             while (rs.next()) {
                 MazeDetails maze = new MazeDetails();
                 maze.name = rs.getString("maze_name");
-                Blob mazeImage = rs.getBlob("maze_image");
-                maze.mazeImage = new String(mazeImage.getBytes(1, (int) mazeImage.length()));
-                Blob mazeOptimalImage = rs.getBlob("maze_optimal_solution");
+                maze.mazeImage = new String(rs.getBytes("maze_image"));
+                byte[] mazeOptimalImage = rs.getBytes("maze_optimal_solution");
                 if (mazeOptimalImage != null) {
-                    maze.mazeSolution = new String(mazeOptimalImage.getBytes(1, (int) mazeOptimalImage.length()));
+                    maze.mazeSolution = new String(mazeOptimalImage);
                 }
                 mazes[i] = maze;
                 i++;
